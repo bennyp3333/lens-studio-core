@@ -218,10 +218,42 @@
     scale: {x: 1.000000, y: 1.000000, z: 1.000000}
     hasSegmentScaleCompensation: false
   Children:
+    - !<own> 5cc7c67c-b550-42e4-988f-9fa47bb81ac6
     - !<own> 73f6219f-03eb-4b66-b025-34ddd0d14241
     - !<own> dc692223-e32e-4302-aa54-fdbc9d9e506e
   Components:
     []
+- !<SceneObject/5cc7c67c-b550-42e4-988f-9fa47bb81ac6>
+  PrefabRemaps:
+    []
+  Name: DelayManager
+  Enabled: true
+  Layers: 1
+  LocalTransform:
+    position: {x: 0.000000, y: 0.000000, z: 0.000000}
+    rotation: {x: 0.000000, y: 0.000000, z: 0.000000}
+    scale: {x: 1.000000, y: 1.000000, z: 1.000000}
+    hasSegmentScaleCompensation: false
+  Children:
+    []
+  Components:
+    - !<own> 5fa1f098-1839-4735-9c36-dbaa2711caf6
+- !<ScriptComponent/5fa1f098-1839-4735-9c36-dbaa2711caf6>
+  PrefabRemaps:
+    []
+  Name: DelayManager
+  Enabled: true
+  ScriptAsset: !<reference> f7a84b7e-add4-42fc-8e96-a12a15c383f5
+  ScriptInputsDefault:
+    debugLogs: true
+  ScriptTypesDefault:
+    {}
+  ScriptInputs:
+    "":
+      debugLogs: false
+  ScriptTypes:
+    "":
+      {}
 - !<ScriptComponent/6f655017-cd20-416d-9556-1845a5d95a80>
   PrefabRemaps:
     []

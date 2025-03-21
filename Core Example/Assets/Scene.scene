@@ -268,6 +268,37 @@
     LineSpacing: 1.000000
     CapitalizationOverride: None
   DepthTest: false
+- !<SceneObject/33aeea06-a612-475b-bba6-6727cec6ff78>
+  PrefabRemaps:
+    []
+  Name: DelayManager
+  Enabled: true
+  Layers: 1
+  LocalTransform:
+    position: {x: 0.000000, y: 0.000000, z: 0.000000}
+    rotation: {x: 0.000000, y: 0.000000, z: 0.000000}
+    scale: {x: 1.000000, y: 1.000000, z: 1.000000}
+    hasSegmentScaleCompensation: false
+  Children:
+    []
+  Components:
+    - !<own> 533a9bba-e5c0-4ebf-a5b2-582a61b4ef6a
+- !<ScriptComponent/533a9bba-e5c0-4ebf-a5b2-582a61b4ef6a>
+  PrefabRemaps:
+    []
+  Name: DelayManager
+  Enabled: true
+  ScriptAsset: !<reference> f7a84b7e-add4-42fc-8e96-a12a15c383f5
+  ScriptInputsDefault:
+    debugLogs: true
+  ScriptTypesDefault:
+    {}
+  ScriptInputs:
+    "":
+      debugLogs: false
+  ScriptTypes:
+    "":
+      {}
 - !<SceneObject/5706929c-1fec-4ac2-837f-c209d07a30f8>
   PrefabRemaps:
     []
@@ -477,6 +508,8 @@
     - 00fc3cde-1347-43e9-a6fa-ebcb11d208ea: 6f655017-cd20-416d-9556-1845a5d95a80
     - 0d22b75a-3323-4337-bcfa-9ab5f1c84136: 4217e513-6d90-4950-85b0-dd8f3d1cc604
     - 288aa1ce-63aa-40ff-b9f5-0c709fe85584: 24f3e4a9-d75a-486a-b961-83670b583129
+    - 33aeea06-a612-475b-bba6-6727cec6ff78: 5cc7c67c-b550-42e4-988f-9fa47bb81ac6
+    - 533a9bba-e5c0-4ebf-a5b2-582a61b4ef6a: 5fa1f098-1839-4735-9c36-dbaa2711caf6
     - 5706929c-1fec-4ac2-837f-c209d07a30f8: 73f6219f-03eb-4b66-b025-34ddd0d14241
     - 8002a516-3166-4793-9d6f-77e16c1de6d5: dc692223-e32e-4302-aa54-fdbc9d9e506e
     - 86d81041-f12b-4b7c-8f99-902c3c84a72c: 12b2faa1-95be-4706-b8b2-02a1efbe467b
@@ -499,6 +532,7 @@
     scale: {x: 1.000000, y: 1.000000, z: 1.000000}
     hasSegmentScaleCompensation: false
   Children:
+    - !<own> 33aeea06-a612-475b-bba6-6727cec6ff78
     - !<own> 5706929c-1fec-4ac2-837f-c209d07a30f8
     - !<own> 8002a516-3166-4793-9d6f-77e16c1de6d5
   Components:
