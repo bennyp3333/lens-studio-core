@@ -1,46 +1,110 @@
 /**
  * Recursively searches for a SceneObject with the specified name in the tree
  * rooted at the given SceneObject. If no root is provided, it searches through 
- * all root objects in the scene.
+ * all root objects in the scene and returns the first match.
  * @param {SceneObject | null} root - The root SceneObject from which to begin the search.
  * If null, the function will search through all root objects in the scene.
  * @param {string} name - The name of the SceneObject to search for.
  * @returns {SceneObject | null} The first SceneObject with the specified name if found,
  * or null if no such object exists in the tree.
  */
-function findSceneObjectByName(root, name) {
-    if (root === null) {
-        const rootObjectCount = global.scene.getRootObjectsCount()
-        let current = 0
-        while (current < rootObjectCount) {
-            const result = findSceneObjectByName(
-                global.scene.getRootObject(current),
-                name
-            )
+function findFirstSceneObjectByName(root, name) {
+    if (root == null) {
+        var rootObjectCount = global.scene.getRootObjectsCount();
+        for (var i = 0; i < rootObjectCount; i++) {
+            var rootObject = global.scene.getRootObject(i);
+            var result = findFirstSceneObjectByName(rootObject, name);
             if (result) {
-                return result
+                return result;
             }
-            current += 1
         }
     } else {
-        if (root.name === name) {
-            return root
+        if (root.name == name) {
+            return root;
         }
 
-        for (let i = 0; i < root.getChildrenCount(); i++) {
-            const child = root.getChild(i)
-            const result = findSceneObjectByName(child, name)
+        for (var i = 0; i < root.getChildrenCount(); i++) {
+            var child = root.getChild(i);
+            var result = findFirstSceneObjectByName(child, name);
             if (result) {
-                return result
+                return result;
             }
         }
     }
-    return null
+    return null;
+}
+
+/**
+ * Recursively searches for all SceneObjects with the specified name in the tree
+ * rooted at the given SceneObject. If no root is provided, it searches through 
+ * all root objects in the scene.
+ * @param {SceneObject | null} root - The root SceneObject from which to begin the search.
+ * If null, the function will search through all root objects in the scene.
+ * @param {string} name - The name of the SceneObject to search for.
+ * @returns {SceneObject[]} An array of SceneObjects with the specified name.
+ */
+function searchSceneObjectsByName(root, name) {
+    var matchingObjects = [];
+
+    if (root == null) {
+        var rootObjectCount = global.scene.getRootObjectsCount();
+        for (var i = 0; i < rootObjectCount; i++) {
+            var rootObject = global.scene.getRootObject(i);
+            matchingObjects = matchingObjects.concat(searchSceneObjectsByName(rootObject, name));
+        }
+        return matchingObjects;
+    }
+
+    if (root.name == name) {
+        matchingObjects.push(root);
+    }
+
+    for (var i = 0; i < root.getChildrenCount(); i++) {
+        var child = root.getChild(i);
+        matchingObjects = matchingObjects.concat(searchSceneObjectsByName(child, name));
+    }
+
+    return matchingObjects;
+}
+
+/**
+ * Recursively searches the children of a SceneObject and returns the first
+ * SceneObject that matches a predicate function. If no root object is provided,
+ * it searches through all root objects in the scene.
+ * @param {SceneObject|null} object - The SceneObject to search through, or null to start at the root.
+ * @param {function} predicate - A function that takes a SceneObject as an argument
+ * and returns true if the object matches the criteria, false otherwise.
+ * @returns {SceneObject | null} The first SceneObject that matches the predicate.
+ */
+function findFirstByPredicate(object, predicate) {
+    if (object == null) {
+        var rootObjectCount = global.scene.getRootObjectsCount();
+        for (var i = 0; i < rootObjectCount; i++) {
+            var rootObject = global.scene.getRootObject(i);
+            var result = findFirstByPredicate(rootObject, predicate);
+            if (result) {
+                return result;
+            }
+        }
+    } else {
+        if (predicate(object)) {
+            return object;
+        }
+
+        for (var i = 0; i < object.getChildrenCount(); i++) {
+            var child = object.getChild(i);
+            var result = findFirstByPredicate(child, predicate);
+            if (result) {
+                return result;
+            }
+        }
+    }
+    return null;
 }
 
 /**
  * Recursively searches the children of a SceneObject and returns an array
- * of children that match a predicate function. If no root object is provided,
+ * of SceneObjects that match a predicate function. If no root object is provided,
  * it searches through all root objects in the scene.
  * @param {SceneObject|null} object - The SceneObject to search through, or null to start at the root.
  * @param {function} predicate - A function that takes a SceneObject as an argument
@@ -50,7 +114,7 @@ function findSceneObjectByName(root, name) {
 function searchByPredicate(object, predicate) {
     var matchingObjects = [];
 
-    if (object === null) {
+    if (object == null) {
         const rootObjectCount = global.scene.getRootObjectsCount();
         for (let i = 0; i < rootObjectCount; i++) {
             const rootObject = global.scene.getRootObject(i);
@@ -63,13 +127,82 @@ function searchByPredicate(object, predicate) {
         matchingObjects.push(object);
     }
 
-    var childrenCount = object.getChildrenCount();
-    for (var i = 0; i < childrenCount; i++) {
+    for (var i = 0; i < object.getChildrenCount(); i++) {
         var child = object.getChild(i);
         matchingObjects = matchingObjects.concat(searchByPredicate(child, predicate));
     }
 
     return matchingObjects;
+}
+
+/**
+ * Recursively searches for a component of the specified type in the tree
+ * rooted at the given SceneObject. If no root is provided, it searches through 
+ * all root objects in the scene and returns the first match.
+ * @param {SceneObject | null} root - The root SceneObject from which to begin the search.
+ * If null, the function will search through all root objects in the scene.
+ * @param {string} componentType - The type of the component to search for (e.g., "Component.Camera").
+ * @returns {Component | null} The first component of the specified type if found, 
+ * or null if no such component exists in the tree.
+ */
+function findFirstComponentByType(root, componentType) {
+    if (root == null) {
+        var rootObjectCount = global.scene.getRootObjectsCount();
+        for (var i = 0; i < rootObjectCount; i++) {
+            var rootObject = global.scene.getRootObject(i);
+            var result = findFirstComponentByType(rootObject, componentType);
+            if (result) {
+                return result;
+            }
+        }
+    } else {
+        var components = root.getComponents(componentType);
+        if (components.length > 0) {
+            return components[0]; // Return the first found component of the specified type.
+        }
+
+        for (var i = 0; i < root.getChildrenCount(); i++) {
+            var child = root.getChild(i);
+            var result = findFirstComponentByType(child, componentType);
+            if (result) {
+                return result;
+            }
+        }
+    }
+    return null;
+}
+
+/**
+ * Recursively searches the children of a SceneObject and returns an array
+ * of components that match the specified type. If no root object is provided,
+ * it searches through all root objects in the scene.
+ * @param {SceneObject | null} root - The root SceneObject to search through, or null to start at the root.
+ * @param {string} componentType - The type of the component to search for (e.g., "Component.RenderMeshVisual").
+ * @returns {Component[]} An array of components that match the specified type.
+ */
+function searchComponentsByType(root, componentType) {
+    var matchingComponents = [];
+
+    if (root == null) {
+        var rootObjectCount = global.scene.getRootObjectsCount();
+        for (var i = 0; i < rootObjectCount; i++) {
+            var rootObject = global.scene.getRootObject(i);
+            matchingComponents = matchingComponents.concat(searchComponentsByType(rootObject, componentType));
+        }
+        return matchingComponents;
+    }
+
+    var components = root.getComponents(componentType);
+    if (components.length > 0) {
+        matchingComponents = matchingComponents.concat(components);
+    }
+
+    for (var i = 0; i < root.getChildrenCount(); i++) {
+        var child = root.getChild(i);
+        matchingComponents = matchingComponents.concat(searchComponentsByType(child, componentType));
+    }
+
+    return matchingComponents;
 }
 
 /**
@@ -80,16 +213,14 @@ function searchByPredicate(object, predicate) {
  * otherwise, returns false.
  */
 function isDescendantOf(sceneObject, root) {
-    if (sceneObject === root) {
-        return true
+    let current = sceneObject;
+    while (current !== null) {
+        if (current === root) {
+            return true;
+        }
+        current = current.getParent();
     }
-
-    const parent = sceneObject.getParent()
-    if (parent === null) {
-        return false
-    }
-
-    return isDescendantOf(parent, root)
+    return false;
 }
 
 /**
@@ -201,8 +332,12 @@ function recursiveAlpha(rootObj, alpha, effectDisabled){
 
 // Exporting the functions
 var exports = {
-    findSceneObjectByName,
+    findFirstSceneObjectByName,
+    searchSceneObjectsByName,
+    findFirstByPredicate,
     searchByPredicate,
+    findFirstComponentByType,
+    searchComponentsByType,
     isDescendantOf,
     applyToDescendants,
     findScript,
