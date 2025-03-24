@@ -1,3 +1,4 @@
+//@input boolean enabled = true
 //@input SceneObject attachTo
 //@input bool smoothPosition = true
 //@input float posSmoothing = 1.0 {"showIf":"smoothPosition"}
@@ -7,9 +8,20 @@
 script.objectTransform = script.getSceneObject().getTransform();
 script.attachToTransform = script.attachTo.getTransform();
 
+//TODO: add option to not affect position or rotation
+
 function init() {
     script.objectTransform.setWorldPosition(script.attachToTransform.getWorldPosition());
     script.objectTransform.setWorldRotation(script.attachToTransform.getWorldRotation());
+}
+
+script.start = function(reset) {
+    updateEvent.enabled = true;
+    if(reset){ script.reset(); }
+}
+
+script.stop = function() {
+    updateEvent.enabled = false;
 }
 
 script.reset = function() {
@@ -23,6 +35,7 @@ script.updateAttachment = function(object) {
 }
 
 var updateEvent = script.createEvent("UpdateEvent");
+updateEvent.enabled = script.enabled;
 updateEvent.bind(function(eventData) {
     // Handle position updates
     if (script.smoothPosition) {
@@ -41,7 +54,7 @@ updateEvent.bind(function(eventData) {
         var lerpedRotation = quat.slerp(currentRotation, targetRotation, script.rotSmoothing * getDeltaTime());
         script.objectTransform.setWorldRotation(lerpedRotation);
     } else {
-        script.objectTransform.setWorldRotation(script.attachToTransform.getWorldRotation());
+        //script.objectTransform.setWorldRotation(script.attachToTransform.getWorldRotation());
     }
 });
 

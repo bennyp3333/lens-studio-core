@@ -151,6 +151,54 @@ function findScriptUpwards(sceneObj, propName, filterFunc, allowSelf) {
     return null;
 }
 
+/**
+ * Recursively sets the alpha value for all supported visual components in the hierarchy of a root SceneObject.
+ * @param {SceneObject} rootObj - The root object whose descendants will be affected.
+ * @param {number} alpha - The alpha value to apply (between 0.0 and 1.0).
+ * @param {boolean} effectDisabled - If true, alpha will still be applied to disabled objects. If false, disabled objects are skipped.
+ * @returns {void}
+ */
+function recursiveAlpha(rootObj, alpha, effectDisabled){
+    applyToDescendants(rootObj, (obj) => {
+        if(!obj.enabled && !effectDisabled){ return; }
+        
+        var meshVisComp = obj.getComponent("Component.RenderMeshVisual");
+        var imageComp = obj.getComponent("Component.Image");
+        var text3DComp = obj.getComponent("Component.Text3D");
+        var textComp = obj.getComponent("Component.Text");
+        
+        if(meshVisComp){
+            for (var i = 0; i < meshVisComp.getMaterialsCount(); i++) {
+                var currColor = meshVisComp.getMaterial(i).mainPass.baseColor;
+                if(currColor){
+                    currColor.a = alpha;
+                    meshVisComp.getMaterial(i).mainPass.baseColor = currColor;
+                }
+            }
+        }else if(imageComp){
+            for (var i = 0; i < imageComp.getMaterialsCount(); i++) {
+                var currColor = imageComp.getMaterial(i).mainPass.baseColor;
+                if(currColor){
+                    currColor.a = alpha;
+                    imageComp.getMaterial(i).mainPass.baseColor = currColor;
+                }
+            }
+        }else if(text3DComp){
+            for (var i = 0; i < text3DComp.getMaterialsCount(); i++) {
+                var currColor = text3DComp.getMaterial(i).mainPass.baseColor;
+                if(currColor){
+                    currColor.a = alpha;
+                    text3DComp.getMaterial(i).mainPass.baseColor = currColor;
+                }
+            }
+        }else if(textComp){
+            var currColor = textComp.textFill.color;
+            currColor.a = alpha;
+            textComp.textFill.color = currColor;
+        }
+    });
+}
+
 // Exporting the functions
 var exports = {
     findSceneObjectByName,
@@ -158,7 +206,8 @@ var exports = {
     isDescendantOf,
     applyToDescendants,
     findScript,
-    findScriptUpwards
+    findScriptUpwards,
+    recursiveAlpha
 };
 
 if(script){

@@ -25,6 +25,7 @@
   MaxVisibility: Editable
   ScriptInputsHidden:
     attachTo: false
+    enabled: false
     posSmoothing: false
     rotSmoothing: false
     smoothPosition: false
@@ -37,6 +38,7 @@
       posSmoothing: !<float> 1.000000
       smoothRotation: false
       rotSmoothing: !<float> 1.000000
+      enabled: false
   ScriptTypes:
     -
       {}

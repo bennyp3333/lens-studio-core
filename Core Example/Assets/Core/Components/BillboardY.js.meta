@@ -28,6 +28,7 @@
     debug: false
     debugName: false
     debugText: false
+    flipFacingDir: false
     onStart: false
     onUpdate: false
   ScriptTypesHidden:
@@ -39,6 +40,7 @@
       debug: false
       debugName: Billboard
       debugText: !<reference.Text> 00000000-0000-0000-0000-000000000000
+      flipFacingDir: false
   ScriptTypes:
     -
       {}

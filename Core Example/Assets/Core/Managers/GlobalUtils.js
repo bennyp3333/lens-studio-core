@@ -8,6 +8,7 @@ function tryRequire(file){
 
 var utilModules = [
     tryRequire("../Utilities/ArrayUtils.js"),
+    tryRequire("../Utilities/ColorUtils.js"),
     tryRequire("../Utilities/ComponentUtils.js"),
     tryRequire("../Utilities/MathUtils.js"),
     tryRequire("../Utilities/ObjectUtils.js"),
@@ -43,6 +44,7 @@ function mergeWithConflictDetection(fromObj, toObj) {
             print("Conflict detected for function name: " + funcName);
         } else {
             toObj[funcName] = fromObj[funcName];
+            //print("Loaded util: " + funcName);
         }
     }
 }

@@ -1,4 +1,5 @@
 //@input SceneObject camera
+//@input bool flipFacingDir
 //@input bool onUpdate
 //@input bool onStart
 //@ui {"widget":"separator"}
@@ -31,11 +32,22 @@ function init(){
     debugPrint("Initilized!");
 }
 
+script.start = function() {
+    updateEvent.enabled = true;
+}
+
+script.stop = function() {
+    updateEvent.enabled = false;
+}
+
 script.billboard = function(){
     cameraPos = cameraTransform.getWorldPosition();
     selfPos = selfTransform.getWorldPosition();
     
     var diffVec = cameraPos.sub(selfPos);
+    if(script.flipFacingDir){
+        diffVec = selfPos.sub(cameraPos);
+    }
     diffVec.y = 0;
     
     var lookQuat = quat.lookAt(diffVec, new vec3(0, 1, 0));
