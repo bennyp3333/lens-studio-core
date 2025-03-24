@@ -11,31 +11,35 @@
  * @returns {Event} tweenUpdate - The update event tweening is binded to.
  */
 function simpleTween(startVal, endVal, time, delay, updateCallback, doneCallback) {
-    var acc = 0;
-    var step = (endVal - startVal) / (30 * time);
-    var inOut = endVal > startVal;
-    var val = startVal;
+    var elapsed = 0;
+    var delayElapsed = 0;
+    var range = endVal - startVal;
+
     var tweenUpdate = script.createEvent("UpdateEvent");
     tweenUpdate.bind(function(eventData) {
-        if (acc >= delay) {
-            val += step;
-            if ((inOut && val >= endVal) || (!inOut && val <= endVal)) {
-                if (updateCallback) {
-                    updateCallback(endVal);
-                }
-                if (doneCallback) {
-                    doneCallback(endVal);
-                }
-                tweenUpdate.enabled = false;
-            } else {
-                if (updateCallback) {
-                    updateCallback(val);
-                }
+        var dt = getDeltaTime();
+
+        if (delayElapsed < delay) {
+            delayElapsed += dt;
+            return;
+        }
+
+        elapsed += dt;
+        var t = Math.min(elapsed / time, 1);
+
+        var val = startVal + range * t;
+        if (updateCallback) {
+            updateCallback(val);
+        }
+
+        if (t >= 1) {
+            if (doneCallback) {
+                doneCallback(val);
             }
-        } else {
-            acc += getDeltaTime();
+            tweenUpdate.enabled = false;
         }
     });
+
     return tweenUpdate;
 }
 
