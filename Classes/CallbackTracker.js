@@ -1,6 +1,13 @@
 global.CallbackTracker = CallbackTracker;
 
-const removeFromArray = global.commonJs.remove;
+function removeFromArray(array, element) {
+    var index = array.indexOf(element);
+    if (index > -1) {
+        array.splice(index, 1);
+        return true;
+    }
+    return false;
+}
 
 function CallbackTracker(scriptComponent) {
     this.scriptComponent = scriptComponent;

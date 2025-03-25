@@ -1,0 +1,54 @@
+- !<AssetImportMetadata/e50adfcc-7a4f-470a-b2f4-e50fe7de283b>
+  ImportedAssetIds:
+    JavaScriptAsset: !<reference> 17c04f79-e548-4542-bbc0-d894ba6a6cef
+  ImporterName: JavaScriptAssetImporter
+  PrimaryAsset: !<reference> 17c04f79-e548-4542-bbc0-d894ba6a6cef
+  PackageType: NotAPackage
+  PackagePolicy: CannotBeUnpacked
+  AssetDataMap:
+    JavaScriptAsset: !<own> befb36f8-145c-4c30-beef-b6f16c96fdb3
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings/ed2959af-9aaa-4f79-b8d5-f29cca2d3fdf>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<ScriptAssetData/befb36f8-145c-4c30-beef-b6f16c96fdb3>
+  SvgIcon: ""
+  Description: ""
+  InternalVersion: 0
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  ComponentUid: 00000000-0000-0000-0000-000000000000
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  CurrentVisibility: Editable
+  MaxVisibility: Editable
+  ScriptInputsHidden:
+    constrainAxis: false
+    flipFacingDir: false
+    local: false
+    mode: false
+    offsetRotation: false
+    onStart: false
+    onUpdate: false
+    smoothing: false
+    smoothingVal: false
+    target: false
+    up: false
+  ScriptTypesHidden:
+    {}
+  DefaultScriptInputs:
+    - target: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      mode: lookAt
+      constrainAxis: !<string> y
+      up: !<string> y
+      local: world
+      offsetRotation: !<Vec3> {x: 0.000000, y: 0.000000, z: 0.000000}
+      smoothing: false
+      smoothingVal: !<float> 5.000000
+      flipFacingDir: false
+      onUpdate: false
+      onStart: false
+  ScriptTypes:
+    -
+      {}
