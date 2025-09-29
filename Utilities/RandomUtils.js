@@ -5,7 +5,7 @@
  * @returns {number} A random number between lo and hi.
  */
 function randomRange(lo, hi) {
-    return Math.random() * (lo - hi) + lo;
+    return Math.random() * (hi - lo) + lo;
 }
 
 /**
