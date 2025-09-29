@@ -1,32 +1,42 @@
 // ToggleButton.js
-// Version: 0.0.1
-// Event: On Awake
+// Version: 0.1.0
 // Description: Trigger events by toggle.
 //
 // ----- USAGE -----
 // Attach this script to a Scene Object with a Image Component.
 // Button Id and Function Data are passed into custom/global functions
-// Ex. otherScript.api.customFunction(buttonID int, onSelectFunctionData string)
+// Ex. otherScript.customFunction(buttonID int, onSelectFunctionData string)
 //
 // ----- LOCAL API USAGE -----
 //
+// Add callback function to select/deselect events
+// script.onSelect.add(function(buttonID, data) { ... })
+// script.onDeselect.add(function(buttonID, data) { ... })
+//
+// Remove callback function from events
+// script.onSelect.remove(callbackFunction)
+// script.onDeselect.remove(callbackFunction)
+//
+// Register with a button array (called automatically by ButtonArray)
+// script.registerArray(arrayScript)
+//
 // Manually set interactability
-// script.api.setInteractable(bool)
+// script.setInteractable(bool)
 //
 // Returns true if interactable
-// script.api.isInteractable()
+// script.isInteractable()
 //
 // Returns true if selected
-// script.api.isSelected()
+// script.isSelected()
 //
 // Returns buttonID
-// script.api.getButtonID()
+// script.getButtonID()
 //
 // Manually trigger selection
-// script.api.select()
+// script.select()
 //
 // Manually trigger deselection
-// script.api.deselect()
+// script.deselect()
 //
 // -----------------
 
@@ -93,217 +103,285 @@
 
 //@ui {"widget":"group_end"}
 
-script.api.select = select;
-script.api.deselect = deselect;
-script.setInteractable = setInteractable;
-script.api.isSelected = isSelected;
-script.api.getButtonID = getButtonID;
-script.api.isInteractable = isInteractable;
+// ===== Event System =====
+function EventDispatcher() {
+	this.callbacks = [];
+}
 
+EventDispatcher.prototype.add = function(callback) {
+	if (typeof callback === 'function') {
+		if (this.callbacks.indexOf(callback) === -1) {
+			this.callbacks.push(callback);
+		}
+	} else {
+		printWarning("Attempted to add non-function callback");
+	}
+};
+
+EventDispatcher.prototype.remove = function(callback) {
+	var index = this.callbacks.indexOf(callback);
+	if (index > -1) {
+		this.callbacks.splice(index, 1);
+	}
+};
+
+EventDispatcher.prototype.trigger = function(buttonID, data) {
+	for (var i = 0; i < this.callbacks.length; i++) {
+		try {
+			this.callbacks[i](buttonID, data);
+		} catch (e) {
+			printWarning("Error in callback: " + e);
+		}
+	}
+};
+
+// ===== Public API =====
+var onSelectEvent = new EventDispatcher();
+var onDeselectEvent = new EventDispatcher();
+
+script.onSelect = onSelectEvent;
+script.onDeselect = onDeselectEvent;
+script.select = select;
+script.deselect = deselect;
+script.setInteractable = setInteractable;
+script.isSelected = isSelected;
+script.getButtonID = getButtonID;
+script.isInteractable = isInteractable;
+script.registerArray = registerArray;
+
+// ===== Component Setup =====
 var sceneObject = script.getSceneObject();
 var button = sceneObject;
 var buttonTransform = button.getTransform();
 var buttonImage = button.getComponent("Component.Image");
 button.createComponent("Component.InteractionComponent");
 
-var partOfArray = false;
-var arrayScript;
-
 var selectAudioComp = script.getSceneObject().createComponent("Component.AudioComponent");
 var deselectAudioComp = script.getSceneObject().createComponent("Component.AudioComponent");
 
+// ===== Array Management =====
+var arrayScript = null;
+
+function registerArray(array) {
+	arrayScript = array;
+	printDebug("Registered with ButtonArray");
+}
+
+// ===== Initialization =====
 var selectDelay = script.createEvent("DelayedCallbackEvent");
-selectDelay.bind(function(eventdata){
-    select();
+selectDelay.bind(function(eventdata) {
+	select();
 });
 
-function init(){
-    global.touchSystem.touchBlocking = script.touchBlockingEnabled;
-    
-    if(script.activeTexture && script.inactiveTexture){
-        buttonImage.mainPass.baseTex = script.selected ? script.activeTexture : script.inactiveTexture;
-    }else{
-        printWarning("Active and Inactive textures are missing");
-        return;
-    }
-    
-    if(script.useAudio){
-        if(script.selectAudioTrack){
-            selectAudioComp.audioTrack = script.selectAudioTrack;
-        }
-        if(script.deselectAudioTrack){
-            deselectAudioComp.audioTrack = script.deselectAudioTrack;
-        }
-    }
-    
-    if(script.selectOnStart){
-        selectDelay.reset(script.delayTime);
-    }
-    
-    checkIfPartOfArray();
+function init() {
+	global.touchSystem.touchBlocking = script.touchBlockingEnabled;
+
+	if (script.activeTexture && script.inactiveTexture) {
+		buttonImage.mainPass.baseTex = script.selected ? script.activeTexture : script.inactiveTexture;
+	} else {
+		printWarning("Active and Inactive textures are missing");
+		return;
+	}
+
+	if (script.useAudio) {
+		if (script.selectAudioTrack) {
+			selectAudioComp.audioTrack = script.selectAudioTrack;
+		}
+		if (script.deselectAudioTrack) {
+			deselectAudioComp.audioTrack = script.deselectAudioTrack;
+		}
+	}
+
+	if (script.selectOnStart) {
+		selectDelay.reset(script.delayTime);
+	}
 }
 
 init();
 
-function checkIfPartOfArray(){
-    arrayScript = button.getParent().getComponent("Component.ScriptComponent");
-    if(arrayScript && arrayScript.api.isButtonArray){
-        partOfArray = true;
-    }
-}
-
+// ===== Touch Events =====
 var touchStartEvent = script.createEvent("TouchStartEvent");
 touchStartEvent.enabled = script.interactable;
-touchStartEvent.bind(function(eventData){
-    if(script.scaleOnPress){
-        buttonTransform.setLocalScale(vec3.one().uniformScale(script.pressedScale));
-    }
+touchStartEvent.bind(function(eventData) {
+	if (script.scaleOnPress) {
+		buttonTransform.setLocalScale(vec3.one().uniformScale(script.pressedScale));
+	}
 });
 
 var touchEndEvent = script.createEvent("TouchEndEvent");
 touchEndEvent.enabled = script.interactable;
-touchEndEvent.bind(function(eventData){
-    if(script.scaleOnPress){
-        buttonTransform.setLocalScale(vec3.one());
-    }
+touchEndEvent.bind(function(eventData) {
+	if (script.scaleOnPress) {
+		buttonTransform.setLocalScale(vec3.one());
+	}
 });
 
 var tapEvent = script.createEvent("TapEvent");
 tapEvent.enabled = script.interactable;
-tapEvent.bind(function(eventData){
-    //printDebug("Button " + script.buttonID + " Tapped");
-    if(script.selected){
-        if(partOfArray){
-            if(arrayScript.api.allowNoneSelected){
-                deselect();
-            }
-        }else{
-            deselect();
-        }
-    }else{
-        select();
-    }
+tapEvent.bind(function(eventData) {
+	if (script.selected) {
+		// Check if we're in an array with restrictions
+		if (arrayScript) {
+			// If array doesn't allow none selected, check if we're the last one
+			if (!arrayScript.allowNoneSelected()) {
+				if (!arrayScript.hasOtherSelected(script.buttonID)) {
+					// We're the last selected button, can't deselect
+					return;
+				}
+			}
+		}
+		deselect();
+	} else {
+		select();
+	}
 });
 
-function select(){
-    if(!script.selected){
-        printDebug("Button " + script.buttonID + " Selected");
-        script.selected = true;
-        if(script.useAudio && selectAudioComp.audioTrack){
-            selectAudioComp.play(1);
-        }
-        buttonImage.mainPass.baseTex = script.activeTexture;
-        if(partOfArray){
-            arrayScript.api.childButtonSelected(script.buttonID);
-        }
-        selectCallback();
-    }
+// ===== Core Functions =====
+function select() {
+	if (!script.selected) {
+		printDebug("Button " + script.buttonID + " Selected");
+		script.selected = true;
+
+		if (script.useAudio && selectAudioComp.audioTrack) {
+			selectAudioComp.play(1);
+		}
+
+		buttonImage.mainPass.baseTex = script.activeTexture;
+
+		// Notify array if registered
+		if (arrayScript) {
+			arrayScript.onChildButtonSelected(script.buttonID);
+		}
+
+		// Trigger all programmatically added callbacks
+		onSelectEvent.trigger(script.buttonID, null);
+
+		// Execute legacy callback system
+		selectCallback();
+	}
 }
 
-function selectCallback(){
-    if(partOfArray && arrayScript.api.callbackOverride){
-        switch(script.callbackType){
-            case 0:
-                arrayScript.api.childButtonCallback(script.buttonID);
-                break;
-            case 1:
-                arrayScript.api.childButtonCallback(script.buttonID, script.onSelectGlobalFunctionData);
-                break;
-            case 2:
-                arrayScript.api.childButtonCallback(script.buttonID, script.onSelectFunctionData);
-                break;
-        }
-    }else{
-        switch(script.callbackType){
-            case 1:
-                var globalFunction = global[script.onSelectGlobalFunctionName];
-                if(globalFunction){
-                    globalFunction(script.buttonID, script.onSelectGlobalFunctionData);
-                }else{
-                    printWarning("Global Function \"" + script.onSelectGlobalFunctionName + "\" Not Defined");
-                }
-                break;
-            case 2:
-                if(script.customFunctionScript){
-                    var customFunction = script.customFunctionScript.api[script.onSelectFunctionName];
-                    if(customFunction){
-                        customFunction(script.buttonID, script.onSelectFunctionData);
-                    }else{
-                        printWarning("Custom Function \"" + script.onSelectFunctionName + "\" Not Defined");
-                    }
-                }else{
-                    printWarning("Custom Function Script Not Set");
-                }
-                break;
-            default:
-                if(script.editEventCallbacks){
-                    printWarning("Select Callback Not Set");
-                }
-        }
-    }
+function selectCallback() {
+	// If part of array with callback override, let array handle it
+	if (arrayScript && arrayScript.hasCallbackOverride()) {
+		var data = null;
+		switch (script.callbackType) {
+			case 1:
+				data = script.onSelectGlobalFunctionData;
+				break;
+			case 2:
+				data = script.onSelectFunctionData;
+				break;
+		}
+		arrayScript.onChildButtonCallback(script.buttonID, data);
+		return;
+	}
+
+	// Otherwise handle callback locally
+	switch (script.callbackType) {
+		case 1:
+			var globalFunction = global[script.onSelectGlobalFunctionName];
+			if (globalFunction) {
+				globalFunction(script.buttonID, script.onSelectGlobalFunctionData);
+			} else {
+				printWarning("Global Function \"" + script.onSelectGlobalFunctionName + "\" Not Defined");
+			}
+			break;
+		case 2:
+			if (script.customFunctionScript) {
+				var customFunction = script.customFunctionScript[script.onSelectFunctionName];
+				if (customFunction) {
+					customFunction(script.buttonID, script.onSelectFunctionData);
+				} else {
+					printWarning("Custom Function \"" + script.onSelectFunctionName + "\" Not Defined");
+				}
+			} else {
+				printWarning("Custom Function Script Not Set");
+			}
+			break;
+		default:
+			if (script.editEventCallbacks) {
+				printWarning("Select Callback Not Set");
+			}
+	}
 }
 
-function deselect(){
-    if(script.selected){
-        printDebug("Button " + script.buttonID + " Deselected");
-        script.selected = false;
-        if(script.useAudio && deselectAudioComp.audioTrack){
-            deselectAudioComp.play(1);
-        }
-        buttonImage.mainPass.baseTex = script.inactiveTexture;
-        deselectCallback();
-    }
+function deselect() {
+	if (script.selected) {
+		printDebug("Button " + script.buttonID + " Deselected");
+		script.selected = false;
+
+		if (script.useAudio && deselectAudioComp.audioTrack) {
+			deselectAudioComp.play(1);
+		}
+
+		buttonImage.mainPass.baseTex = script.inactiveTexture;
+
+		// Trigger all programmatically added callbacks
+		onDeselectEvent.trigger(script.buttonID, null);
+
+		// Execute legacy callback system
+		deselectCallback();
+	}
 }
 
-function deselectCallback(){
-    switch(script.callbackType){
-        case 1:
-            var globalFunction = global[script.onDeselectGlobalFunctionName]
-            if(globalFunction){
-                globalFunction(script.buttonID, script.onDeselectGlobalFunctionData);
-            }
-            break;
-        case 2:
-            if(script.customFunctionScript){
-                var customFunction = script.customFunctionScript.api[script.onDeselectFunctionName];
-                if(customFunction){
-                    customFunction(script.buttonID, script.onDeselectFunctionData);
-                }
-            }else{
-                printWarning("Custom Function Script Not Set");
-            }
-            break;
-    }
+function deselectCallback() {
+	switch (script.callbackType) {
+		case 1:
+			var globalFunction = global[script.onDeselectGlobalFunctionName];
+			if (globalFunction) {
+				globalFunction(script.buttonID, script.onDeselectGlobalFunctionData);
+			}
+			break;
+		case 2:
+			if (script.customFunctionScript) {
+				var customFunction = script.customFunctionScript[script.onDeselectFunctionName];
+				if (customFunction) {
+					customFunction(script.buttonID, script.onDeselectFunctionData);
+				}
+			} else {
+				printWarning("Custom Function Script Not Set");
+			}
+			break;
+	}
 }
 
-function setInteractable(bool){
-    script.interactable = bool;
-    touchStartEvent.enabled = bool;
-    touchEndEvent.enabled = bool;
+function setInteractable(bool) {
+	script.interactable = bool;
+	touchStartEvent.enabled = bool;
+	touchEndEvent.enabled = bool;
+	tapEvent.enabled = bool;
 }
 
-function getButtonID(){
-    return script.buttonID;
+function getButtonID() {
+	return script.buttonID;
 }
 
-function isSelected(){
-    return script.selected;
+function isSelected() {
+	return script.selected;
 }
 
-function isInteractable(){
-    return script.interactable;
+function isInteractable() {
+	return script.interactable;
 }
 
-// Print debug messages
-function printDebug(message){
-    if(script.printDebugStatements){
-        print("ToggleButton " + sceneObject.name + " - " + message);
-    }
+// ===== Debug Functions =====
+function printDebug(message) {
+	if (script.printDebugStatements) {
+		var newLog = "ToggleButton " + sceneObject.name + " - " + message;
+		if (global.textLogger) {
+			global.logToScreen(newLog);
+		}
+		print(newLog);
+	}
 }
 
-// Print warning message
-function printWarning(message){
-    if(script.printWarningStatements){
-        print("ToggleButton " + sceneObject.name + " - WARNING, " + message);
-    }
+function printWarning(message) {
+	if (script.printWarningStatements) {
+		var warningLog = "ToggleButton " + sceneObject.name + " - WARNING, " + message;
+		if (global.textLogger) {
+			global.logError(warningLog);
+		}
+		print(warningLog);
+	}
 }
