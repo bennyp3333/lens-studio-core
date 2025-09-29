@@ -1,0 +1,51 @@
+- !<AssetImportMetadata/7a7375ca-8b5d-4b00-b82f-11a2caf8e44e>
+  ImportedAssetIds:
+    JavaScriptAsset: !<reference> fb907475-ce95-44e0-a8c8-24d22cb674fa
+  ImporterName: JavaScriptAssetImporter
+  PrimaryAsset: !<reference> fb907475-ce95-44e0-a8c8-24d22cb674fa
+  PackageType: NotAPackage
+  PackagePolicy: CannotBeUnpacked
+  ExtraData:
+    {}
+  AssetDataMap:
+    JavaScriptAsset: !<own> e9eb783f-7535-4a6d-85f6-5a1b72cf6998
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<ScriptAssetData/e9eb783f-7535-4a6d-85f6-5a1b72cf6998>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  ComponentUid: 2e9a954a-8568-45f9-9e2b-72c7a89d3066
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  CurrentVisibility: Editable
+  MaxVisibility: Editable
+  ScriptInputsHidden:
+    editAdvancedOptions: false
+    overrideParticleCount: false
+    particleCount: false
+    printDebugStatements: false
+    printWarningStatements: false
+    startOnInit: false
+    useUniqueSeeds: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  DefaultScriptInputs:
+    - startOnInit: true
+      useUniqueSeeds: true
+      overrideParticleCount: false
+      particleCount: 1000
+      editAdvancedOptions: false
+      printDebugStatements: false
+      printWarningStatements: true
+  ScriptTypes:
+    -
+      {}
