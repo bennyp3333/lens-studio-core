@@ -1,0 +1,93 @@
+- !<AssetImportMetadata/6820ba19-b5be-4b1a-b442-0b70a3e72dcd>
+  ImportedAssetIds:
+    JavaScriptAsset: !<reference> 497da762-82e3-414b-bd77-239ac40d7740
+  ImporterName: JavaScriptAssetImporter
+  PrimaryAsset: !<reference> 497da762-82e3-414b-bd77-239ac40d7740
+  PackageType: NotAPackage
+  PackagePolicy: CannotBeUnpacked
+  ExtraData:
+    {}
+  AssetDataMap:
+    JavaScriptAsset: !<own> 632e55ff-a279-4c0a-aea2-2132e7105b51
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<ScriptAssetData/632e55ff-a279-4c0a-aea2-2132e7105b51>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  ComponentUid: e081eedb-d6b5-4426-9292-96df045a65d4
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  CurrentVisibility: Editable
+  MaxVisibility: Editable
+  ScriptInputsHidden:
+    activeTexture: false
+    buttonID: false
+    callbackType: false
+    customFunctionScript: false
+    delayTime: false
+    deselectAudioTrack: false
+    editAdvancedOptions: false
+    editEventCallbacks: false
+    inactiveTexture: false
+    interactable: false
+    moreOptions: false
+    onDeselectFunctionData: false
+    onDeselectFunctionName: false
+    onDeselectGlobalFunctionData: false
+    onDeselectGlobalFunctionName: false
+    onSelectFunctionData: false
+    onSelectFunctionName: false
+    onSelectGlobalFunctionData: false
+    onSelectGlobalFunctionName: false
+    pressedScale: false
+    printDebugStatements: false
+    printWarningStatements: false
+    scaleOnPress: false
+    selectAudioTrack: false
+    selectOnStart: false
+    selected: false
+    touchBlockingEnabled: false
+    useAudio: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  DefaultScriptInputs:
+    - interactable: true
+      selected: false
+      buttonID: 0
+      activeTexture: !<reference.Texture> 00000000-0000-0000-0000-000000000000
+      inactiveTexture: !<reference.Texture> 00000000-0000-0000-0000-000000000000
+      moreOptions: false
+      selectOnStart: false
+      delayTime: !<float> 0.000000
+      editEventCallbacks: false
+      callbackType: 0
+      onSelectGlobalFunctionName: ""
+      onSelectGlobalFunctionData: ""
+      onDeselectGlobalFunctionName: ""
+      onDeselectGlobalFunctionData: ""
+      customFunctionScript: !<reference.ScriptComponent> 00000000-0000-0000-0000-000000000000
+      onSelectFunctionName: ""
+      onSelectFunctionData: ""
+      onDeselectFunctionName: ""
+      onDeselectFunctionData: ""
+      scaleOnPress: false
+      pressedScale: 0.900000
+      useAudio: false
+      selectAudioTrack: !<reference.AudioTrackAsset> 00000000-0000-0000-0000-000000000000
+      deselectAudioTrack: !<reference.AudioTrackAsset> 00000000-0000-0000-0000-000000000000
+      editAdvancedOptions: false
+      touchBlockingEnabled: true
+      printDebugStatements: false
+      printWarningStatements: true
+  ScriptTypes:
+    -
+      {}

@@ -1,7 +1,7 @@
 // ScreenLogger.js
 // Version: 2.1.0
-// Event: Awake
 // Description: Prints the given message on the screen
+// Author: Bennyp3333 [https://benjamin-p.dev]
 
 // ----- USAGE -----
 // To log text to the screen, use: 

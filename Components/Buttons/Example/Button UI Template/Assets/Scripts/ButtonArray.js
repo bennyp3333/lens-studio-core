@@ -1,6 +1,7 @@
 // ButtonArray.js
 // Version: 0.1.0
 // Description: Controls array of Toggle Buttons.
+// Author: Bennyp3333 [https://benjamin-p.dev]
 //
 // ----- USAGE -----
 // Attach this script to a Scene Object that is parented to Toggle Buttons.

@@ -1,0 +1,65 @@
+- !<AssetImportMetadata/66f9c63c-9a84-4587-845f-ac085b8107fc>
+  ImportedAssetIds:
+    JavaScriptAsset: !<reference> 57e0e4e8-069c-41c9-888f-a55f736afa79
+  ImporterName: JavaScriptAssetImporter
+  PrimaryAsset: !<reference> 57e0e4e8-069c-41c9-888f-a55f736afa79
+  PackageType: NotAPackage
+  PackagePolicy: CannotBeUnpacked
+  ExtraData:
+    {}
+  AssetDataMap:
+    JavaScriptAsset: !<own> 5caf14cf-0afa-4868-9799-7f02584a2275
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<ScriptAssetData/5caf14cf-0afa-4868-9799-7f02584a2275>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  ComponentUid: 7cd39c79-d32f-4df0-a8c6-824e0f3c2b18
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  CurrentVisibility: Editable
+  MaxVisibility: Editable
+  ScriptInputsHidden:
+    allowMultiple: false
+    allowNone: false
+    callbackType: false
+    connectButtons: false
+    customFunctionScript: false
+    editAdvancedOptions: false
+    forceSelect: false
+    onSelectFunctionData: false
+    onSelectFunctionName: false
+    onSelectGlobalFunctionData: false
+    onSelectGlobalFunctionName: false
+    overrideEventCallbacks: false
+    printDebugStatements: false
+    printWarningStatements: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  DefaultScriptInputs:
+    - connectButtons: false
+      allowMultiple: false
+      allowNone: false
+      forceSelect: true
+      overrideEventCallbacks: false
+      callbackType: 0
+      onSelectGlobalFunctionName: ""
+      onSelectGlobalFunctionData: ""
+      customFunctionScript: !<reference.ScriptComponent> 00000000-0000-0000-0000-000000000000
+      onSelectFunctionName: ""
+      onSelectFunctionData: ""
+      editAdvancedOptions: false
+      printDebugStatements: false
+      printWarningStatements: true
+  ScriptTypes:
+    -
+      {}

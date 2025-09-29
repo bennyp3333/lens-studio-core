@@ -1,6 +1,7 @@
 // ToggleButton.js
 // Version: 0.1.0
 // Description: Trigger events by toggle.
+// Author: Bennyp3333 [https://benjamin-p.dev]
 //
 // ----- USAGE -----
 // Attach this script to a Scene Object with a Image Component.

@@ -1,0 +1,85 @@
+- !<AssetImportMetadata/7134115f-e322-45cb-9cdf-d18653f8b10f>
+  ImportedAssetIds:
+    JavaScriptAsset: !<reference> 55a18753-586e-46bc-b2d6-3e0e35c808e9
+  ImporterName: JavaScriptAssetImporter
+  PrimaryAsset: !<reference> 55a18753-586e-46bc-b2d6-3e0e35c808e9
+  PackageType: NotAPackage
+  PackagePolicy: CannotBeUnpacked
+  ExtraData:
+    {}
+  AssetDataMap:
+    JavaScriptAsset: !<own> ab826255-64c8-4ebb-83dd-a2ce807dbf8e
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<ScriptAssetData/ab826255-64c8-4ebb-83dd-a2ce807dbf8e>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  ComponentUid: e7891713-39b1-47ab-9615-d6f1a374f3fd
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  CurrentVisibility: Editable
+  MaxVisibility: Editable
+  ScriptInputsHidden:
+    buttonID: false
+    callbackType: false
+    colorOnPress: false
+    customFunctionScript: false
+    defaultColor: false
+    delayTime: false
+    editAdvancedOptions: false
+    editEventCallbacks: false
+    interactable: false
+    moreOptions: false
+    onPressFunctionData: false
+    onPressFunctionName: false
+    onPressGlobalFunctionData: false
+    onPressGlobalFunctionName: false
+    pressOnStart: false
+    pressed: false
+    pressedColor: false
+    pressedScale: false
+    printDebugStatements: false
+    printWarningStatements: false
+    scaleOnPress: false
+    tapAudioTrack: false
+    touchBlockingEnabled: false
+    useAudio: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  DefaultScriptInputs:
+    - interactable: true
+      pressed: false
+      buttonID: 0
+      moreOptions: false
+      pressOnStart: false
+      delayTime: !<float> 0.000000
+      editEventCallbacks: false
+      callbackType: 0
+      onPressGlobalFunctionName: ""
+      onPressGlobalFunctionData: ""
+      customFunctionScript: !<reference.ScriptComponent> 00000000-0000-0000-0000-000000000000
+      onPressFunctionName: ""
+      onPressFunctionData: ""
+      scaleOnPress: false
+      pressedScale: 0.900000
+      colorOnPress: false
+      defaultColor: !<Vec3> {x: 1.000000, y: 1.000000, z: 1.000000}
+      pressedColor: !<Vec3> {x: 0.800000, y: 0.800000, z: 0.800000}
+      useAudio: false
+      tapAudioTrack: !<reference.AudioTrackAsset> 00000000-0000-0000-0000-000000000000
+      editAdvancedOptions: false
+      touchBlockingEnabled: true
+      printDebugStatements: false
+      printWarningStatements: true
+  ScriptTypes:
+    -
+      {}

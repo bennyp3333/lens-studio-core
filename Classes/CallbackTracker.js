@@ -60,8 +60,8 @@ CallbackTracker.prototype = {
                     return;
                 }
                 for (var i = 0; i < behaviors.length; i++) {
-                    if (behaviors[i] && behaviors[i].api.trigger) {
-                        behaviors[i].api.trigger();
+                    if (behaviors[i] && behaviors[i].trigger) {
+                        behaviors[i].trigger();
                     }
                 }
                 break;
@@ -91,11 +91,11 @@ CallbackTracker.prototype = {
                         print("You are trying to invoke an empty string function!");
                         continue;
                     }
-                    if (!otherScript.api[functionNames[k]]) {
+                    if (!otherScript[functionNames[k]]) {
                         print("Cannot find the " + functionNames[k] + " function in the assigned Script Component!");
                         continue;
                     }
-                    otherScript.api[functionNames[k]](eventData);
+                    otherScript[functionNames[k]](eventData);
                 }
                 break;
         }
