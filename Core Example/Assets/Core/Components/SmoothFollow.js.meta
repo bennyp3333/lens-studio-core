@@ -5,21 +5,24 @@
   PrimaryAsset: !<reference> 1e266c40-6803-4974-8ba7-3f11a3a3c7d3
   PackageType: NotAPackage
   PackagePolicy: CannotBeUnpacked
+  ExtraData:
+    {}
   AssetDataMap:
     JavaScriptAsset: !<own> 7db55768-41ee-406b-932d-ac3644698799
   DependentFiles:
     []
-  ImporterSettings: !<AssetImporterSettings/92223a3f-dfbc-4c30-b4cd-6b7f68137714>
+  ImporterSettings: !<AssetImporterSettings>
     {}
   CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
 - !<ScriptAssetData/7db55768-41ee-406b-932d-ac3644698799>
   SvgIcon: ""
+  SetupScript:
+    code: ""
   Description: ""
-  InternalVersion: 0
   VersionMajor: 0
   VersionMinor: 0
   VersionPatch: 0
-  ComponentUid: 00000000-0000-0000-0000-000000000000
+  ComponentUid: 14f7dd31-580c-402f-88c6-5dec0732559f
   ExportUid: 00000000-0000-0000-0000-000000000000
   CurrentVisibility: Editable
   MaxVisibility: Editable
@@ -32,13 +35,15 @@
     smoothRotation: false
   ScriptTypesHidden:
     {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
   DefaultScriptInputs:
-    - attachTo: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+    - enabled: false
+      attachTo: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
       smoothPosition: true
       posSmoothing: !<float> 1.000000
       smoothRotation: false
       rotSmoothing: !<float> 1.000000
-      enabled: false
   ScriptTypes:
     -
       {}

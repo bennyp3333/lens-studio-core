@@ -5,21 +5,24 @@
   PrimaryAsset: !<reference> 6fba5e91-bbc6-4fb1-bffe-c40cb65bc5c5
   PackageType: NotAPackage
   PackagePolicy: CannotBeUnpacked
+  ExtraData:
+    {}
   AssetDataMap:
     JavaScriptAsset: !<own> 394401d8-6eb5-461b-b324-158e43540c07
   DependentFiles:
     []
-  ImporterSettings: !<AssetImporterSettings/4b56929b-3240-44ad-b0c7-621c8cba3ffc>
+  ImporterSettings: !<AssetImporterSettings>
     {}
   CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
 - !<ScriptAssetData/394401d8-6eb5-461b-b324-158e43540c07>
   SvgIcon: ""
+  SetupScript:
+    code: ""
   Description: ""
-  InternalVersion: 0
   VersionMajor: 0
   VersionMinor: 0
   VersionPatch: 0
-  ComponentUid: 00000000-0000-0000-0000-000000000000
+  ComponentUid: 5479dfd0-60c4-4ee8-be10-d6ccec594094
   ExportUid: 00000000-0000-0000-0000-000000000000
   CurrentVisibility: Editable
   MaxVisibility: Editable
@@ -32,6 +35,8 @@
     useUniqueLayer: false
   ScriptTypesHidden:
     {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
   DefaultScriptInputs:
     - loggingEnabled: true
       logLimit: 20
