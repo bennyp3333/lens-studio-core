@@ -188,6 +188,7 @@
     onPressFunctionData: true
     pressedScale: true
     defaultColor: true
+    pressedColor: true
     editAdvancedOptions: true
     touchBlockingEnabled: true
     printDebugStatements: true
@@ -212,8 +213,8 @@
       scaleOnPress: true
       pressedScale: 0.900000
       colorOnPress: true
-      defaultColor: !<Vec4> {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
-      pressedColor: !<Vec4> {x: 0.701961, y: 0.701961, z: 0.701961, w: 1.000000}
+      defaultColor: !<Vec3> {x: 1.000000, y: 1.000000, z: 1.000000}
+      pressedColor: !<Vec3> {x: 0.800000, y: 0.800000, z: 0.800000}
       useAudio: true
       tapAudioTrack: !<reference.AudioTrackAsset> dc36cd30-163c-4ae1-ba7e-77ecc0b8f8c1
       editAdvancedOptions: false

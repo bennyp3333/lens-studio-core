@@ -1,6 +1,5 @@
 // PushButton.js
-// Version: 0.0.1
-// Event: On Awake
+// Version: 0.1.0
 // Description: Trigger events by press.
 //
 // ----- USAGE -----
@@ -9,6 +8,12 @@
 // Ex. otherScript.customFunction(buttonID int, onSelectFunctionData string)
 //
 // ----- LOCAL API USAGE -----
+//
+// Add callback function to press event
+// script.onPress.add(function(buttonID, data) { ... })
+//
+// Remove callback function from press event
+// script.onPress.remove(callbackFunction)
 //
 // Manually set interactability
 // script.setInteractable(bool)
@@ -63,8 +68,8 @@
 
 //@ui {"widget":"separator"}
 //@input bool colorOnPress = false;
-//@input vec4 defaultColor = {1,1,1,1} {"widget":"color", "showIf":"colorOnPress"}
-//@input vec4 pressedColor = {1,1,1,1} {"widget":"color", "showIf":"colorOnPress"}
+//@input vec3 defaultColor = {1,1,1} {"widget":"color", "showIf":"colorOnPress"}
+//@input vec3 pressedColor = {0.8,0.8,0.8} {"widget":"color", "showIf":"colorOnPress"}
 
 //@ui {"widget":"separator"}
 //@input bool useAudio = false;
@@ -80,12 +85,49 @@
 
 //@ui {"widget":"group_end"}
 
+// ===== Event System =====
+function EventDispatcher() {
+	this.callbacks = [];
+}
+
+EventDispatcher.prototype.add = function(callback) {
+	if (typeof callback === 'function') {
+		if (this.callbacks.indexOf(callback) === -1) {
+			this.callbacks.push(callback);
+		}
+	} else {
+		printWarning("Attempted to add non-function callback");
+	}
+};
+
+EventDispatcher.prototype.remove = function(callback) {
+	var index = this.callbacks.indexOf(callback);
+	if (index > -1) {
+		this.callbacks.splice(index, 1);
+	}
+};
+
+EventDispatcher.prototype.trigger = function(buttonID, data) {
+	for (var i = 0; i < this.callbacks.length; i++) {
+		try {
+			this.callbacks[i](buttonID, data);
+		} catch (e) {
+			printWarning("Error in callback: " + e);
+		}
+	}
+};
+
+// ===== Public API =====
+var onPressEvent = new EventDispatcher();
+
+script.onPress = onPressEvent;
 script.press = press;
 script.setInteractable = setInteractable;
 script.getButtonID = getButtonID;
 script.isPressed = isPressed;
 script.isInteractable = isInteractable;
 
+// ===== Component Setup =====
 var sceneObject = script.getSceneObject();
 var button = sceneObject;
 var buttonTransform = button.getTransform();
@@ -94,127 +136,154 @@ button.createComponent("Component.InteractionComponent");
 
 var tapAudioComp = script.getSceneObject().createComponent("Component.AudioComponent");
 
+// ===== Initialization =====
 var pressDelay = script.createEvent("DelayedCallbackEvent");
 pressDelay.bind(function(eventdata){
     press();
 });
 
-function init(){
-    global.touchSystem.touchBlocking = script.touchBlockingEnabled;
-    
-    if(script.colorOnPress){
-        buttonImage.mainPass.baseColor = script.pressed ? script.pressedColor : script.defaultColor;
-    }
-    
-    if(script.useAudio){
-        tapAudioComp.audioTrack = script.tapAudioTrack;
-    }
-    
-    if(script.pressOnStart){
-        pressDelay.reset(script.delayTime);
-    }
+function init() {
+	global.touchSystem.touchBlocking = script.touchBlockingEnabled;
+
+	if (script.colorOnPress) {
+		applyColor(script.pressed ? script.pressedColor : script.defaultColor);
+	}
+
+	if (script.useAudio) {
+		tapAudioComp.audioTrack = script.tapAudioTrack;
+	}
+
+	if (script.pressOnStart) {
+		pressDelay.reset(script.delayTime);
+	}
 }
 
 init();
 
+// ===== Touch Events =====
 var touchStartEvent = script.createEvent("TouchStartEvent");
 touchStartEvent.enabled = script.interactable;
-touchStartEvent.bind(function(eventData){
-    //printDebug("Button " + script.buttonID + " Press Down");
-    script.pressed = true;
-    if(script.colorOnPress){
-        buttonImage.mainPass.baseColor = script.pressedColor;
-    }
-    if(script.scaleOnPress){
-        buttonTransform.setLocalScale(vec3.one().uniformScale(script.pressedScale));
-    }
+touchStartEvent.bind(function(eventData) {
+	script.pressed = true;
+
+	if (script.colorOnPress) {
+		applyColor(script.pressedColor);
+	}
+
+	if (script.scaleOnPress) {
+		buttonTransform.setLocalScale(vec3.one().uniformScale(script.pressedScale));
+	}
 });
 
 var touchEndEvent = script.createEvent("TouchEndEvent");
 touchEndEvent.enabled = script.interactable;
-touchEndEvent.bind(function(eventData){
-    //printDebug("Button " + script.buttonID + " Press Up");
-    script.pressed = false;
-    if(script.colorOnPress){
-        buttonImage.mainPass.baseColor = script.defaultColor;
-    }
-    if(script.scaleOnPress){
-        buttonTransform.setLocalScale(vec3.one());
-    }
+touchEndEvent.bind(function(eventData) {
+	script.pressed = false;
+
+	if (script.colorOnPress) {
+		applyColor(script.defaultColor);
+	}
+
+	if (script.scaleOnPress) {
+		buttonTransform.setLocalScale(vec3.one());
+	}
 });
 
 var tapEvent = script.createEvent("TapEvent");
 tapEvent.enabled = script.interactable;
-tapEvent.bind(function(eventData){
-    //printDebug("Button " + script.buttonID + " Tapped");
-    press();
+tapEvent.bind(function(eventData) {
+	press();
 });
 
-function press(){
-    printDebug("Button " + script.buttonID + " Pressed");
-    if(script.useAudio){
-        tapAudioComp.play(1);
-    }
-    pressCallback();
+// ===== Core Functions =====
+function press() {
+	printDebug("Button " + script.buttonID + " Pressed");
+
+	if (script.useAudio) {
+		tapAudioComp.play(1);
+	}
+
+	// Trigger all programmatically added callbacks
+	onPressEvent.trigger(script.buttonID, null);
+
+	// Execute legacy callback system
+	pressCallback();
 }
 
-function pressCallback(){
-    switch(script.callbackType){
-        case 1:
-            var globalFunction = global[script.onPressGlobalFunctionName];
-            if(globalFunction){
-                globalFunction(script.buttonID, script.onPressGlobalFunctionData);
-            }else{
-                printWarning("Global Function \"" + script.onPressGlobalFunctionName + "\" Not Defined");
-            }
-            break;
-        case 2:
-            if(script.customFunctionScript){
-                var customFunction = script.customFunctionScript[script.onPressFunctionName];
-                if(customFunction){
-                    customFunction(script.buttonID, script.onPressFunctionData);
-                }else{
-                    printWarning("Custom Function \"" + script.onPressFunctionName + "\" Not Defined");
-                }
-            }else{
-                printWarning("Custom Function Script Not Set");
-            }
-            break;
-        default:
-            if(script.editEventCallbacks){
-                printWarning("Press Callback Not Set");
-            }
-    }
+function pressCallback() {
+	switch (script.callbackType) {
+		case 1:
+			var globalFunction = global[script.onPressGlobalFunctionName];
+			if (globalFunction) {
+				globalFunction(script.buttonID, script.onPressGlobalFunctionData);
+			} else {
+				printWarning("Global Function \"" + script.onPressGlobalFunctionName + "\" Not Defined");
+			}
+			break;
+		case 2:
+			if (script.customFunctionScript) {
+				var customFunction = script.customFunctionScript[script.onPressFunctionName];
+				if (customFunction) {
+					customFunction(script.buttonID, script.onPressFunctionData);
+				} else {
+					printWarning("Custom Function \"" + script.onPressFunctionName + "\" Not Defined");
+				}
+			} else {
+				printWarning("Custom Function Script Not Set");
+			}
+			break;
+		default:
+			if (script.editEventCallbacks) {
+				printWarning("Press Callback Not Set");
+			}
+	}
 }
 
-function setInteractable(bool){
-    script.interactable = bool;
-    touchStartEvent.enabled = bool;
-    touchEndEvent.enabled = bool;
+function applyColor(color) {
+	if (!buttonImage || !buttonImage.mainPass) return;
+
+	currentAlpha = buttonImage.mainPass.baseColor.a;
+
+	var newColor = new vec4(color.r, color.g, color.b, currentAlpha);
+	buttonImage.mainPass.baseColor = newColor;
 }
 
-function getButtonID(){
-    return script.buttonID;
+function setInteractable(bool) {
+	script.interactable = bool;
+	touchStartEvent.enabled = bool;
+	touchEndEvent.enabled = bool;
+	tapEvent.enabled = bool;
 }
 
-function isPressed(){
-    return script.pressed;
+function getButtonID() {
+	return script.buttonID;
 }
 
-function isInteractable(){
-    return script.interactable;
+function isPressed() {
+	return script.pressed;
 }
 
-// Print debug messages
-function printDebug(message){
-    if(script.printDebugStatements){
-        print("PushButton " + sceneObject.name + " - " + message);
-    }
+function isInteractable() {
+	return script.interactable;
 }
 
-// Print warning message
-function printWarning(message){
-    if(script.printWarningStatements){
-        print("PushButton " + sceneObject.name + " - WARNING, " + message);
-    }
+// ===== Debug Functions =====
+function printDebug(message) {
+	if (script.printDebugStatements) {
+		var newLog = "PushButton " + sceneObject.name + " - " + message;
+		if (global.textLogger) {
+			global.logToScreen(newLog);
+		}
+		print(newLog);
+	}
+}
+
+function printWarning(message) {
+	if (script.printWarningStatements) {
+		var warningLog = "PushButton " + sceneObject.name + " - WARNING, " + message;
+		if (global.textLogger) {
+			global.logError(warningLog);
+		}
+		print(warningLog);
+	}
 }

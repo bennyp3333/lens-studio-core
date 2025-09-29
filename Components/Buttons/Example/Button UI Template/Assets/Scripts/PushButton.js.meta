@@ -72,8 +72,8 @@
       scaleOnPress: false
       pressedScale: 0.900000
       colorOnPress: false
-      defaultColor: !<Vec4> {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
-      pressedColor: !<Vec4> {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
+      defaultColor: !<Vec3> {x: 1.000000, y: 1.000000, z: 1.000000}
+      pressedColor: !<Vec3> {x: 0.800000, y: 0.800000, z: 0.800000}
       useAudio: false
       tapAudioTrack: !<reference.AudioTrackAsset> 00000000-0000-0000-0000-000000000000
       editAdvancedOptions: false
