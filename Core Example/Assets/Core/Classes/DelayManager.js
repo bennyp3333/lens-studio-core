@@ -1,6 +1,6 @@
 /*
 DelayManager.js
-Version: 1.0.0
+Version: 1.1.0
 Description: A utility script for managing delayed function execution with support for time-based and frame-based delays, looping, tagging, and purging.
 Author: Bennyp3333 [https://benjamin-p.dev]
 
@@ -22,7 +22,7 @@ const DelayManager = require("./DelayManager");
     - Basic Example:
 
     var myDelay = new global.Delay();
-    myDelay.setFunc(function(){
+    myDelay.setOnComplete(function(){
         print("Delayed function executed!");
     });
     myDelay.setTime(3);
@@ -31,19 +31,31 @@ const DelayManager = require("./DelayManager");
     or
 
     var myDelay = new global.Delay({
-        func: function(){
+        onComplete: function(){
             print("Delayed function executed!");
         },
         time: 3
     });
 
+    - Intermediate Example with separate onLoop and onComplete:
 
-    - Intermediate Example:
+    var myDelay = new global.Delay({
+        onLoop: function(loopIndex, totalLoops){
+            print("Loop " + (loopIndex + 1) + " of " + totalLoops);
+        },
+        onComplete: function(){
+            print("All loops finished!");
+        },
+        time: 1,
+        loops: 5
+    });
+
+    - Advanced Example:
 
     var localDelayManager = new global.DelayManager(script);
     var myDelay = localDelayManager.Delay({
-        func: function(arg1, arg2){
-            print("Delayed function executed!");
+        onLoop: function(arg1, arg2){
+            print("Loop executed!");
             print("Arguments: " + arg1 + ", " + arg2);
         },
         args: ["Hello", 123],
@@ -51,11 +63,11 @@ const DelayManager = require("./DelayManager");
         loops: 3,           // Execute the function 3 times
         tags: ["myTag", "important"],   // Assign tags for later management
         bindToDelay: true,  // Bind 'this' context to the ManagedDelay instance
-        persistent: true,  // Delay will be purged after completion
+        persistent: true,   // Delay will be purged after completion
         startOnCreate: false,// Starts the delay immediately upon creation
         frames: 60,         // alternative to time, will delay 60 frames.
         onComplete: function(){
-            print("delay complete");
+            print("All loops complete!");
         }
     });
 
@@ -73,12 +85,12 @@ const DelayManager = require("./DelayManager");
 
     - Configuration Methods
 
-        myDelay.setFunc(func)       // Sets the function to call.
+        myDelay.setOnLoop(func)     // Sets the function to call on each loop iteration.
         myDelay.setArgs(args)       // Sets the arguments to pass to the function.
         myDelay.setFrames(framesCount)  // Sets the delay to use frames instead of time.
         myDelay.setTime(time)       // Sets the delay to use time instead of frames.
         myDelay.setLoops(count)     // Sets the number of loops.
-        myDelay.onComplete(callback)// Sets the onComplete callback.
+        myDelay.setOnComplete(callback)// Sets the onComplete callback.
         myDelay.addTag(tag)         // Adds a tag to the delay.
         myDelay.clearTags()         // Removes all tags from the delay.
         myDelay.setPersistent(persistent)   // Sets the delay to persistent.
@@ -94,6 +106,8 @@ const DelayManager = require("./DelayManager");
         myDelay.isRunning()     // Returns true if the delay is running.
         myDelay.isPaused()      // Returns true if the delay is paused.
         myDelay.getLoopsLeft()  // Returns the number of loops remaining.
+        myDelay.getCurrentLoop()// Returns the current loop index (0-based).
+        myDelay.getTotalLoops() // Returns the total number of loops.
 
  - DelayManager
 
@@ -120,6 +134,11 @@ const DelayManager = require("./DelayManager");
  - Tags allow for grouped management of delays.
  - Frame-based delays offer more precise timing than time-based delays.
  - If both frames and time are set, frames take priority.
+ - For single delays (loops=1, the most common use case), use onComplete
+ - onLoop is called for each loop iteration (including when loops=1)
+ - onComplete is called once after all loops are finished
+ - When loops=1, both onLoop and onComplete are called
+ - Both callbacks receive the args, but onLoop also receives loopIndex and totalLoops
 
 */
 
@@ -217,7 +236,8 @@ function ManagedDelay(manager, options){
     this.createTime = getTime();
     this.startTime = null;
     
-    this.func = options.func || function(){};
+    this.onLoopFunc = options.onLoop || null;
+    this.onCompleteFunc = options.onComplete || null;
     
     if(options.args !== undefined){
         if(Array.isArray(options.args)){
@@ -253,11 +273,12 @@ function ManagedDelay(manager, options){
     var frameWait = Math.round(options.frames || 1);
     var framesLeft = null;
     var loopCount = Math.max(1, Math.round(options.loops || 1));
+    var totalLoops = loopCount;
+    var currentLoopIndex = 0;
     
-    var onCompleteCallback = options.onComplete || null;
     var bindContextToDelay = options.bindToDelay || false;
     var startOnCreate = options.startOnCreate !== false &&
-        (options.func !== undefined) &&
+        (options.onLoop !== undefined || options.onComplete !== undefined) &&
         (options.time !== undefined || options.frames !== undefined);
 
     var isPaused = false;
@@ -266,8 +287,13 @@ function ManagedDelay(manager, options){
 
     // --- CONFIGURATION ---
     
-    this.setFunc = function(func){
-        this.func = func;
+    this.setOnLoop = function(func){
+        this.onLoopFunc = func;
+        return this;
+    };
+
+    this.setOnComplete = function(func){
+        this.onCompleteFunc = func;
         return this;
     };
     
@@ -293,12 +319,9 @@ function ManagedDelay(manager, options){
     };
 
     this.setLoops = function(count){
-        loopCount = count;
-        return this;
-    };
-
-    this.onComplete = function(callback){
-        onCompleteCallback = callback;
+        loopCount = Math.max(1, Math.round(count || 1));
+        totalLoops = loopCount;
+        currentLoopIndex = 0;
         return this;
     };
 
@@ -334,6 +357,8 @@ function ManagedDelay(manager, options){
         isRunning = true;
         self.startTime = getTime();
         loopCount = (loopTimes != null) ? Math.max(1, Math.round(loopTimes)) : loopCount;
+        totalLoops = loopCount;
+        currentLoopIndex = 0;
 
         if(debug){
             startMessage = "[ManagedDelay] Started delay " + this.id;
@@ -415,10 +440,11 @@ function ManagedDelay(manager, options){
     this.triggerNow = function(overrideArgs){
         stopWaitEvent();
         var callArgs = overrideArgs || self.args;
-        execute(callArgs);
+        executeOnLoop(callArgs);
         isRunning = false;
         isPaused = false;
         self.completed = true;
+        triggerOnComplete(callArgs);
         if(debug){ print("[ManagedDelay] Triggered delay " + this.id + " immediately."); }
         self.manager.purge();
         return this;
@@ -441,20 +467,26 @@ function ManagedDelay(manager, options){
     this.isRunning = function(){ return isRunning; };
     this.isPaused = function(){ return isPaused; };
     this.getLoopsLeft = function(){ return loopCount; };
+    this.getCurrentLoop = function(){ return currentLoopIndex; };
+    this.getTotalLoops = function(){ return totalLoops; };
 
     // --- PRIVATE HELPERS ---
 
     function onFrameUpdate(){
         if(framesLeft <= 0){
-            execute(self.args);
+            executeOnLoop(self.args);
+            currentLoopIndex++;
+            
             if(loopCount < 0){
+                // Infinite loops
                 framesLeft = frameWait;
+                currentLoopIndex = currentLoopIndex % 1000000; // Prevent overflow
             }else if(loopCount > 1){
                 loopCount--;
                 framesLeft = frameWait;
             }else{
                 stopWaitEvent();
-                triggerOnComplete();
+                triggerOnComplete(self.args);
             }
         }else{
             framesLeft--;
@@ -462,15 +494,19 @@ function ManagedDelay(manager, options){
     }
 
     function onTimeComplete(){
-        execute(self.args);
+        executeOnLoop(self.args);
+        currentLoopIndex++;
+        
         if(loopCount < 0){
+            // Infinite loops
             waitEvent.reset(timeWait);
+            currentLoopIndex = currentLoopIndex % 1000000; // Prevent overflow
         }else if(loopCount > 1){
             loopCount--;
             waitEvent.reset(timeWait);
         }else{
             stopWaitEvent();
-            triggerOnComplete();
+            triggerOnComplete(self.args);
         }
     }
 
@@ -481,22 +517,37 @@ function ManagedDelay(manager, options){
         }
     }
 
-    function triggerOnComplete(){
+    function triggerOnComplete(args){
         isRunning = false;
         isPaused = false;
         self.completed = true;
         if(debug){ print("[ManagedDelay] Completed delay " + self.id); }
         self.manager.purge();
-        if(onCompleteCallback){
-            onCompleteCallback();
+        executeOnComplete(args);
+    }
+    
+    function executeOnLoop(args){
+        if(!self.onLoopFunc || typeof self.onLoopFunc !== 'function') return;
+
+        // Create a new args array with loop info appended
+        var extendedArgs = args.slice(); // Copy the args
+        extendedArgs.push(currentLoopIndex);
+        extendedArgs.push(totalLoops);
+
+        if(bindContextToDelay){
+            self.onLoopFunc.apply(self, extendedArgs);
+        }else{
+            self.onLoopFunc.apply(null, extendedArgs);
         }
     }
     
-    function execute(args){
+    function executeOnComplete(args){
+        if(!self.onCompleteFunc || typeof self.onCompleteFunc !== 'function') return;
+
         if(bindContextToDelay){
-            self.func.apply(self, args);
+            self.onCompleteFunc.apply(self, args);
         }else{
-            self.func.apply(null, args);
+            self.onCompleteFunc.apply(null, args);
         }
     }
     
