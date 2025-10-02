@@ -1,0 +1,75 @@
+- !<AssetImportMetadata/153c01c0-04b9-45d9-bd9a-ee215d58acfa>
+  ImportedAssetIds:
+    JavaScriptAsset: !<reference> 1e87f1ff-4dca-42be-ab5d-ded957458013
+  ImporterName: JavaScriptAssetImporter
+  PrimaryAsset: !<reference> 1e87f1ff-4dca-42be-ab5d-ded957458013
+  PackageType: NotAPackage
+  PackagePolicy: CannotBeUnpacked
+  ExtraData:
+    {}
+  AssetDataMap:
+    JavaScriptAsset: !<own> 6c515f0c-b603-48b5-84c3-7f9e76869828
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<ScriptAssetData/6c515f0c-b603-48b5-84c3-7f9e76869828>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  ComponentUid: 3e47cefe-6530-4879-9371-fff8ddfc6293
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  CurrentVisibility: Editable
+  MaxVisibility: Editable
+  ScriptInputsHidden:
+    backCameraObjects: false
+    editAdvancedOptions: false
+    editEventCallbacks: false
+    frontCameraObjects: false
+    onBackCameraCallbackType: false
+    onBackCameraCustomFunctionScript: false
+    onBackCameraFunctionData: false
+    onBackCameraFunctionName: false
+    onBackCameraGlobalFunctionData: false
+    onBackCameraGlobalFunctionName: false
+    onFrontCameraCallbackType: false
+    onFrontCameraCustomFunctionScript: false
+    onFrontCameraFunctionData: false
+    onFrontCameraFunctionName: false
+    onFrontCameraGlobalFunctionData: false
+    onFrontCameraGlobalFunctionName: false
+    printDebugStatements: false
+    printWarningStatements: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  DefaultScriptInputs:
+    - frontCameraObjects: !<reference.SceneObject[]>
+        []
+      backCameraObjects: !<reference.SceneObject[]>
+        []
+      editEventCallbacks: false
+      onFrontCameraCallbackType: 0
+      onFrontCameraGlobalFunctionName: ""
+      onFrontCameraGlobalFunctionData: ""
+      onFrontCameraCustomFunctionScript: !<reference.ScriptComponent> 00000000-0000-0000-0000-000000000000
+      onFrontCameraFunctionName: ""
+      onFrontCameraFunctionData: ""
+      onBackCameraCallbackType: 0
+      onBackCameraGlobalFunctionName: ""
+      onBackCameraGlobalFunctionData: ""
+      onBackCameraCustomFunctionScript: !<reference.ScriptComponent> 00000000-0000-0000-0000-000000000000
+      onBackCameraFunctionName: ""
+      onBackCameraFunctionData: ""
+      editAdvancedOptions: false
+      printDebugStatements: false
+      printWarningStatements: true
+  ScriptTypes:
+    -
+      {}
