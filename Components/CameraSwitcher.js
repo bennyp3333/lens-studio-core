@@ -54,10 +54,10 @@ function onFrontCamera(){
     global.isBackCamera = false;
 
     for (var i = 0; i < script.backCameraObjects.length; i++) {
-        script.backCameraObjects[i].enabled = true;
+        script.backCameraObjects[i].enabled = false;
     }
     for (var i = 0; i < script.frontCameraObjects.length; i++) {
-        script.frontCameraObjects[i].enabled = false;
+        script.frontCameraObjects[i].enabled = true;
     }
 
     frontCameraCallback();
@@ -70,10 +70,10 @@ function onBackCamera(){
     global.isBackCamera = true;
 
     for (var i = 0; i < script.backCameraObjects.length; i++) {
-        script.backCameraObjects[i].enabled = false;
+        script.backCameraObjects[i].enabled = true;
     }
     for (var i = 0; i < script.frontCameraObjects.length; i++) {
-        script.frontCameraObjects[i].enabled = true;
+        script.frontCameraObjects[i].enabled = false;
     }
 
     backCameraCallback();

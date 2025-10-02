@@ -6,8 +6,8 @@
 //
 // ----- USAGE -----
 // 1. Add this script to a Scene Object
-// 2. Assign objects to "Front Camera Objects" array (visible when front camera is active)
-// 3. Assign objects to "Back Camera Objects" array (visible when back camera is active)
+// 2. Assign objects to "Front Camera Objects" array (enabled when front camera is active)
+// 3. Assign objects to "Back Camera Objects" array (enabled when back camera is active)
 // 4. Optional: Enable "Event Callbacks" to trigger custom functions on camera switch
 //    - Choose "Global Function" to call a function defined in global scope
 //    - Choose "Custom Function" to call a function from another script component
@@ -54,10 +54,10 @@ function onFrontCamera(){
     global.isBackCamera = false;
 
     for (var i = 0; i < script.backCameraObjects.length; i++) {
-        script.backCameraObjects[i].enabled = true;
+        script.backCameraObjects[i].enabled = false;
     }
     for (var i = 0; i < script.frontCameraObjects.length; i++) {
-        script.frontCameraObjects[i].enabled = false;
+        script.frontCameraObjects[i].enabled = true;
     }
 
     frontCameraCallback();
@@ -70,10 +70,10 @@ function onBackCamera(){
     global.isBackCamera = true;
 
     for (var i = 0; i < script.backCameraObjects.length; i++) {
-        script.backCameraObjects[i].enabled = false;
+        script.backCameraObjects[i].enabled = true;
     }
     for (var i = 0; i < script.frontCameraObjects.length; i++) {
-        script.frontCameraObjects[i].enabled = true;
+        script.frontCameraObjects[i].enabled = false;
     }
 
     backCameraCallback();
