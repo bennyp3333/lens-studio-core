@@ -1,0 +1,94 @@
+- !<AssetImportMetadata/2d5414b6-5e70-4b5a-b297-92202d177979>
+  ImportedAssetIds:
+    7a0dd5cd69df73fa: !<reference> f39af8fb-fe03-4153-8c8a-560835fa9b68
+    8f8a04544e1fa9cf: !<reference> d702cf2a-bd46-4381-bf52-1b669325e232
+    Meshes/teapot: !<reference> 6e330bcd-a713-4c84-b8c3-64f1489e08fe
+    Scene: !<reference> fad8b64a-afab-4139-a742-c7a905d932f7
+    eca0322bd21a7088: !<reference> 71cda48c-3134-483e-acc5-e9a6558e7486
+  ImporterName: ObjImporter
+  PrimaryAsset: !<reference> fad8b64a-afab-4139-a742-c7a905d932f7
+  PackageType: LegacyPackage
+  PackagePolicy: CanBeUnpackedTransparent
+  ExtraData:
+    {}
+  AssetDataMap:
+    Scene: !<own> c485cb00-2178-44db-ae86-27399f74c3ff
+  DependentFiles:
+    []
+  ImporterSettings: !<D3FileImporterSettingsBase>
+    UseLegacyImporter: false
+    WithMaterials: false
+    NamingConvention: ByCategorySanitizeV2
+    PersistentIdGenerationAlgorithm: DescriptorBased
+  CompressionSettings: !<ComplexCompressionSettings>
+    Presets:
+      None Compression: !<SingleCompressionSettings>
+        CompressorName: None
+        CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+    ExtensionMappings:
+      mesh: None Compression
+    Overrides:
+      {}
+- !<SceneObject/3bfb7a53-aa8d-441b-b843-03deddb2fa44>
+  PrefabRemaps:
+    []
+  Name: teapot
+  Enabled: true
+  Layers: 1
+  LocalTransform: !<TransformEntity>
+    Position: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Rotation: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Scale: {x: 1.000000, y: 1.000000, z: 1.000000}
+    HasSegmentScaleCompensation: false
+  Children:
+    - !<own> 719dc4d5-7dad-4c31-8707-30f3c77dc4e7
+  Components:
+    []
+- !<ObjectPrefab/4a4d4760-af2a-48c5-a389-0a4639d0e857>
+  PackagePath: ""
+  objects:
+    - !<own> 3bfb7a53-aa8d-441b-b843-03deddb2fa44
+  LazyLoading: false
+  RetainAssets: true
+- !<SceneObject/719dc4d5-7dad-4c31-8707-30f3c77dc4e7>
+  PrefabRemaps:
+    []
+  Name: teapot
+  Enabled: true
+  Layers: 1
+  LocalTransform: !<TransformEntity>
+    Position: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Rotation: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Scale: {x: 1.000000, y: 1.000000, z: 1.000000}
+    HasSegmentScaleCompensation: false
+  Children:
+    []
+  Components:
+    - !<own> 7309c0cf-eff1-46d9-b50f-162d285ac385
+- !<RenderMeshVisual/7309c0cf-eff1-46d9-b50f-162d285ac385>
+  PrefabRemaps:
+    []
+  Name: component_0
+  Enabled: true
+  RenderOrder: 0
+  StretchMode: Stretch
+  VerticalAlignment: Center
+  HorizontalAlignment: Center
+  MeshShadowMode: None
+  ShadowColor: {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
+  ShadowDensity: 1.000000
+  Materials:
+    []
+  Mesh: !<reference> 6e330bcd-a713-4c84-b8c3-64f1489e08fe
+  Skin: !<reference> 00000000-0000-0000-0000-000000000000
+  BlendShapesEnabled: true
+  BlendNormals: false
+  BlendShapes:
+    {}
+- !<ObjectPrefabAssetData/c485cb00-2178-44db-ae86-27399f74c3ff>
+  SourceRemaps:
+    - 71cda48c-3134-483e-acc5-e9a6558e7486: 7309c0cf-eff1-46d9-b50f-162d285ac385
+    - d702cf2a-bd46-4381-bf52-1b669325e232: 719dc4d5-7dad-4c31-8707-30f3c77dc4e7
+    - f39af8fb-fe03-4153-8c8a-560835fa9b68: 3bfb7a53-aa8d-441b-b843-03deddb2fa44
+    - fad8b64a-afab-4139-a742-c7a905d932f7: 4a4d4760-af2a-48c5-a389-0a4639d0e857
+  SourceState: !<own> 4a4d4760-af2a-48c5-a389-0a4639d0e857

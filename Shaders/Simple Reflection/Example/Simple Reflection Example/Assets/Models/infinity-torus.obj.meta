@@ -1,0 +1,94 @@
+- !<AssetImportMetadata/9b374ed4-4d09-4a4a-9721-5ea01d334395>
+  ImportedAssetIds:
+    7a0dd5cd69df73fa: !<reference> 460e9295-3bef-4435-a96c-2cfa3191a477
+    7eed8d906e4f1eac: !<reference> acdbba8b-ce7c-4704-9ee3-c002cf0ca4c7
+    8818191698fb00af: !<reference> aae926c4-b1de-4cfd-864b-ed1e7591c0e2
+    Meshes/infinity-torus: !<reference> 45a12e56-9ade-4511-8ebd-4ea36842b51f
+    Scene: !<reference> 02d1142f-74f0-4a71-98fc-cedc00b39705
+  ImporterName: ObjImporter
+  PrimaryAsset: !<reference> 02d1142f-74f0-4a71-98fc-cedc00b39705
+  PackageType: LegacyPackage
+  PackagePolicy: CanBeUnpackedTransparent
+  ExtraData:
+    {}
+  AssetDataMap:
+    Scene: !<own> b038d10a-78e1-4283-ae75-ab58d7804b73
+  DependentFiles:
+    []
+  ImporterSettings: !<D3FileImporterSettingsBase>
+    UseLegacyImporter: false
+    WithMaterials: false
+    NamingConvention: ByCategorySanitizeV2
+    PersistentIdGenerationAlgorithm: DescriptorBased
+  CompressionSettings: !<ComplexCompressionSettings>
+    Presets:
+      None Compression: !<SingleCompressionSettings>
+        CompressorName: None
+        CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+    ExtensionMappings:
+      mesh: None Compression
+    Overrides:
+      {}
+- !<ObjectPrefab/3cce2e7a-ca8f-44de-a369-c02061f2bba9>
+  PackagePath: ""
+  objects:
+    - !<own> ddc379e1-8d87-4eaf-b654-c0322f5f92e9
+  LazyLoading: false
+  RetainAssets: true
+- !<RenderMeshVisual/9ddb26f0-23d3-4237-9f2c-737143e6f230>
+  PrefabRemaps:
+    []
+  Name: component_0
+  Enabled: true
+  RenderOrder: 0
+  StretchMode: Stretch
+  VerticalAlignment: Center
+  HorizontalAlignment: Center
+  MeshShadowMode: None
+  ShadowColor: {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
+  ShadowDensity: 1.000000
+  Materials:
+    []
+  Mesh: !<reference> 45a12e56-9ade-4511-8ebd-4ea36842b51f
+  Skin: !<reference> 00000000-0000-0000-0000-000000000000
+  BlendShapesEnabled: true
+  BlendNormals: false
+  BlendShapes:
+    {}
+- !<ObjectPrefabAssetData/b038d10a-78e1-4283-ae75-ab58d7804b73>
+  SourceRemaps:
+    - 02d1142f-74f0-4a71-98fc-cedc00b39705: 3cce2e7a-ca8f-44de-a369-c02061f2bba9
+    - 460e9295-3bef-4435-a96c-2cfa3191a477: ddc379e1-8d87-4eaf-b654-c0322f5f92e9
+    - aae926c4-b1de-4cfd-864b-ed1e7591c0e2: fda29a10-902f-4eba-b7db-8bf48858ad01
+    - acdbba8b-ce7c-4704-9ee3-c002cf0ca4c7: 9ddb26f0-23d3-4237-9f2c-737143e6f230
+  SourceState: !<own> 3cce2e7a-ca8f-44de-a369-c02061f2bba9
+- !<SceneObject/ddc379e1-8d87-4eaf-b654-c0322f5f92e9>
+  PrefabRemaps:
+    []
+  Name: infinity-torus
+  Enabled: true
+  Layers: 1
+  LocalTransform: !<TransformEntity>
+    Position: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Rotation: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Scale: {x: 1.000000, y: 1.000000, z: 1.000000}
+    HasSegmentScaleCompensation: false
+  Children:
+    - !<own> fda29a10-902f-4eba-b7db-8bf48858ad01
+  Components:
+    []
+- !<SceneObject/fda29a10-902f-4eba-b7db-8bf48858ad01>
+  PrefabRemaps:
+    []
+  Name: infinity-torus
+  Enabled: true
+  Layers: 1
+  LocalTransform: !<TransformEntity>
+    Position: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Rotation: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Scale: {x: 1.000000, y: 1.000000, z: 1.000000}
+    HasSegmentScaleCompensation: false
+  Children:
+    []
+  Components:
+    - !<own> 9ddb26f0-23d3-4237-9f2c-737143e6f230
