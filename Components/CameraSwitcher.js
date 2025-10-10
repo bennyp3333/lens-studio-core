@@ -1,13 +1,13 @@
 // CameraSwitcher.js
-// Version: 0.1.0
+// Version: 0.1.1
 // Description: Manages front and back camera switching events in Lens Studio. 
 //  Automatically toggles visibility of assigned objects based on active camera and triggers optional callback functions when camera switches occur.
 // Author: Bennyp3333 [https://benjamin-p.dev]
 //
 // ----- USAGE -----
 // 1. Add this script to a Scene Object
-// 2. Assign objects to "Front Camera Objects" array (visible when front camera is active)
-// 3. Assign objects to "Back Camera Objects" array (visible when back camera is active)
+// 2. Assign objects to "Front Camera Objects" array (enabled when front camera is active)
+// 3. Assign objects to "Back Camera Objects" array (enabled when back camera is active)
 // 4. Optional: Enable "Event Callbacks" to trigger custom functions on camera switch
 //    - Choose "Global Function" to call a function defined in global scope
 //    - Choose "Custom Function" to call a function from another script component
@@ -54,10 +54,18 @@ function onFrontCamera(){
     global.isBackCamera = false;
 
     for (var i = 0; i < script.backCameraObjects.length; i++) {
-        script.backCameraObjects[i].enabled = false;
+        if (script.backCameraObjects[i]) {
+            script.backCameraObjects[i].enabled = false;
+        } else {
+            printWarning("Back Camera Object at index " + i + " is null or undefined, skipping");
+        }
     }
     for (var i = 0; i < script.frontCameraObjects.length; i++) {
-        script.frontCameraObjects[i].enabled = true;
+        if (script.frontCameraObjects[i]) {
+            script.frontCameraObjects[i].enabled = true;
+        } else {
+            printWarning("Front Camera Object at index " + i + " is null or undefined, skipping");
+        }
     }
 
     frontCameraCallback();
@@ -70,10 +78,18 @@ function onBackCamera(){
     global.isBackCamera = true;
 
     for (var i = 0; i < script.backCameraObjects.length; i++) {
-        script.backCameraObjects[i].enabled = true;
+        if (script.backCameraObjects[i]) {
+            script.backCameraObjects[i].enabled = true;
+        } else {
+            printWarning("Back Camera Object at index " + i + " is null or undefined, skipping");
+        }
     }
     for (var i = 0; i < script.frontCameraObjects.length; i++) {
-        script.frontCameraObjects[i].enabled = false;
+        if (script.frontCameraObjects[i]) {
+            script.frontCameraObjects[i].enabled = false;
+        } else {
+            printWarning("Front Camera Object at index " + i + " is null or undefined, skipping");
+        }
     }
 
     backCameraCallback();
