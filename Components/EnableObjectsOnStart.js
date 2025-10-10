@@ -18,4 +18,4 @@ function onAwake(){
     });
 }
 
-script.createEvent("OnAwakeEvent").bind(onAwake);
+script.createEvent("OnStartEvent").bind(onAwake);
