@@ -1,0 +1,94 @@
+- !<AssetImportMetadata/1145f6ba-e631-49bc-a8f2-073fe0f75c17>
+  ImportedAssetIds:
+    40e33549d6f746bf: !<reference> b2f558e5-b4fe-4238-9018-da8e5b68d9ca
+    7a0dd5cd69df73fa: !<reference> c079c846-4c7b-4def-9dbd-6b598863c377
+    9df7d5c1bc31817e: !<reference> af167f19-301c-4807-a966-59a00e18f1fb
+    Meshes/Suzanne: !<reference> cd624c24-9b09-4a7c-9dcc-b0daff5dcc09
+    Scene: !<reference> b099fa06-eccc-48a1-8e63-bed5e9b28a3b
+  ImporterName: ObjImporter
+  PrimaryAsset: !<reference> b099fa06-eccc-48a1-8e63-bed5e9b28a3b
+  PackageType: LegacyPackage
+  PackagePolicy: CanBeUnpackedTransparent
+  ExtraData:
+    {}
+  AssetDataMap:
+    Scene: !<own> 885eb6c0-868e-4208-8419-59b79972838b
+  DependentFiles:
+    []
+  ImporterSettings: !<D3FileImporterSettingsBase>
+    UseLegacyImporter: false
+    WithMaterials: false
+    NamingConvention: ByCategorySanitizeV2
+    PersistentIdGenerationAlgorithm: DescriptorBased
+  CompressionSettings: !<ComplexCompressionSettings>
+    Presets:
+      None Compression: !<SingleCompressionSettings>
+        CompressorName: None
+        CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+    ExtensionMappings:
+      mesh: None Compression
+    Overrides:
+      {}
+- !<ObjectPrefab/1d592143-45f3-41c7-97a2-578ed56e3783>
+  PackagePath: ""
+  objects:
+    - !<own> be1b650f-a6e4-4552-b616-63606afd6a8a
+  LazyLoading: false
+  RetainAssets: true
+- !<ObjectPrefabAssetData/885eb6c0-868e-4208-8419-59b79972838b>
+  SourceRemaps:
+    - af167f19-301c-4807-a966-59a00e18f1fb: 9c37775b-dd2e-47ab-ae06-b9410b0555e6
+    - b099fa06-eccc-48a1-8e63-bed5e9b28a3b: 1d592143-45f3-41c7-97a2-578ed56e3783
+    - b2f558e5-b4fe-4238-9018-da8e5b68d9ca: b0e33033-bb8c-409e-884b-b7857271abdd
+    - c079c846-4c7b-4def-9dbd-6b598863c377: be1b650f-a6e4-4552-b616-63606afd6a8a
+  SourceState: !<own> 1d592143-45f3-41c7-97a2-578ed56e3783
+- !<SceneObject/9c37775b-dd2e-47ab-ae06-b9410b0555e6>
+  PrefabRemaps:
+    []
+  Name: Suzanne
+  Enabled: true
+  Layers: 1
+  LocalTransform: !<TransformEntity>
+    Position: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Rotation: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Scale: {x: 1.000000, y: 1.000000, z: 1.000000}
+    HasSegmentScaleCompensation: false
+  Children:
+    []
+  Components:
+    - !<own> b0e33033-bb8c-409e-884b-b7857271abdd
+- !<RenderMeshVisual/b0e33033-bb8c-409e-884b-b7857271abdd>
+  PrefabRemaps:
+    []
+  Name: component_0
+  Enabled: true
+  RenderOrder: 0
+  StretchMode: Stretch
+  VerticalAlignment: Center
+  HorizontalAlignment: Center
+  MeshShadowMode: None
+  ShadowColor: {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
+  ShadowDensity: 1.000000
+  Materials:
+    []
+  Mesh: !<reference> cd624c24-9b09-4a7c-9dcc-b0daff5dcc09
+  Skin: !<reference> 00000000-0000-0000-0000-000000000000
+  BlendShapesEnabled: true
+  BlendNormals: false
+  BlendShapes:
+    {}
+- !<SceneObject/be1b650f-a6e4-4552-b616-63606afd6a8a>
+  PrefabRemaps:
+    []
+  Name: suzanne
+  Enabled: true
+  Layers: 1
+  LocalTransform: !<TransformEntity>
+    Position: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Rotation: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Scale: {x: 1.000000, y: 1.000000, z: 1.000000}
+    HasSegmentScaleCompensation: false
+  Children:
+    - !<own> 9c37775b-dd2e-47ab-ae06-b9410b0555e6
+  Components:
+    []

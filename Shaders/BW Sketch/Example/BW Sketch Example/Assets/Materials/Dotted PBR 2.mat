@@ -1,0 +1,97 @@
+- !<Material/6bcc9f9a-8e26-4127-8aaa-ea8c00816a52>
+  PackagePath: ""
+  PassesInfo:
+    - !<own> d6e16d0e-5270-4def-ad28-c508c24fbf99
+- !<PassInfo/d6e16d0e-5270-4def-ad28-c508c24fbf99>
+  CachedProperties:
+    []
+  DepthWrite: true
+  DepthTest: true
+  DepthFunction: LessEqual
+  TwoSided: false
+  ColorMask: {x: true, y: true, z: true, w: true}
+  CullMode: Back
+  PolygonOffset: {x: 0.000000, y: 0.000000}
+  FrustumCulling: Auto
+  FrustumCullPad: 0.000000
+  InstanceCount: 1
+  Defines:
+    - NODE_0_DROPLIST_ITEM 0
+  BlendMode: Disabled
+  Properties:
+    Port_AO_N337:
+      typeIdx: 4
+      value: {x: 1.000000, y: 1.000000, z: 1.000000}
+    Port_Albedo_N337:
+      typeIdx: 4
+      value: {x: 1.000000, y: 1.000000, z: 1.000000}
+    Port_Emissive_N337:
+      typeIdx: 4
+      value: {x: 1.000000, y: 1.000000, z: 1.000000}
+    Port_Import_N033:
+      typeIdx: 1
+      value: 123.000000
+    Port_Import_N095:
+      typeIdx: 1
+      value: 1.000000
+    Port_Input0_N054:
+      typeIdx: 1
+      value: 1.000000
+    Port_Input0_N102:
+      typeIdx: 5
+      value: {x: 0.500000, y: 0.500000, z: 0.500000, w: 0.000000}
+    Port_Input1_N011:
+      typeIdx: 1
+      value: 10.000000
+    Port_Input1_N012:
+      typeIdx: 1
+      value: 20.000000
+    Port_Input1_N021:
+      typeIdx: 1
+      value: 100.000000
+    Port_Input1_N027:
+      typeIdx: 3
+      value: {x: 571.820007, y: 418.929993}
+    Port_Input1_N028:
+      typeIdx: 3
+      value: {x: 913.979980, y: 907.059998}
+    Port_Input1_N029:
+      typeIdx: 3
+      value: {x: 426.480011, y: 848.580017}
+    Port_Input1_N030:
+      typeIdx: 1
+      value: 1.000000
+    Port_Input1_N094:
+      typeIdx: 5
+      value: {x: 0.212500, y: 0.715400, z: 0.072100, w: 0.000000}
+    Port_Metallic_N337:
+      typeIdx: 1
+      value: 0.000000
+    Port_Opacity_N337:
+      typeIdx: 1
+      value: 0.000000
+    Port_Roughness_N337:
+      typeIdx: 1
+      value: 0.000000
+    Port_SpecularAO_N337:
+      typeIdx: 4
+      value: {x: 1.000000, y: 1.000000, z: 1.000000}
+    Port_Value2_N007:
+      typeIdx: 1
+      value: 1.000000
+    PreviewEnabled:
+      typeIdx: 0
+      value: 0
+    Tweak_N60:
+      typeIdx: 1
+      value: 3.260000
+    Tweak_N61:
+      typeIdx: 1
+      value: 0.000000
+    Tweak_N62:
+      typeIdx: 1
+      value: 1.000000
+    Tweak_N63:
+      typeIdx: 1
+      value: 1.000000
+  Pass: !<reference> 67b78859-4036-4d72-a6ea-21d5cbeccfa6
