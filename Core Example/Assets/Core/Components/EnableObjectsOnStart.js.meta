@@ -27,6 +27,7 @@
   CurrentVisibility: Editable
   MaxVisibility: Editable
   ScriptInputsHidden:
+    delay: false
     objectsToEnable: false
   ScriptTypesHidden:
     {}
@@ -35,6 +36,7 @@
   DefaultScriptInputs:
     - objectsToEnable: !<reference.SceneObject[]>
         []
+      delay: !<float> 0.000000
   ScriptTypes:
     -
       {}
