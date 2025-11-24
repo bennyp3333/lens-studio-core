@@ -30,7 +30,7 @@ Essential for effects that need to be triggered or controlled at runtime. See th
 
 ## General Components
 
-### BaseScript.js
+### [BaseScript.js](./BaseScript.js)
 
 A template script that provides the standard structure used throughout Lens Studio Core projects.
 
@@ -50,7 +50,7 @@ Use this as your starting point for new scripts. Copy BaseScript.js when creatin
 - Toggle debug mode on/off in the Inspector
 - Integrates with Core prefab's TextLogger for on-screen debugging
 
-### CameraSwitcher.js
+### [CameraSwitcher.js](./CameraSwitcher.js)
 
 Manages front/back camera switching with automatic object visibility toggling.
 
@@ -64,7 +64,7 @@ Manages front/back camera switching with automatic object visibility toggling.
 - Different content for front vs back camera
 - Triggering effects when camera switches
 
-### LookAt.js
+### [LookAt.js](./LookAt.js)
 
 Makes objects orient themselves toward a target with multiple facing modes.
 
@@ -85,7 +85,7 @@ Makes objects orient themselves toward a target with multiple facing modes.
 - Characters or objects tracking a target
 - Billboarded sprites and effects
 
-### SmoothFollow.js
+### [SmoothFollow.js](./SmoothFollow.js)
 
 Makes an object smoothly follow another object's position and/or rotation.
 
@@ -101,7 +101,7 @@ Makes an object smoothly follow another object's position and/or rotation.
 - Object tethering with lag
 - Follow-cam behaviors
 
-### FPScounter.js
+### [FPScounter.js](./FPScounter.js)
 
 Displays real-time frame rate on screen with smoothing.
 
@@ -113,7 +113,7 @@ Displays real-time frame rate on screen with smoothing.
 
 Attach to an object with a Text component for instant FPS monitoring during development.
 
-### EnableObjectsOnStart.js
+### [EnableObjectsOnStart.js](./EnableObjectsOnStart.js)
 
 Enables assigned objects when the lens starts.
 
@@ -125,6 +125,19 @@ Enables assigned objects when the lens starts.
 **Common Use Cases:**
 - Cleaning up the Scene hierarchy during development
 - Organizing complex scenes
+
+### [MakeMatUnique.js](./MakeMatUnique.js)
+
+Automatically clones all materials on a Scene Object so they become unique instances.
+
+**Key Features:**
+- Prevents shared-material side effects when modifying materials at runtime
+- Supports RenderMeshVisual, Image, and Text3D components
+- Automatically clones and reassigns materials on initialization
+
+**Common Use Cases:**
+- Animating or modifying material parameters per object
+- Avoiding global changes to materials shared across multiple visuals
 
 ## Integration with Core Systems
 
