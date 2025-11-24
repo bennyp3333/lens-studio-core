@@ -1,0 +1,44 @@
+- !<AssetImportMetadata/9ce4e646-46c6-4b6c-a0f9-ab841c1fdb9a>
+  ImportedAssetIds:
+    JavaScriptAsset: !<reference> 8e192433-c7f2-4c32-818a-58e3456f3621
+  ImporterName: JavaScriptAssetImporter
+  PrimaryAsset: !<reference> 8e192433-c7f2-4c32-818a-58e3456f3621
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    JavaScriptAsset: !<own> c00df5d7-a7fa-4482-8b02-de5a7c9301d9
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<ScriptAssetData/c00df5d7-a7fa-4482-8b02-de5a7c9301d9>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  ComponentUid: 761b937c-8836-4c10-adef-3907a24fb79a
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    restartButton: false
+    tapPrompt: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    - tapPrompt: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      restartButton: !<reference.InteractionComponent> 00000000-0000-0000-0000-000000000000
+  ScriptTypes:
+    -
+      {}

@@ -1,0 +1,113 @@
+- !<AssetImportMetadata/16370701-d419-4b29-989d-d7507e9d36ce>
+  ImportedAssetIds:
+    JavaScriptAsset: !<reference> e2bad830-41c5-47e0-8c79-9394f37e0846
+  ImporterName: JavaScriptAssetImporter
+  PrimaryAsset: !<reference> e2bad830-41c5-47e0-8c79-9394f37e0846
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    JavaScriptAsset: !<own> 0fb2ee53-08d0-4100-ad65-19cc184e04dc
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<ScriptAssetData/0fb2ee53-08d0-4100-ad65-19cc184e04dc>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  ComponentUid: 7d3b6bcb-6a48-4432-b2c1-d2b7c8bc5260
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    autoHide: false
+    autoHideDelay: false
+    autoShow: false
+    autoShowDelay: false
+    debug: false
+    disableWhenHidden: false
+    faderName: false
+    faderTags: false
+    inAdvanced: false
+    inAlpha: false
+    inEasing: false
+    inEasingType: false
+    inFadeMaterialParameter: false
+    inMode: false
+    inRect: false
+    inRecursiveFade: false
+    inScale: false
+    inScaleLocal: false
+    inTime: false
+    initialState: false
+    makeMaterialsUnique: false
+    optional: false
+    outAdvanced: false
+    outAlpha: false
+    outEasing: false
+    outEasingType: false
+    outFadeMaterialParameter: false
+    outMode: false
+    outRect: false
+    outRecursiveFade: false
+    outScale: false
+    outScaleLocal: false
+    outTime: false
+    printDebugStatements: false
+    printWarningStatements: false
+    sceneObject: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    - initialState: visible
+      autoShow: false
+      autoShowDelay: !<float> 0.000000
+      autoHide: false
+      autoHideDelay: !<float> 2.000000
+      inMode: fade
+      inTime: 0.750000
+      inAdvanced: false
+      inAlpha: !<float> 1.000000
+      inScale: !<Vec3> {x: 1.000000, y: 1.000000, z: 1.000000}
+      inRect: !<Vec4> {x: -1.000000, y: 1.000000, z: -1.000000, w: 1.000000}
+      inEasing: Quadratic
+      inEasingType: Out
+      inRecursiveFade: true
+      inFadeMaterialParameter: baseColor
+      inScaleLocal: Local
+      outMode: fade
+      outTime: 0.750000
+      outAdvanced: false
+      outAlpha: !<float> 0.000000
+      outScale: !<Vec3> {x: 0.000000, y: 0.000000, z: 0.000000}
+      outRect: !<Vec4> {x: -1.000000, y: 1.000000, z: -1.000000, w: 1.000000}
+      outEasing: Quadratic
+      outEasingType: Out
+      outRecursiveFade: true
+      outFadeMaterialParameter: baseColor
+      outScaleLocal: Local
+      optional: false
+      sceneObject: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      faderName: ""
+      faderTags: !<string[]>
+        []
+      disableWhenHidden: false
+      makeMaterialsUnique: true
+      debug: false
+      printDebugStatements: false
+      printWarningStatements: true
+  ScriptTypes:
+    -
+      {}
