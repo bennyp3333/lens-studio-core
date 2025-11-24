@@ -155,7 +155,12 @@ var sceneObject = script.getSceneObject();
 var button = sceneObject;
 var buttonTransform = button.getTransform();
 var buttonImage = button.getComponent("Component.Image");
-button.createComponent("Component.InteractionComponent");
+
+var interactionComp = button.getComponent("Component.InteractionComponent");
+if(!interactionComp){
+	interactionComp = button.createComponent("Component.InteractionComponent");
+}
+interactionComp.enabled = script.interactable;
 
 var selectAudioComp = script.getSceneObject().createComponent("Component.AudioComponent");
 var deselectAudioComp = script.getSceneObject().createComponent("Component.AudioComponent");
@@ -349,6 +354,7 @@ function deselectCallback() {
 
 function setInteractable(bool) {
 	script.interactable = bool;
+    interactionComp.enabled = bool;
 	touchStartEvent.enabled = bool;
 	touchEndEvent.enabled = bool;
 	tapEvent.enabled = bool;

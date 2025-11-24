@@ -133,7 +133,12 @@ var sceneObject = script.getSceneObject();
 var button = sceneObject;
 var buttonTransform = button.getTransform();
 var buttonImage = button.getComponent("Component.Image");
-button.createComponent("Component.InteractionComponent");
+
+var interactionComp = button.getComponent("Component.InteractionComponent");
+if(!interactionComp){
+	interactionComp = button.createComponent("Component.InteractionComponent");
+}
+interactionComp.enabled = script.interactable;
 
 var tapAudioComp = script.getSceneObject().createComponent("Component.AudioComponent");
 
@@ -251,6 +256,7 @@ function applyColor(color) {
 
 function setInteractable(bool) {
 	script.interactable = bool;
+	interactionComp.enabled = bool;
 	touchStartEvent.enabled = bool;
 	touchEndEvent.enabled = bool;
 	tapEvent.enabled = bool;
