@@ -318,6 +318,7 @@
     - !<own> 4217e513-6d90-4950-85b0-dd8f3d1cc604
     - !<own> 6f655017-cd20-416d-9556-1845a5d95a80
     - !<own> 7c4ddb2e-3ae3-4834-859f-d87a2ee8c808
+    - !<own> 8850c34d-7bd2-4515-b9c6-b40fc654ef13
 - !<SceneObject/7729afb0-ca09-4e76-ba4f-6deac3dbdd47>
   PrefabRemaps:
     []
@@ -373,6 +374,22 @@
   Name: GlobalUtils
   Enabled: true
   ScriptAsset: !<reference> cc3aa104-7e48-4b0a-82e7-de5e7fdac08e
+  ScriptInputsDefault:
+    {}
+  ScriptTypesDefault:
+    {}
+  ScriptInputs:
+    "":
+      {}
+  ScriptTypes:
+    "":
+      {}
+- !<ScriptComponent/8850c34d-7bd2-4515-b9c6-b40fc654ef13>
+  PrefabRemaps:
+    []
+  Name: BaseTools
+  Enabled: true
+  ScriptAsset: !<reference> 8a4323d9-1b9e-47c7-a62a-be88fa36b1f6
   ScriptInputsDefault:
     {}
   ScriptTypesDefault:

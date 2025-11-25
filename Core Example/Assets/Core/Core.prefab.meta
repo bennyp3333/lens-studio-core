@@ -156,6 +156,22 @@
   Components:
     - !<own> bf00494b-66d7-4137-9893-36f9203f6b86
     - !<own> 13d363b0-f912-47f9-9556-07a74df5f49d
+- !<ScriptComponent/5ee9377d-ec95-4e6f-a3cd-9cec6476c4c0>
+  PrefabRemaps:
+    []
+  Name: BaseTools
+  Enabled: true
+  ScriptAsset: !<reference> 8a4323d9-1b9e-47c7-a62a-be88fa36b1f6
+  ScriptInputsDefault:
+    {}
+  ScriptTypesDefault:
+    {}
+  ScriptInputs:
+    "":
+      {}
+  ScriptTypes:
+    "":
+      {}
 - !<SceneObject/61ab86b3-5021-4cbd-95c4-0f3d32376a59>
   PrefabRemaps:
     []
@@ -183,6 +199,7 @@
     - 486a619b-e4bd-4625-b789-9804415f2563: c1e28f54-e0eb-4c12-a15c-9708d2fe4ff2
     - 493219e5-af68-499d-b7c2-e79324a4af3e: 13d363b0-f912-47f9-9556-07a74df5f49d
     - 55ffa58e-5bd0-41d3-9318-5b5b0d2080d5: 8e834f54-fe05-4288-9079-8bd2fd977e52
+    - 56fd5fd3-6860-4fb9-a079-65e47c4b6a5b: a8a19b78-82a2-451c-96e1-848ccdc7dbf3
     - 5cc7c67c-b550-42e4-988f-9fa47bb81ac6: 9fc1703e-aa4c-46d4-a28c-445a3b5221b3
     - 5fa1f098-1839-4735-9c36-dbaa2711caf6: cc6cfff6-6498-4846-88e8-d785351e413b
     - 6f655017-cd20-416d-9556-1845a5d95a80: 23156ff8-0b8d-4edd-8f90-a3b089ea17b5
@@ -190,10 +207,11 @@
     - 7729afb0-ca09-4e76-ba4f-6deac3dbdd47: 49ca7476-b82c-4526-a800-4f2304a8ffff
     - 78afae10-e58a-49ab-8a17-820241f60e1a: 0ac2cb20-6b1d-4758-bf47-dd98d881a4ca
     - 7c4ddb2e-3ae3-4834-859f-d87a2ee8c808: 1d14584a-f8d3-4729-be1d-3c0abcf9a7af
+    - 8850c34d-7bd2-4515-b9c6-b40fc654ef13: 5ee9377d-ec95-4e6f-a3cd-9cec6476c4c0
     - 8c33d349-e776-4b56-9f11-e6576e555cb3: bf00494b-66d7-4137-9893-36f9203f6b86
     - a202a924-aa0a-407d-b65c-ee7d096b467f: 44408fe4-82a6-4393-92ee-8dc0362e0f91
     - dc692223-e32e-4302-aa54-fdbc9d9e506e: 61ab86b3-5021-4cbd-95c4-0f3d32376a59
-  SourceState: !<own> 95f61238-f61f-4fdc-ade5-2ddb9296f2f3
+  SourceState: !<own> a8a19b78-82a2-451c-96e1-848ccdc7dbf3
 - !<ScriptComponent/6ff22572-b7b4-4827-904f-c35053e35f3c>
   PrefabRemaps:
     []
@@ -244,12 +262,6 @@
     - !<own> 61ab86b3-5021-4cbd-95c4-0f3d32376a59
   Components:
     []
-- !<ObjectPrefab/95f61238-f61f-4fdc-ade5-2ddb9296f2f3>
-  PackagePath: ""
-  objects:
-    - !<own> 8e834f54-fe05-4288-9079-8bd2fd977e52
-  LazyLoading: false
-  RetainAssets: true
 - !<SceneObject/9fc1703e-aa4c-46d4-a28c-445a3b5221b3>
   PrefabRemaps:
     []
@@ -265,6 +277,12 @@
     []
   Components:
     - !<own> cc6cfff6-6498-4846-88e8-d785351e413b
+- !<ObjectPrefab/a8a19b78-82a2-451c-96e1-848ccdc7dbf3>
+  PackagePath: ""
+  objects:
+    - !<own> 8e834f54-fe05-4288-9079-8bd2fd977e52
+  LazyLoading: false
+  RetainAssets: true
 - !<SceneObject/a977fd27-989d-444b-869c-8d3102a2559b>
   PrefabRemaps:
     []
@@ -393,6 +411,7 @@
     - !<own> 6ff22572-b7b4-4827-904f-c35053e35f3c
     - !<own> 23156ff8-0b8d-4edd-8f90-a3b089ea17b5
     - !<own> 1d14584a-f8d3-4729-be1d-3c0abcf9a7af
+    - !<own> 5ee9377d-ec95-4e6f-a3cd-9cec6476c4c0
 - !<Text/f4ad3168-9dd7-4c9c-b06d-57ef01a63f5b>
   PrefabRemaps:
     []

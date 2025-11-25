@@ -11,10 +11,11 @@
 //
 // ----- DEBUG INPUTS -----
 // Add these inputs to enable debug functionality:
-//    //@input bool debug
-//    //@input string debugName = "" {"showIf":"debug"}
-//    //@input Component.Text debugText {"showIf":"debug"}
-//
+/*
+//@ input bool debug
+//@ input string debugName = "" {"showIf":"debug"}
+//@ input Component.Text debugText {"showIf":"debug"}
+*/
 
 var BaseTools = function(scriptRef) {
     var sceneObj = scriptRef.getSceneObject();

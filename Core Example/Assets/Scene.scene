@@ -342,6 +342,7 @@
     - !<own> 0d22b75a-3323-4337-bcfa-9ab5f1c84136
     - !<own> 00fc3cde-1347-43e9-a6fa-ebcb11d208ea
     - !<own> f21ac50a-4ab3-4b15-9e26-ec759cd46a67
+    - !<own> ffe88592-75a7-428b-a757-3cd32fb68683
 - !<SceneObject/8002a516-3166-4793-9d6f-77e16c1de6d5>
   PrefabRemaps:
     []
@@ -585,6 +586,7 @@
     - e937b395-86d2-49e9-bead-d9d144c19058: 43a5c6d3-576a-4092-975e-5b8649e9ddfe
     - e94a638f-b5ee-4746-92f8-b8658f4431d0: 55ffa58e-5bd0-41d3-9318-5b5b0d2080d5
     - f21ac50a-4ab3-4b15-9e26-ec759cd46a67: 7c4ddb2e-3ae3-4834-859f-d87a2ee8c808
+    - ffe88592-75a7-428b-a757-3cd32fb68683: 8850c34d-7bd2-4515-b9c6-b40fc654ef13
   Name: Core
   Enabled: true
   Layers: 1
@@ -606,6 +608,22 @@
   Name: GlobalUtils
   Enabled: true
   ScriptAsset: !<reference> cc3aa104-7e48-4b0a-82e7-de5e7fdac08e
+  ScriptInputsDefault:
+    {}
+  ScriptTypesDefault:
+    {}
+  ScriptInputs:
+    "":
+      {}
+  ScriptTypes:
+    "":
+      {}
+- !<ScriptComponent/ffe88592-75a7-428b-a757-3cd32fb68683>
+  PrefabRemaps:
+    []
+  Name: BaseTools
+  Enabled: true
+  ScriptAsset: !<reference> 8a4323d9-1b9e-47c7-a62a-be88fa36b1f6
   ScriptInputsDefault:
     {}
   ScriptTypesDefault:
