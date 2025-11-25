@@ -20,6 +20,15 @@ Interactive button components for building UI elements:
 
 Perfect for creating interactive menus, settings panels, and UI controls. See the [Buttons README](./Buttons/) for detailed documentation and examples.
 
+### [Fader/](./Fader/)
+
+Flexible fading system with support for multiple animation modes:
+
+- **Fader** - Controller for fade, scale, and slide animations with easing and callbacks
+- **FaderManager** - Global singleton for coordinating animations by name or tag
+
+Ideal for UI transitions, menu systems, tooltips, and any visibility animations. See the [Fader README](./Fader/) for detailed documentation and examples.
+
 ### [GPU Particles/](./GPU%20Particles/)
 
 Controller for GPU-based particle systems:
