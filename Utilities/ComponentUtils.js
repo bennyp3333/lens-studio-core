@@ -127,22 +127,6 @@ function makeMatArrayUnique(meshVisArray) {
     return clonedMaterials;
 }
 
-/**
- * Creates an AudioComponent for the given script and optionally sets its audio track.
- * @param {ScriptComponent} thatScript - The script component to which the AudioComponent will be added.
- * @param {AudioTrackAsset} [audioTrack] - The audio track asset to assign to the audio component (optional).
- * @returns {AudioComponent} The created audio component.
- */
-function createAudioComp(thatScript, audioTrack) {
-    var audioComp = thatScript.getSceneObject().createComponent("Component.AudioComponent");
-    if (audioTrack) {
-        audioComp.audioTrack = audioTrack;
-    } else {
-        print("Audiotrack is not set!");
-    }
-    return audioComp;
-}
-
 // Exporting the functions
 var exports = {
     getAlphaObject,
@@ -151,8 +135,7 @@ var exports = {
     setAlpha,
     makeMatUniqueObject,
     makeMatUnique,
-    makeMatArrayUnique,
-    createAudioComp
+    makeMatArrayUnique
 };
 
 if(script){

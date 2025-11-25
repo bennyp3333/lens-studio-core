@@ -10,7 +10,43 @@ All utility functions are available immediately after the Core prefab initialize
 
 ## Utility Modules
 
-### MathUtils.js
+### [BaseTools.js](./BaseTools.js)
+
+Injects common utility functions directly onto a script reference for convenient access. Lightweight alternative to DelayManager for quick one-off operations.
+
+> **Note:** Unlike other utilities, BaseTools is accessed via `global.BaseTools(script)` and injects functions directly onto the script reference rather than being called through `global.utils`.
+
+**Key Functions:**
+- `delay(delayTime, callback)` - Execute callback after delay, returns event
+- `delayTween(delayTime, object, tweenName)` - Start a tween after delay
+- `delayAudio(delayTime, action, audio, loops)` - Play/stop audio after delay
+- `delayEnable(delayTime, object, state)` - Enable/disable object after delay
+- `createAudioComp(audioTrack)` - Create AudioComponent on this SceneObject
+- `debugPrint(text)` - Print debug message (if debug enabled)
+- `errorPrint(text)` - Print error message (always prints)
+
+**Usage Example:**
+```javascript
+//@input bool debug
+//@input string debugName = "" {"showIf":"debug"}
+//@input Component.Text debugText {"showIf":"debug"}
+
+global.BaseTools(script);
+
+function init() {
+    script.debugPrint("Initialized!");
+    
+    script.delay(1.0, function() {
+        script.debugPrint("1 second later!");
+    });
+    
+    script.delayEnable(2.0, someObject, false);
+}
+
+script.createEvent("OnStartEvent").bind(init);
+```
+
+### [MathUtils.js](./MathUtils.js)
 
 Mathematical operations and transformations.
 
@@ -22,7 +58,19 @@ Mathematical operations and transformations.
 - `degreesToRadians(degrees)` - Convert degrees to radians
 - `radiansToDegrees(radians)` - Convert radians to degrees
 
-### ArrayUtils.js
+**Usage Example:**
+```javascript
+// Interpolate between values
+var halfway = global.utils.lerp(0, 100, 0.5); // 50
+
+// Clamp values
+var clamped = global.utils.clamp(150, 0, 100); // 100
+
+// Remap from one range to another
+var remapped = global.utils.remap(5, 0, 10, 0, 100); // 50
+```
+
+### [ArrayUtils.js](./ArrayUtils.js)
 
 Array manipulation and utilities.
 
@@ -35,7 +83,20 @@ Array manipulation and utilities.
 - `indexOfMax(array)` - Get index of maximum value
 - `forEach(array, fn)` - Iterate over array elements
 
-### ColorUtils.js
+**Usage Example:**
+```javascript
+// Shuffle array
+var items = [1, 2, 3, 4, 5];
+global.utils.shuffleArray(items);
+
+// Remove element
+global.utils.removeFromArray(items, 3);
+
+// Get max value
+var max = global.utils.getMax([5, 2, 8, 1]); // 8
+```
+
+### [ColorUtils.js](./ColorUtils.js)
 
 Color space conversions and color generation.
 
@@ -45,7 +106,16 @@ Color space conversions and color generation.
 - `colorRandom(alpha)` - Generate random RGBA color
 - `randomColorHue(brightness, saturation, alpha)` - Random color with specified HSV values
 
-### StringUtils.js
+**Usage Example:**
+```javascript
+// Convert RGB to HSV
+var hsv = global.utils.rgbToHsv(new vec3(1, 0, 0));
+
+// Generate random color with specific brightness
+var color = global.utils.randomColorHue(0.8, 1.0, 1.0);
+```
+
+### [StringUtils.js](./StringUtils.js)
 
 String manipulation and analysis.
 
@@ -54,7 +124,7 @@ String manipulation and analysis.
 - `randomId(len)` - Generate random alphanumeric string
 - `chunkText(txt, len)` - Split text into chunks intelligently
 
-### RandomUtils.js
+### [RandomUtils.js](./RandomUtils.js)
 
 Random number and selection utilities.
 
@@ -63,14 +133,14 @@ Random number and selection utilities.
 - `arrayRandom(arr)` - Select random element from array
 - `objectRandom(obj)` - Select random element from object
 
-### ObjectUtils.js
+### [ObjectUtils.js](./ObjectUtils.js)
 
 Object manipulation utilities.
 
 **Key Functions:**
 - `setDefault(obj, key, def)` - Set default value if key doesn't exist
 
-### SceneUtils.js
+### [SceneUtils.js](./SceneUtils.js)
 
 Scene object search and manipulation functions.
 
@@ -87,7 +157,21 @@ Scene object search and manipulation functions.
 - `findScriptUpwards(sceneObj, propName, filterFunc, allowSelf)` - Find script in parent hierarchy
 - `recursiveAlpha(rootObj, alpha, effectDisabled)` - Set alpha on all visual components in hierarchy
 
-### ComponentUtils.js
+**Usage Example:**
+```javascript
+// Find object by name
+var player = global.utils.findFirstSceneObjectByName(null, "Player");
+
+// Find all cameras
+var cameras = global.utils.searchComponentsByType(null, "Component.Camera");
+
+// Find using custom condition
+var bigObjects = global.utils.searchByPredicate(null, function(obj) {
+    return obj.getTransform().getLocalScale().x > 10;
+});
+```
+
+### [ComponentUtils.js](./ComponentUtils.js)
 
 Component-specific utilities for common operations.
 
@@ -101,57 +185,56 @@ Sets the alpha/transparency on any visual component (RenderMeshVisual, Image, Te
 
 Clones materials to make them unique, preventing changes from affecting other objects sharing the same material.
 
-**`createAudioComp(script, audioTrack)`**
-
-Creates and configures an AudioComponent on a script's SceneObject.
-
 **Other Functions:**
 - `getAlphaObject(obj)` / `getAlpha(meshVis)` - Get current alpha value
 - `setAlpha(meshVis, alpha)` - Set alpha on mesh visual
 - `makeMatArrayUnique(meshVisArray)` - Make materials unique across multiple visuals
 
-### Easing.js
+**Usage Example:**
+```javascript
+// Fade out an object
+global.utils.setAlphaObject(myObject, 0.5);
+
+// Make material unique before modifying
+var meshVis = myObject.getComponent("Component.RenderMeshVisual");
+global.utils.makeMatUnique(meshVis);
+meshVis.mainPass.baseColor = new vec4(1, 0, 0, 1);
+
+// Set alpha recursively on all children
+global.utils.recursiveAlpha(parentObject, 0.5, false);
+```
+
+### [Easing.js](./Easing.js)
 
 Easing functions for smooth animations and transitions. Accessed via `global.easing` as well as `global.utils`.
 
 **Available Easing Functions:**
 
-**Linear:**
-- `linear(t)` - No easing
+**Linear:** `linear(t)` - No easing
 
-**Sine:**
-- `easeInSine(t)`, `easeOutSine(t)`, `easeInOutSine(t)` - Gentle easing
+**Sine:** `easeInSine(t)`, `easeOutSine(t)`, `easeInOutSine(t)` - Gentle easing
 
-**Quadratic:**
-- `easeInQuad(t)`, `easeOutQuad(t)`, `easeInOutQuad(t)` - Moderate acceleration
+**Quadratic:** `easeInQuad(t)`, `easeOutQuad(t)`, `easeInOutQuad(t)` - Moderate acceleration
 
-**Cubic:**
-- `easeInCubic(t)`, `easeOutCubic(t)`, `easeInOutCubic(t)` - Strong acceleration
+**Cubic:** `easeInCubic(t)`, `easeOutCubic(t)`, `easeInOutCubic(t)` - Strong acceleration
 
-**Quartic:**
-- `easeInQuart(t)`, `easeOutQuart(t)`, `easeInOutQuart(t)` - Very strong acceleration
+**Quartic:** `easeInQuart(t)`, `easeOutQuart(t)`, `easeInOutQuart(t)` - Very strong acceleration
 
-**Quintic:**
-- `easeInQuint(t)`, `easeOutQuint(t)`, `easeInOutQuint(t)` - Extreme acceleration
+**Quintic:** `easeInQuint(t)`, `easeOutQuint(t)`, `easeInOutQuint(t)` - Extreme acceleration
 
-**Exponential:**
-- `easeInExpo(t)`, `easeOutExpo(t)`, `easeInOutExpo(t)` - Exponential curves
+**Exponential:** `easeInExpo(t)`, `easeOutExpo(t)`, `easeInOutExpo(t)` - Exponential curves
 
-**Circular:**
-- `easeInCirc(t)`, `easeOutCirc(t)`, `easeInOutCirc(t)` - Circular motion curves
+**Circular:** `easeInCirc(t)`, `easeOutCirc(t)`, `easeInOutCirc(t)` - Circular motion curves
 
-**Back:**
-- `easeInBack(t)`, `easeOutBack(t)`, `easeInOutBack(t)` - Overshoot and return
+**Back:** `easeInBack(t)`, `easeOutBack(t)`, `easeInOutBack(t)` - Overshoot and return
 
-**Elastic:**
-- `easeInElastic(t)`, `easeOutElastic(t)`, `easeInOutElastic(t)` - Spring-like motion
+**Elastic:** `easeInElastic(t)`, `easeOutElastic(t)`, `easeInOutElastic(t)` - Spring-like motion
 
-**Bounce:**
-- `easeInBounce(t)`, `easeOutBounce(t)`, `easeInOutBounce(t)` - Bouncing motion
+**Bounce:** `easeInBounce(t)`, `easeOutBounce(t)`, `easeInOutBounce(t)` - Bouncing motion
 
 All easing functions take a normalized time value `t` (0.0 to 1.0) and return the eased value.
 
-### SimpleTween.js
+### [SimpleTween.js](./SimpleTween.js)
 
 A lightweight tweening system for animating values over time. Accessed via `global.simpleTween` as well as `global.utils.simpleTween`.
 
@@ -171,75 +254,7 @@ Creates a simple linear tween between two values.
 
 **Returns:** UpdateEvent that the tween is bound to
 
-## Usage Examples
-
-### Math Operations
-```javascript
-// Interpolate between values
-var halfway = global.utils.lerp(0, 100, 0.5); // 50
-
-// Clamp values
-var clamped = global.utils.clamp(150, 0, 100); // 100
-
-// Remap from one range to another
-var remapped = global.utils.remap(5, 0, 10, 0, 100); // 50
-```
-
-### Array Manipulation
-```javascript
-// Shuffle array
-var items = [1, 2, 3, 4, 5];
-global.utils.shuffleArray(items);
-
-// Remove element
-global.utils.removeFromArray(items, 3);
-
-// Get max value
-var max = global.utils.getMax([5, 2, 8, 1]); // 8
-```
-
-### Color Operations
-```javascript
-// Convert RGB to HSV
-var hsv = global.utils.rgbToHsv(new vec3(1, 0, 0));
-
-// Generate random color with specific brightness
-var color = global.utils.randomColorHue(0.8, 1.0, 1.0);
-```
-
-### Scene Searching
-```javascript
-// Find object by name
-var player = global.utils.findFirstSceneObjectByName(null, "Player");
-
-// Find all cameras
-var cameras = global.utils.searchComponentsByType(null, "Component.Camera");
-
-// Find using custom condition
-var bigObjects = global.utils.searchByPredicate(null, function(obj) {
-    return obj.getTransform().getLocalScale().x > 10;
-});
-```
-
-### Component Operations
-```javascript
-// Fade out an object
-global.utils.setAlphaObject(myObject, 0.5);
-
-// Make material unique before modifying
-var meshVis = myObject.getComponent("Component.RenderMeshVisual");
-global.utils.makeMatUnique(meshVis);
-meshVis.mainPass.baseColor = new vec4(1, 0, 0, 1);
-
-// Add audio to a script
-var audioComp = global.utils.createAudioComp(script, myAudioTrack);
-audioComp.play(1);
-
-// Set alpha recursively on all children
-global.utils.recursiveAlpha(parentObject, 0.5, false);
-```
-
-### Easing with SimpleTween
+**Usage Example with Easing:**
 ```javascript
 // Simple position tween with easing
 var startPos = 0;
