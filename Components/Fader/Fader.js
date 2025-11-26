@@ -285,6 +285,7 @@ Fader.prototype._cacheComponents = function() {
         meshes: this.sceneObj.getComponents("Component.RenderMeshVisual"),
         images: this.sceneObj.getComponents("Component.Image"),
         text3D: this.sceneObj.getComponents("Component.Text3D"),
+        postEffects: this.sceneObj.getComponents("Component.PostEffectVisual"),
         
         // Text components (use textFill.color)
         texts: this.sceneObj.getComponents("Component.Text"),
@@ -316,7 +317,8 @@ Fader.prototype._cacheComponents = function() {
     // Add images and text3D directly
     this._componentCache.mainPass = this._componentCache.mainPass.concat(
         this._componentCache.images,
-        this._componentCache.text3D
+        this._componentCache.text3D,
+        this._componentCache.postEffects
     );
     
     this._printDebug("" + this._componentCache.mainPass.length + " mainPass components cached");
@@ -357,6 +359,13 @@ Fader.prototype._makeComponentMaterialsUnique = function() {
         var text3D = this._componentCache.text3D[i];
         var clonedMaterial = text3D.mainMaterial.clone();
         text3D.mainMaterial = clonedMaterial;
+    }
+
+    // Handle postEffects (single material each)
+    for (var i = 0; i < this._componentCache.postEffects.length; i++) {
+        var postEffect = this._componentCache.postEffects[i];
+        var clonedMaterial = postEffect.mainMaterial.clone();
+        postEffect.mainMaterial = clonedMaterial;
     }
     
     this._printDebug("Materials made unique");
@@ -578,6 +587,7 @@ Fader.prototype._setAlpha = function(obj, alpha, recursive, parameter) {
         var meshComponents = obj.getComponents("Component.RenderMeshVisual");
         var imageComponents = obj.getComponents("Component.Image");
         var text3DComponents = obj.getComponents("Component.Text3D");
+        var postEffectComponents = obj.getComponents("Component.PostEffectVisual");
                 
         var mainPassComponents = [];
         
@@ -595,7 +605,8 @@ Fader.prototype._setAlpha = function(obj, alpha, recursive, parameter) {
         // Add images and text3D directly
         mainPassComponents = mainPassComponents.concat(
             imageComponents,
-            text3DComponents
+            text3DComponents,
+            postEffectComponents
         );
         
         for (var i = 0; i < mainPassComponents.length; i++) {
