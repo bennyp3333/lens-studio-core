@@ -142,6 +142,9 @@ Object manipulation utilities.
 Scene object search and manipulation functions.
 
 **Key Functions:**
+- `setEnabled(obj, value)` - Sets the enabled/disabled state for objects/components
+- `enable(obj)` - Enables objects/components
+- `disable(obj)` - Disables objects/components
 - `findFirstSceneObjectByName(root, name)` - Find first object by name
 - `searchSceneObjectsByName(root, name)` - Find all objects by name
 - `findFirstComponentByType(root, type)` - Find first component of type
@@ -156,6 +159,9 @@ Scene object search and manipulation functions.
 
 **Usage Example:**
 ```javascript
+// Enable list of SceneObjects
+global.setEnabled([obj1, obj2], true);
+
 // Find object by name
 var player = global.utils.findFirstSceneObjectByName(null, "Player");
 

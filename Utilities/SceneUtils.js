@@ -1,4 +1,45 @@
 /**
+ * Sets the enabled/disabled state for objects/components.
+ * @param {SceneObject|SceneObject[]|Component|Component[]} obj - The object/component or array of objects/components to enable or disable.
+ * @param {boolean} value - The value indicating whether to enable (true) or disable (false) the objects/components.
+ */
+function setEnabled(obj, value) {
+    if (Array.isArray(obj)) {
+        obj.forEach((item) => {
+            setEnabled(item, value);
+        });
+    } else {
+        obj.enabled = value;
+    }
+}
+/**
+ * Enables the visibility of objects/components.
+ * @param {SceneObject|SceneObject[]|Component|Component[]} obj - The object/component or array of objects/components to enable.
+ */
+function enable(obj) {
+    if (Array.isArray(obj)) {
+        obj.forEach((obj) => {
+            setEnabled(obj, true);
+        });
+    } else {
+        obj.enabled = true;
+    }
+}
+/**
+ * Disables the visibility of objects/components.
+ * @param {SceneObject|SceneObject[]|Component|Component[]} obj - The object/component or array of objects/components to disable.
+ */
+function disable(obj) {
+    if (Array.isArray(obj)) {
+        obj.forEach((obj) => {
+            setEnabled(obj, false);
+        });
+    } else {
+        obj.enabled = false;
+    }
+}
+
+/**
  * Recursively searches for a SceneObject with the specified name in the tree
  * rooted at the given SceneObject. If no root is provided, it searches through 
  * all root objects in the scene and returns the first match.
@@ -332,6 +373,9 @@ function recursiveAlpha(rootObj, alpha, effectDisabled){
 
 // Exporting the functions
 var exports = {
+    setEnabled,
+    enable,
+    disable,
     findFirstSceneObjectByName,
     searchSceneObjectsByName,
     findFirstByPredicate,

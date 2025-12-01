@@ -1,3 +1,58 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:55ce4d74516c688acf97b3d1d6b1115099b90fcec126017cd972a8fc3872865c
-size 1191
+studioVersion:
+  major: 5
+  minor: 12
+  patch: 1
+  build: 25080420
+  type: Public
+coreVersion: 321
+clientVersion: 13.500000
+updateCheckpoint: 68
+sceneId: 0a1ccb1a-fe88-4fbb-9883-e3af3c75fd99
+viewConfig:
+  simulation:
+    device: iPhone 14 Pro
+    cameraFov: 45.709999
+    fullFrameAspect: 0.562500
+    resolutionScale: 1.000000
+    viewport: Maximized
+    output: Live
+    stereoOutputEye: Center
+    deviceTypeOverride: Unknown
+    tint: true
+    screenshot: false
+    videoScreenRecord: false
+  cameraType: Front
+metaInfo:
+  hints:
+    []
+  tags:
+    []
+  lensName: Untitled
+  lensDescriptors:
+    []
+  lensApplicability:
+    - Front
+    - Back
+  lensClientCompatibilities:
+    - Mobile
+    - Web
+  platformBundlesEnabled: false
+  iconHash: ""
+  videoPreviewHash: ""
+  fromTemplateName: Default
+  fromTemplateUrl: Lens Studio 5.1.1.24092500
+  activationCamera: Front
+  sourceMapEnabled: false
+  usingMinClientVersions: false
+  androidMinClientVersion:
+    major: 0
+    minor: 0
+    patch: 0
+    build: 0
+  iOSMinClientVersion:
+    major: 0
+    minor: 0
+    patch: 0
+    build: 0
+  documentId: 13b38d3b-861b-46ed-8e20-fffbb09bdd7e
+  originalDocumentId: 13b38d3b-861b-46ed-8e20-fffbb09bdd7e
