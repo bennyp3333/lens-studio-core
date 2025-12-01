@@ -1,27 +1,14 @@
 // BaseTools.js
 // Version: 0.1.0
 // Description: Injects common utility functions directly onto a script reference.
-//  Provides simple delay utilities, audio helpers, and debug printing without needing
-//  a separate tools object. Lightweight alternative to DelayManager for quick one-off operations.
 // Author: Bennyp3333 [https://benjamin-p.dev]
 //
 // ----- USAGE -----
 // 1. Call global.BaseTools(script) at the top of your script (after inputs)
-// 2. Use injected functions directly: script.delay(1.0, callback), script.debugPrint("msg")
-//
-// ----- DEBUG INPUTS -----
-// Add these inputs to enable debug functionality:
-/*
-//@ input bool debug
-//@ input string debugName = "" {"showIf":"debug"}
-//@ input Component.Text debugText {"showIf":"debug"}
-*/
+// 2. Use injected functions directly: script.delay(1.0, callback)
 
 var BaseTools = function(scriptRef) {
     var sceneObj = scriptRef.getSceneObject();
-    var debugEnabled = scriptRef.debug || false;
-    var debugName = scriptRef.debugName || "";
-    var debugText = scriptRef.debugText || null;
     
     /**
      * Executes a callback after a delay.
@@ -48,7 +35,7 @@ var BaseTools = function(scriptRef) {
             if (global.tweenManager) {
                 global.tweenManager.startTween(object, tweenName);
             } else {
-                scriptRef.errorPrint("tweenManager not found!");
+                print("!!ERROR!! tweenManager not found!");
             }
         });
         delayedEvent.reset(delayTime);
@@ -102,32 +89,9 @@ var BaseTools = function(scriptRef) {
         if (audioTrack) {
             audioComp.audioTrack = audioTrack;
         } else {
-            scriptRef.errorPrint("Audiotrack is not set!");
+            print("!!ERROR!! Audiotrack is not set!");
         }
         return audioComp;
-    };
-    
-    /**
-     * Prints a debug message (only if script.debug is true).
-     * @param {string} text - Message to print
-     */
-    scriptRef.debugPrint = function(text) {
-        if (!debugEnabled) return;
-        var newLog = (debugName || sceneObj.name) + ": " + text;
-        if (global.textLogger) global.logToScreen(newLog);
-        if (debugText) debugText.text = newLog;
-        print(newLog);
-    };
-    
-    /**
-     * Prints an error message (always prints regardless of debug setting).
-     * @param {string} text - Error message to print
-     */
-    scriptRef.errorPrint = function(text) {
-        var errorLog = "!!ERROR!! " + (debugName || sceneObj.name) + ": " + text;
-        if (global.textLogger) global.logError(errorLog);
-        if (debugText) debugText.text = errorLog;
-        print(errorLog);
     };
     
     return scriptRef;

@@ -14,7 +14,7 @@ All utility functions are available immediately after the Core prefab initialize
 
 Injects common utility functions directly onto a script reference for convenient access. Lightweight alternative to DelayManager for quick one-off operations.
 
-> **Note:** Unlike other utilities, BaseTools is accessed via `global.BaseTools(script)` and injects functions directly onto the script reference rather than being called through `global.utils`.
+> **Note:** Unlike other utilities, BaseTools is accessed via `global.BaseTools(script)` and injects functions directly onto the **script** reference rather than being called through `global.utils`.
 
 **Key Functions:**
 - `delay(delayTime, callback)` - Execute callback after delay, returns event
@@ -22,28 +22,25 @@ Injects common utility functions directly onto a script reference for convenient
 - `delayAudio(delayTime, action, audio, loops)` - Play/stop audio after delay
 - `delayEnable(delayTime, object, state)` - Enable/disable object after delay
 - `createAudioComp(audioTrack)` - Create AudioComponent on this SceneObject
-- `debugPrint(text)` - Print debug message (if debug enabled)
-- `errorPrint(text)` - Print error message (always prints)
 
 **Usage Example:**
 ```javascript
-//@input bool debug
-//@input string debugName = "" {"showIf":"debug"}
-//@input Component.Text debugText {"showIf":"debug"}
+//@input Asset.AudioTrackAsset beepAudioTrack
 
 global.BaseTools(script);
 
-function init() {
-    script.debugPrint("Initialized!");
-    
-    script.delay(1.0, function() {
-        script.debugPrint("1 second later!");
-    });
-    
-    script.delayEnable(2.0, someObject, false);
-}
+var beepAudioComp = script.createAudioComp(script.beepAudioTrack);
 
-script.createEvent("OnStartEvent").bind(init);
+script.delay(1.0, function() {
+    print("1 second later!");
+    beepAudioComp.play(1);
+});
+
+script.delayTween(1.5, tweenObj, "fadeIn");
+
+script.delayEnable(2.0, someObject, false);
+
+script.delayAudio(3.0, "play", beepAudioComp, 1);
 ```
 
 ### [MathUtils.js](./MathUtils.js)

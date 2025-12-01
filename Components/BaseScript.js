@@ -12,10 +12,10 @@ var selfTransform = self.getTransform();
 function init() {
     // Example: delayed action
     // script.delay(1.0, function() {
-    //     script.debugPrint("1 second later!");
+    //     debugPrint("1 second later!");
     // });
 
-    script.debugPrint("Initialized!");
+    debugPrint("Initialized!");
 }
 
 function onUpdate(){
@@ -25,3 +25,12 @@ function onUpdate(){
 
 script.createEvent("OnStartEvent").bind(init);
 script.createEvent("UpdateEvent").bind(onUpdate);
+
+// Debug
+function debugPrint(text){
+    if(!script.debug) return;
+    var newLog = (script.debugName || self.name) + ": " + text;
+    if(global.textLogger) global.logToScreen(newLog);
+    if(script.debugText) script.debugText.text = newLog;
+    print(newLog);
+}
