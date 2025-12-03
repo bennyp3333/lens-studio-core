@@ -27,17 +27,17 @@
   CurrentVisibility: Editable
   MaxVisibility: Editable
   ScriptInputsHidden:
-    debug: false
-    debugName: false
-    debugText: false
+    editAdvancedOptions: false
+    printDebugStatements: false
+    printWarningStatements: false
   ScriptTypesHidden:
     {}
   ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
   DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
   DefaultScriptInputs:
-    - debug: false
-      debugName: SpawnManager
-      debugText: !<reference.Text> 00000000-0000-0000-0000-000000000000
+    - editAdvancedOptions: false
+      printDebugStatements: false
+      printWarningStatements: true
   ScriptTypes:
     -
       {}

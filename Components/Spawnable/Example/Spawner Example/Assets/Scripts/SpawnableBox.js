@@ -51,7 +51,7 @@ script.despawn = function() {
         script.spawnManager.destroy(script.spawnId);
     } else {
         // Fallback if not properly registered
-        debugPrint("Warning: despawn called but not registered with SpawnManager");
+        debugPrint("Warning: despawn called but not registered with SpawnManager", true);
         self.destroy();
     }
 };
@@ -94,19 +94,11 @@ script.getObject = function() {
 
 // DEBUG
 
-function debugPrint(text) {
-    if (!script.debug) return;
+function debugPrint(text, force) {
+    if (!force && !script.debug) return;
     var idStr = script.spawnId ? " [" + script.spawnId + "]" : "";
-    var newLog = script.debugName + idStr + ": " + text;
-    if (global.textLogger) global.logToScreen(newLog);
-    if (script.debugText) script.debugText.text = newLog;
-    print(newLog);
-}
-
-function errorPrint(text) {
-    var idStr = script.spawnId ? " [" + script.spawnId + "]" : "";
-    var errorLog = "!!ERROR!! " + script.debugName + idStr + ": " + text;
-    if (global.textLogger) global.logError(errorLog);
-    if (script.debugText) script.debugText.text = errorLog;
-    print(errorLog);
+    var log = script.debugName + idStr + ": " + text;
+    if (global.textLogger) global.logToScreen(log);
+    if (script.debugText) script.debugText.text = log;
+    print(log);
 }

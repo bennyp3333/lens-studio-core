@@ -1,5 +1,5 @@
 // SpawnManager.js
-// Version: 0.1.0
+// Version: 0.1.2
 // Description: Global spawn utility for Lens Studio
 // Author: Bennyp3333 [https://benjamin-p.dev]
 //
@@ -13,9 +13,11 @@
 //   global.spawn.count(groupName)                    - Count objects (optionally in group)
 
 //@ui {"widget":"separator"}
-//@input bool debug
-//@input string debugName = "SpawnManager" {"showIf":"debug"}
-//@input Component.Text debugText {"showIf":"debug"}
+//@input bool editAdvancedOptions
+//@ui {"widget":"group_start", "label":"Advanced Options", "showIf":"editAdvancedOptions"}
+//@input bool printDebugStatements = false
+//@input bool printWarningStatements = true
+//@ui {"widget":"group_end"}
 
 // SPAWN REGISTRY
 
@@ -39,12 +41,12 @@ var idCounter = 0;
  */
 function create(source, parent, group){
     if (!source) {
-        errorPrint("Cannot spawn: source is null");
+        printWarning("Cannot spawn: source is null");
         return null;
     }
     
     if (!parent) {
-        errorPrint("Cannot spawn: parent is null");
+        printWarning("Cannot spawn: parent is null");
         return null;
     }
 
@@ -53,21 +55,21 @@ function create(source, parent, group){
     // Spawn based on type
     if (source.isOfType("Asset.ObjectPrefab")) {
         newObj = source.instantiate(parent);
-        debugPrint("Instantiated Prefab: " + (newObj ? newObj.name : "null"));
+        printDebug("Instantiated Prefab: " + (newObj ? newObj.name : "null"));
     } else if (source.isOfType("SceneObject")) {
         if (source.enabled) {
-            errorPrint("WARNING: Source SceneObject '" + source.name + "' is enabled. " +
+            printWarning("WARNING: Source SceneObject '" + source.name + "' is enabled. " +
                 "Best practice is to keep reference objects DISABLED in the hierarchy.");
         }
         newObj = parent.copyWholeHierarchy(source);
-        debugPrint("Copied SceneObject: " + (newObj ? newObj.name : "null"));
+        printDebug("Copied SceneObject: " + (newObj ? newObj.name : "null"));
     } else {
-        errorPrint("Cannot spawn: source is neither a Prefab nor a SceneObject");
+        printWarning("Cannot spawn: source is neither a Prefab nor a SceneObject");
         return null;
     }
 
     if (!newObj) {
-        errorPrint("Spawn failed: resulting object is null");
+        printWarning("Spawn failed: resulting object is null");
         return null;
     }
 
@@ -92,7 +94,7 @@ function create(source, parent, group){
             spawnableScript.onSpawned();
         }
     } else {
-        errorPrint("Warning: No SpawnableBase script found on spawned object. " +
+        printWarning("Warning: No SpawnableBase script found on spawned object. " +
             "Add SpawnableBase.js to your prefab/object for full functionality.");
     }
 
@@ -112,10 +114,10 @@ function create(source, parent, group){
             spawnGroups[group] = [];
         }
         spawnGroups[group].push(id);
-        debugPrint("Added to group '" + group + "': " + id);
+        printDebug("Added to group '" + group + "': " + id);
     }
     
-    debugPrint("Spawned object with ID: " + id);
+    printDebug("Spawned object with ID: " + id);
     
     return entry;
 }
@@ -187,7 +189,7 @@ function count(groupName) {
 function destroy(id) {
     var entry = spawnedObjects[id];
     if (!entry) {
-        debugPrint("Cannot destroy: ID not found: " + id);
+        printDebug("Cannot destroy: ID not found: " + id);
         return false;
     }
     
@@ -213,7 +215,7 @@ function destroy(id) {
     // Remove from registry
     delete spawnedObjects[id];
     
-    debugPrint("Destroyed: " + id);
+    printDebug("Destroyed: " + id);
     return true;
 }
 
@@ -238,7 +240,7 @@ function destroyGroup(groupName) {
     // Clean up empty group
     delete spawnGroups[groupName];
     
-    debugPrint("Destroyed group '" + groupName + "': " + destroyed + " objects");
+    printDebug("Destroyed group '" + groupName + "': " + destroyed + " objects");
     return destroyed;
 }
 
@@ -256,7 +258,7 @@ function destroyAll() {
         }
     }
     
-    debugPrint("Destroyed all: " + destroyed + " objects");
+    printDebug("Destroyed all: " + destroyed + " objects");
     return destroyed;
 }
 
@@ -324,7 +326,7 @@ function cleanup() {
     }
     
     if (cleaned > 0) {
-        debugPrint("Cleaned up " + cleaned + " destroyed objects from registry");
+        printDebug("Cleaned up " + cleaned + " destroyed objects from registry");
     }
     
     return cleaned;
@@ -346,24 +348,28 @@ function init() {
         cleanup
     };
     
-    debugPrint("Initialized! API available at global.spawn");
+    printDebug("Initialized! API available at global.spawn");
 }
 
 init();
 
-// DEBUG
-
-function debugPrint(text) {
-    if (!script.debug) return;
-    var newLog = script.debugName + ": " + text;
-    if (global.textLogger) global.logToScreen(newLog);
-    if (script.debugText) script.debugText.text = newLog;
-    print(newLog);
+// ===== Debug Functions =====
+function printDebug(message) {
+	if (script.printDebugStatements) {
+		var newLog = "SpawnManager - " + message;
+		if (global.textLogger) {
+			global.logToScreen(newLog);
+		}
+		print(newLog);
+	}
 }
 
-function errorPrint(text) {
-    var errorLog = script.debugName + ": " + text;
-    if (global.textLogger) global.logError(errorLog);
-    if (script.debugText) script.debugText.text = errorLog;
-    print(errorLog);
+function printWarning(message) {
+	if (script.printWarningStatements) {
+		var warningLog = "SpawnManager - WARNING, " + message;
+		if (global.textLogger) {
+			global.logError(warningLog);
+		}
+		print(warningLog);
+	}
 }

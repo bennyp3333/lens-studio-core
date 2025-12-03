@@ -92,16 +92,16 @@
   Enabled: true
   ScriptAsset: !<reference> 0bba46fd-76b7-410a-afd1-4ef0565d48e1
   ScriptInputsDefault:
-    debug: true
-    debugName: true
-    debugText: true
+    editAdvancedOptions: true
+    printDebugStatements: true
+    printWarningStatements: true
   ScriptTypesDefault:
     {}
   ScriptInputs:
     "":
-      debug: false
-      debugName: SpawnManager
-      debugText: !<reference.Text> 00000000-0000-0000-0000-000000000000
+      editAdvancedOptions: false
+      printDebugStatements: false
+      printWarningStatements: true
   ScriptTypes:
     "":
       {}

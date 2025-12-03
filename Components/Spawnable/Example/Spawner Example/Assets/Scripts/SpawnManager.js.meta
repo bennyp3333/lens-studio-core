@@ -26,9 +26,9 @@
   ExportUid: 00000000-0000-0000-0000-000000000000
   PackagePolicy: CanBeUnpacked
   ScriptInputsHidden:
-    debug: false
-    debugName: false
-    debugText: false
+    editAdvancedOptions: false
+    printDebugStatements: false
+    printWarningStatements: false
   ScriptTypesHidden:
     {}
   ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
@@ -38,9 +38,9 @@
   Attachments:
     []
   DefaultScriptInputs:
-    - debug: false
-      debugName: SpawnManager
-      debugText: !<reference.Text> 00000000-0000-0000-0000-000000000000
+    - editAdvancedOptions: false
+      printDebugStatements: false
+      printWarningStatements: true
   ScriptTypes:
     -
       {}

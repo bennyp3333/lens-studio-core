@@ -27,8 +27,8 @@ script.createEvent("OnStartEvent").bind(init);
 script.createEvent("UpdateEvent").bind(onUpdate);
 
 // Debug
-function debugPrint(text){
-    if(!script.debug) return;
+function debugPrint(text, force) {
+    if (!force && !script.debug) return;
     var newLog = (script.debugName || self.name) + ": " + text;
     if(global.textLogger) global.logToScreen(newLog);
     if(script.debugText) script.debugText.text = newLog;
