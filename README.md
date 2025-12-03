@@ -22,6 +22,7 @@ The Core prefab automatically sets up essential systems:
 
 - **GlobalEvents**: Event management system for decoupled communication between scripts
 - **DelayManager**: Handle delayed callbacks and time-based operations
+- **SpawnManager**: Spawn and manage objects from prefabs or scene templates
 - **Utilities**: Global access to all utility modules (Math, Array, Color, String, etc.)
 - **TextLogger**: Visual debugging with on-screen text logging
 
