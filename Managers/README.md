@@ -8,7 +8,7 @@ The Managers folder contains three critical systems that are instantiated by the
 
 ## Manager Systems
 
-### GlobalEvents.js
+### [GlobalEvents.js](./GlobalEvents.js)
 
 A global event system for decoupled communication between scripts throughout your project.
 
@@ -51,7 +51,7 @@ global.events.remove("gameStarted", myCallbackFunction);
 - Pass meaningful data objects with events
 - Remove listeners when objects are destroyed to prevent memory leaks
 
-### GlobalUtils.js
+### [GlobalUtils.js](./GlobalUtils.js)
 
 Consolidates all utility functions from the Utilities folder into a single global object for easy access.
 
@@ -91,7 +91,7 @@ GlobalUtils uses `require()` to import each utility module from the Utilities fo
 
 If multiple utilities export functions with the same name, GlobalUtils will print a warning to the console. This helps catch naming conflicts during development.
 
-### TextLogger.js
+### [TextLogger.js](./TextLogger.js)
 
 An on-screen debug logging system for displaying runtime information directly in the camera view.
 
@@ -158,6 +158,121 @@ global.textLogger.clearError();
 
 Most Core components automatically use TextLogger when debug logging is enabled. Look for `printDebug()` functions that call `global.logToScreen()`.
 
+### [SpawnManager.js](./SpawnManager.js)
+
+A global system for spawning and managing instantiated objects from prefabs or scene object templates.
+
+**Access via:**
+```javascript
+global.spawn
+```
+
+**Key Features:**
+- Spawn from ObjectPrefabs or disabled SceneObject templates
+- Automatic ID assignment for each spawned object
+- Group spawned objects for batch operations
+- Query spawned objects by ID or group
+- Batch destroy by group or all at once
+- Integrates with [Spawnable scripts](../Components/Spawnable/README.md) for lifecycle callbacks
+
+**Basic Usage:**
+```javascript
+// Spawn an object
+var entry = global.spawn.create(source, parent, "enemies");
+
+// Access the spawned object
+entry.id;      // Unique spawn ID
+entry.obj;     // The SceneObject
+entry.script;  // The Spawnable script (if present)
+
+// Destroy by ID
+global.spawn.destroy(entry.id);
+
+// Destroy all in a group
+global.spawn.destroyGroup("enemies");
+```
+
+**Spawning from Different Sources:**
+```javascript
+// From a prefab asset
+//@input Asset.ObjectPrefab enemyPrefab
+var enemy = global.spawn.create(script.enemyPrefab, script.spawnParent, "enemies");
+
+// From a disabled SceneObject template
+//@input SceneObject popupTemplate {"hint":"Should be DISABLED in hierarchy"}
+var popup = global.spawn.create(script.popupTemplate, script.spawnParent, "popups");
+```
+
+**Query Functions:**
+```javascript
+// Get by ID
+var entry = global.spawn.get(spawnId);
+
+// Get all in a group
+var enemies = global.spawn.getGroup("enemies");
+for (var i = 0; i < enemies.length; i++) {
+    print(enemies[i].obj.name);
+}
+
+// Get all spawned objects
+var all = global.spawn.getAll();
+
+// Count objects
+var enemyCount = global.spawn.count("enemies");
+var totalCount = global.spawn.count();
+```
+
+**Destroy Functions:**
+```javascript
+// Destroy single object
+global.spawn.destroy(spawnId);
+
+// Destroy all in group
+global.spawn.destroyGroup("enemies");
+
+// Destroy everything
+global.spawn.destroyAll();
+
+// Clean up registry (removes references to externally destroyed objects)
+global.spawn.cleanup();
+```
+
+**Working with Spawnable Scripts:**
+
+SpawnManager works best with scripts that implement the [Spawnable pattern](../Components/Spawnable/README.md). When a spawned object has a Spawnable script, SpawnManager automatically:
+- Assigns `spawnId`, `spawnGroup`, and `spawnManager` references
+- Calls `onSpawned()` after instantiation
+- Calls `onDespawn()` before destruction
+
+```javascript
+// Spawn and call methods on the spawnable script
+var popup = global.spawn.create(script.popupRef, script.parent, "popups");
+if (popup.script) {
+    popup.script.animate(screenPos);
+}
+
+// The spawnable can destroy itself
+// Inside the spawnable script:
+script.despawn(); // Removes from registry and destroys
+```
+
+**Important Notes for SceneObject Templates:**
+- The source SceneObject should be **DISABLED** in the hierarchy
+- SpawnManager automatically enables copies after spawning
+- Scripts on copied objects are only accessible after enabling
+- A warning is logged (in debug mode) if the source is enabled
+
+**Common Use Cases:**
+- Projectile/bullet spawning
+- Particle-like effects (popups, hit markers)
+- Enemy wave spawning
+- Any dynamic object instantiation
+
+**Best Practices:**
+- Use meaningful group names ("enemies", "bullets", "popups")
+- Always use `global.spawn.destroy()` or `script.despawn()` instead of `obj.destroy()` to keep the registry clean
+- Call `global.spawn.cleanup()` periodically if objects may be destroyed externally
+
 ## How Managers Initialize
 
 The Core prefab sets up these managers in the following order:
@@ -166,9 +281,12 @@ The Core prefab sets up these managers in the following order:
 2. **GlobalEvents** - Uses CallbackTracker for event management
 3. **DelayManager** - Provides timing utilities
 4. **GlobalUtils** - Consolidates all utility functions
-5. **TextLogger** - Provides debug output
+5. **SpawnManager** - Provides spawn management
+6. **TextLogger** - Provides debug output
 
 This initialization order ensures dependencies are available when needed.
+
+> **Note:** All managers are enabled by default. Feel free to disable or remove any managers you're not using from the Core prefab hierarchy.
 
 ## Integration Between Managers
 
@@ -207,6 +325,32 @@ new global.Delay({
 });
 ```
 
+**SpawnManager + Events:**
+```javascript
+// Notify when enemies are cleared
+global.events.add("clearEnemies", function() {
+    var destroyed = global.spawn.destroyGroup("enemies");
+    global.logToScreen("Cleared " + destroyed + " enemies");
+});
+
+global.events.trigger("clearEnemies");
+```
+
+**SpawnManager + DelayManager:**
+```javascript
+// Spawn enemies in waves
+function spawnWave(count) {
+    for (var i = 0; i < count; i++) {
+        new global.Delay({
+            time: i * 0.5,
+            onComplete: function() {
+                global.spawn.create(script.enemyPrefab, script.parent, "enemies");
+            }
+        });
+    }
+}
+```
+
 ## Best Practices
 
 - **Use Global Events** for cross-script communication instead of direct references
@@ -222,6 +366,7 @@ After Core initializes, the following are available globally:
 ```javascript
 global.events          // Event system
 global.utils           // All utility functions
+global.spawn           // Spawn management system
 global.textLogger      // Logger object
 global.logToScreen()   // Quick log function
 global.logError()      // Quick error log function

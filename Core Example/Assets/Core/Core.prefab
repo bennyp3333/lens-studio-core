@@ -140,6 +140,21 @@
     CapitalizationOverride: None
   DepthTest: false
   TwoSided: false
+- !<SceneObject/38434886-02bc-4637-a382-352600d18e5a>
+  PrefabRemaps:
+    []
+  Name: SpawnManager
+  Enabled: true
+  Layers: 1
+  LocalTransform: !<TransformEntity>
+    Position: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Rotation: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Scale: {x: 1.000000, y: 1.000000, z: 1.000000}
+    HasSegmentScaleCompensation: false
+  Children:
+    []
+  Components:
+    - !<own> f967b177-98f2-483a-804a-5c63a6ce2316
 - !<ScriptComponent/4217e513-6d90-4950-85b0-dd8f3d1cc604>
   PrefabRemaps:
     []
@@ -251,6 +266,7 @@
     - !<own> 7729afb0-ca09-4e76-ba4f-6deac3dbdd47
     - !<own> 5cc7c67c-b550-42e4-988f-9fa47bb81ac6
     - !<own> 73f6219f-03eb-4b66-b025-34ddd0d14241
+    - !<own> 38434886-02bc-4637-a382-352600d18e5a
     - !<own> dc692223-e32e-4302-aa54-fdbc9d9e506e
   Components:
     []
@@ -447,3 +463,23 @@
     - !<own> 131e3c56-1eee-4148-92d2-162a63aa5027
   Components:
     - !<own> 094c8ef7-b667-44e0-985e-3be8720b0409
+- !<ScriptComponent/f967b177-98f2-483a-804a-5c63a6ce2316>
+  PrefabRemaps:
+    []
+  Name: SpawnManager
+  Enabled: true
+  ScriptAsset: !<reference> 0bba46fd-76b7-410a-afd1-4ef0565d48e1
+  ScriptInputsDefault:
+    debug: true
+    debugName: true
+    debugText: true
+  ScriptTypesDefault:
+    {}
+  ScriptInputs:
+    "":
+      debug: false
+      debugName: SpawnManager
+      debugText: !<reference.Text> 00000000-0000-0000-0000-000000000000
+  ScriptTypes:
+    "":
+      {}
