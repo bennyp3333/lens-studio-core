@@ -1,5 +1,5 @@
 // BaseTools.js
-// Version: 0.1.0
+// Version: 0.1.1
 // Description: Injects common utility functions directly onto a script reference.
 // Author: Bennyp3333 [https://benjamin-p.dev]
 //
@@ -35,7 +35,7 @@ var BaseTools = function(scriptRef) {
             if (global.tweenManager) {
                 global.tweenManager.startTween(object, tweenName);
             } else {
-                print("!!ERROR!! tweenManager not found!");
+                print("Warning: tweenManager not found!");
             }
         });
         delayedEvent.reset(delayTime);
@@ -89,7 +89,7 @@ var BaseTools = function(scriptRef) {
         if (audioTrack) {
             audioComp.audioTrack = audioTrack;
         } else {
-            print("!!ERROR!! Audiotrack is not set!");
+            print("Warning: Audiotrack is not set!");
         }
         return audioComp;
     };

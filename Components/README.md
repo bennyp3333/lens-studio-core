@@ -47,7 +47,7 @@ A template script that provides the standard structure used throughout Lens Stud
 - Pre-configured `init()` and `onUpdate()` event handlers
 - Debug logging integration with TextLogger
 - Common variable declarations (self, selfTransform)
-- Consistent debug/error printing functions
+- Consistent debug printing function
 
 **Usage:**
 
@@ -55,7 +55,6 @@ Use this as your starting point for new scripts. Copy BaseScript.js when creatin
 
 **Key Features:**
 - `debugPrint(text)` - Logs to console, screen (via TextLogger), and optional Text component
-- `errorPrint(text)` - Logs errors with "!!ERROR!!" prefix for easy identification
 - Toggle debug mode on/off in the Inspector
 - Integrates with Core prefab's TextLogger for on-screen debugging
 
