@@ -1,0 +1,52 @@
+- !<AssetImportMetadata/45cf5756-9a2f-46ef-84c6-33b6fa5beea6>
+  ImportedAssetIds:
+    JavaScriptAsset: !<reference> d0bd50f9-196c-4799-bfb2-e70fcddfacf1
+  ImporterName: JavaScriptAssetImporter
+  PrimaryAsset: !<reference> d0bd50f9-196c-4799-bfb2-e70fcddfacf1
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    JavaScriptAsset: !<own> 34ce8576-5345-4119-96d1-f210a87da0f1
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<ScriptAssetData/34ce8576-5345-4119-96d1-f210a87da0f1>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  ComponentUid: 396cfe97-3d13-461c-8a2c-ea0e510142c5
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    camera: false
+    objPrefab: false
+    objRef: false
+    popupParent: false
+    popupRef: false
+    spawnParent: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    - camera: !<reference.Camera> 00000000-0000-0000-0000-000000000000
+      popupRef: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      popupParent: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      objRef: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      objPrefab: !<reference.ObjectPrefab> 00000000-0000-0000-0000-000000000000
+      spawnParent: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+  ScriptTypes:
+    -
+      {}

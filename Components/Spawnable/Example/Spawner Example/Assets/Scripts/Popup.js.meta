@@ -1,0 +1,61 @@
+- !<AssetImportMetadata/dbace489-2a6f-4e39-8504-c3aa3c15bafb>
+  ImportedAssetIds:
+    JavaScriptAsset: !<reference> 351f6ed0-59f9-4053-92a9-4be279256da2
+  ImporterName: JavaScriptAssetImporter
+  PrimaryAsset: !<reference> 351f6ed0-59f9-4053-92a9-4be279256da2
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    JavaScriptAsset: !<own> 1615cc8f-cee5-4773-99cc-12acc9f21a05
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<ScriptAssetData/1615cc8f-cee5-4773-99cc-12acc9f21a05>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  ComponentUid: 2058300e-46b0-48fd-b625-3eb70732e445
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    debug: false
+    debugName: false
+    debugText: false
+    fadeInTime: false
+    fadeOutTime: false
+    slideDistance: false
+    slideTime: false
+    textures: false
+    trajectoryX: false
+    trajectoryY: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    - textures: !<reference.Texture[]>
+        []
+      fadeInTime: 0.100000
+      fadeOutTime: 0.100000
+      slideTime: 0.500000
+      slideDistance: 0.250000
+      trajectoryX: !<Vec2> {x: -1.000000, y: 1.000000}
+      trajectoryY: !<Vec2> {x: 0.000000, y: 1.000000}
+      debug: false
+      debugName: Popup
+      debugText: !<reference.Text> 00000000-0000-0000-0000-000000000000
+  ScriptTypes:
+    -
+      {}
