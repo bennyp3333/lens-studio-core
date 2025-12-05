@@ -57,6 +57,7 @@ function stage4(){
 function stage5(){
     print("stage 5");
     global.faderManager.show(["Smile"]);
+    global.faderManager.show(["Particles"]);
     global.faderManager.show(["Text3D", "Box"], showRestartButton);
 }
 
@@ -72,7 +73,7 @@ function restart(){
     restartReady = false;
 
     global.faderManager.hide("Restart", {time: 0.25});
-    global.faderManager.hide(["Text3D", "Box", "Smile"]);
+    global.faderManager.hide(["Text3D", "Box", "Smile", "Particles"]);
     global.faderManager.show(script.tapPrompt, {delay: 0.5}, function(){
         startReady = true;
     });

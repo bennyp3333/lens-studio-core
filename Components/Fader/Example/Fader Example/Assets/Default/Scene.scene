@@ -271,6 +271,26 @@
   MaskTexture: !<reference> 00000000-0000-0000-0000-000000000000
   RayTracing: !<reference> 00000000-0000-0000-0000-000000000000
   DevicePropertiesSource: !<reference> 00000000-0000-0000-0000-000000000000
+- !<RenderMeshVisual/3ccbc6ed-8431-4226-b8f8-6260acd504ad>
+  PrefabRemaps:
+    []
+  Name: Render Mesh Visual
+  Enabled: true
+  RenderOrder: 0
+  StretchMode: Stretch
+  VerticalAlignment: Center
+  HorizontalAlignment: Center
+  MeshShadowMode: None
+  ShadowColor: {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
+  ShadowDensity: 1.000000
+  Materials:
+    - !<reference> 13340b3d-d068-4bdf-8984-28a648faab86
+  Mesh: !<reference> 542c56b2-3b9d-46a8-8397-766c34c39648
+  Skin: !<reference> 00000000-0000-0000-0000-000000000000
+  BlendShapesEnabled: true
+  BlendNormals: false
+  BlendShapes:
+    {}
 - !<ScriptComponent/429a0721-aded-46f0-af03-0863aa8f7469>
   PrefabRemaps:
     []
@@ -644,6 +664,7 @@
     - !<own> 8f9c1d07-546f-4547-a592-ed0e90d044f9
     - !<own> dc6bf882-b0bb-4abd-8c3b-42b0ab60367c
     - !<own> ec88ac92-9181-4441-96cf-624021c2befd
+    - !<own> c425a25c-7326-4f6d-a698-6e81a51ca65f
     - !<own> 0b72b8d2-f03e-4207-8c52-6e81b4b2239d
     - !<own> e44b502a-51b4-450e-81ff-e41fcbdb543b
   Components:
@@ -1287,6 +1308,22 @@
   ScriptTypes:
     "":
       {}
+- !<SceneObject/c425a25c-7326-4f6d-a698-6e81a51ca65f>
+  PrefabRemaps:
+    []
+  Name: Particles
+  Enabled: true
+  Layers: 1048576
+  LocalTransform: !<TransformEntity>
+    Position: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Rotation: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Scale: {x: 100.000000, y: 100.000000, z: 100.000000}
+    HasSegmentScaleCompensation: false
+  Children:
+    []
+  Components:
+    - !<own> 3ccbc6ed-8431-4226-b8f8-6260acd504ad
+    - !<own> fb280947-a86f-4718-868b-56553f59cec2
 - !<ScreenTransform/c75afc94-2ad5-41a7-8e5a-f0895393d052>
   PrefabRemaps:
     []
@@ -1578,3 +1615,85 @@
     bottom: 0.000000
     right: 0.000000
     top: 0.000000
+- !<ScriptComponent/fb280947-a86f-4718-868b-56553f59cec2>
+  PrefabRemaps:
+    []
+  Name: Fader
+  Enabled: true
+  ScriptAsset: !<reference> e2bad830-41c5-47e0-8c79-9394f37e0846
+  ScriptInputsDefault:
+    autoShow: true
+    autoShowDelay: true
+    autoHide: true
+    autoHideDelay: true
+    inMode: true
+    inTime: true
+    inAlpha: true
+    inScale: true
+    inRect: true
+    inEasing: true
+    inEasingType: true
+    inRecursiveFade: true
+    inScaleLocal: true
+    outMode: true
+    outTime: true
+    outAlpha: true
+    outScale: true
+    outRect: true
+    outEasing: true
+    outEasingType: true
+    outRecursiveFade: true
+    outScaleLocal: true
+    optional: true
+    sceneObject: true
+    faderName: true
+    faderTags: true
+    disableWhenHidden: true
+    makeMaterialsUnique: true
+    debug: true
+    printDebugStatements: true
+    printWarningStatements: true
+  ScriptTypesDefault:
+    {}
+  ScriptInputs:
+    "":
+      initialState: hidden
+      autoShow: false
+      autoShowDelay: !<float> 0.000000
+      autoHide: false
+      autoHideDelay: !<float> 2.000000
+      inMode: fade
+      inTime: 0.750000
+      inAdvanced: true
+      inAlpha: !<float> 1.000000
+      inScale: !<Vec3> {x: 1.000000, y: 1.000000, z: 1.000000}
+      inRect: !<Vec4> {x: -1.000000, y: 1.000000, z: -1.000000, w: 1.000000}
+      inEasing: Quadratic
+      inEasingType: Out
+      inRecursiveFade: true
+      inFadeMaterialParameter: particles
+      inScaleLocal: Local
+      outMode: fade
+      outTime: 0.750000
+      outAdvanced: true
+      outAlpha: !<float> 0.000000
+      outScale: !<Vec3> {x: 0.000000, y: 0.000000, z: 0.000000}
+      outRect: !<Vec4> {x: -1.000000, y: 1.000000, z: -1.000000, w: 1.000000}
+      outEasing: Quadratic
+      outEasingType: Out
+      outRecursiveFade: true
+      outFadeMaterialParameter: particles
+      outScaleLocal: Local
+      optional: false
+      sceneObject: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      faderName: ""
+      faderTags: !<string[]>
+        []
+      disableWhenHidden: false
+      makeMaterialsUnique: true
+      debug: false
+      printDebugStatements: false
+      printWarningStatements: true
+  ScriptTypes:
+    "":
+      {}

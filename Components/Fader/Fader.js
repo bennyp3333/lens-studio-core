@@ -1,6 +1,6 @@
 /*
 Fader.js
-Version: 0.1.0
+Version: 0.1.1
 Description: Flexible fading system with support for fade, scale, and slide animations
 Author: Bennyp3333 [https://benjamin-p.dev]
 
@@ -566,6 +566,14 @@ Fader.prototype._setAlpha = function(obj, alpha, recursive, parameter) {
                 if (color) {
                     comp.mainPass[parameter] = new vec4(color.r, color.g, color.b, alpha);
                 }
+            } else if (parameter == "particles"){
+                // GPU Particles support hotfix
+                comp.mainPass["alphaStart"] = alpha;
+                comp.mainPass["alphaEnd"] = alpha;
+                comp.mainPass["alphaMinStart"] = alpha;
+                comp.mainPass["alphaMinEnd"] = alpha;
+                comp.mainPass["alphaMaxStart"] = alpha;
+                comp.mainPass["alphaMaxEnd"] = alpha;
             } else {
                 comp.mainPass[parameter] = alpha;
             }
@@ -617,6 +625,14 @@ Fader.prototype._setAlpha = function(obj, alpha, recursive, parameter) {
                 if (color) {
                     comp.mainPass[parameter] = new vec4(color.r, color.g, color.b, alpha);
                 }
+            } else if (parameter == "particles"){
+                // GPU Particles support hotfix
+                comp.mainPass["alphaStart"] = alpha;
+                comp.mainPass["alphaEnd"] = alpha;
+                comp.mainPass["alphaMinStart"] = alpha;
+                comp.mainPass["alphaMinEnd"] = alpha;
+                comp.mainPass["alphaMaxStart"] = alpha;
+                comp.mainPass["alphaMaxEnd"] = alpha;
             } else {
                 comp.mainPass[parameter] = alpha;
             }
