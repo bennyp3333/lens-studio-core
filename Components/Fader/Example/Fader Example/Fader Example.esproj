@@ -1,3 +1,44 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:a0080101af1888c761f38b2b4a85cae4f39d5d2043fba79138d4809869555a41
-size 864
+studioVersion:
+  major: 5
+  minor: 15
+  patch: 0
+  build: 25101318
+  type: Public
+coreVersion: 330
+clientVersion: 13.60
+updateCheckpoint: 76
+sceneId: 0a1ccb1a-fe88-4fbb-9883-e3af3c75fd99
+metaInfo:
+  hints:
+    []
+  tags:
+    []
+  lensName: Untitled
+  lensDescriptors:
+    []
+  lensApplicability:
+    - Front
+    - Back
+  lensClientCompatibilities:
+    - Mobile
+    - Web
+  platformBundlesEnabled: false
+  iconHash: ""
+  videoPreviewHash: ""
+  fromTemplateName: Default
+  fromTemplateUrl: Lens Studio 5.12.1.25080420
+  activationCamera: Front
+  sourceMapEnabled: false
+  usingMinClientVersions: false
+  androidMinClientVersion:
+    major: 0
+    minor: 0
+    patch: 0
+    build: 0
+  iOSMinClientVersion:
+    major: 0
+    minor: 0
+    patch: 0
+    build: 0
+  documentId: d535af76-857e-4ff7-8cf4-1d6da341a614
+  originalDocumentId: d535af76-857e-4ff7-8cf4-1d6da341a614
