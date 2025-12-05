@@ -67,6 +67,53 @@ function hsvToRgb(color) {
 }
 
 /**
+ * Converts a hex color string to RGB color space.
+ * @param {string} hex - The hex color string (e.g., "#FF5500", "FF5500", "#F50", "F50").
+ * @param {number|null} alpha - Optional alpha value. If provided, returns a vec4 with this alpha.
+ * @returns {vec3|vec4} The color in RGB space (values normalized to [0,1]).
+ */
+function hexToRgb(hex, alpha) {
+    hex = hex.replace(/^#/, '');
+    
+    // Expand shorthand (e.g., "F50" -> "FF5500")
+    if (hex.length === 3) {
+        hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+    }
+    
+    var r = parseInt(hex.substring(0, 2), 16) / 255;
+    var g = parseInt(hex.substring(2, 4), 16) / 255;
+    var b = parseInt(hex.substring(4, 6), 16) / 255;
+    
+    if (alpha != null) {
+        return new vec4(r, g, b, alpha);
+    } else {
+        return new vec3(r, g, b);
+    }
+}
+
+/**
+ * Converts an RGB color to a hex color string.
+ * @param {vec3|vec4} color - The color in RGB space (values in [0,1]).
+ * @param {boolean} includeHash - Whether to include the "#" prefix. Defaults to true.
+ * @returns {string} The hex color string (e.g., "#FF5500").
+ */
+function rgbToHex(color, includeHash) {
+    if (includeHash == null) { includeHash = true; }
+    
+    var r = Math.round(color.r * 255);
+    var g = Math.round(color.g * 255);
+    var b = Math.round(color.b * 255);
+    
+    var toHex = function(val) {
+        var hex = val.toString(16).toUpperCase();
+        return hex.length === 1 ? '0' + hex : hex;
+    };
+    
+    var hex = toHex(r) + toHex(g) + toHex(b);
+    return includeHash ? '#' + hex : hex;
+}
+
+/**
  * Generates a random RGBA color.
  * @param {number|null} alpha - Optional alpha value. If undefined, alpha will be randomized between 0 and 1.
  * @returns {vec4} A random color in RGBA space.
@@ -93,6 +140,8 @@ function randomColorHue(brightness, saturation, alpha) {
 var exports = {
     rgbToHsv,
     hsvToRgb,
+    hexToRgb,
+    rgbToHex,
     colorRandom,
     randomColorHue
 };
