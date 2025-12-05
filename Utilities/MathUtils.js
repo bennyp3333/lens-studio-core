@@ -27,12 +27,12 @@ function clamp(val, min, max) {
  * @param {number} inMax - The upper bound of the input range.
  * @param {number} outMin - The lower bound of the output range.
  * @param {number} outMax - The upper bound of the output range.
- * @param {function} [clamp] - An optional function to clamp the result within the output range.
- * @returns {number} The remapped value, clamped if the `clamp` function is provided.
+ * @param {boolean} [shouldClamp=false] - Whether to clamp the result within the output range.
+ * @returns {number} The remapped value, clamped if `shouldClamp` is true.
  */
-function remap(val, inMin, inMax, outMin, outMax, clamp) {
+function remap(val, inMin, inMax, outMin, outMax, shouldClamp) {
     var mapped = ((val - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
-    if (clamp) {
+    if (shouldClamp) {
         mapped = clamp(mapped, outMin, outMax);
     }
     return mapped;
