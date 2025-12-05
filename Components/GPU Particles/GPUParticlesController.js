@@ -1,5 +1,5 @@
 // GPUParticlesController.js
-// Version: 0.1.0
+// Version: 0.1.1
 // Description: Handles start/stop/pause/reset operations for GPU particles.
 // Author: Bennyp3333 [https://benjamin-p.dev]
 //
@@ -17,6 +17,7 @@
 
 //@input bool startOnInit = true
 //@input bool useUniqueSeeds = true {"hint": "Generate unique seeds on each start"}
+//@input bool makeUniqueMaterial = true {"hint": "Clone material to avoid affecting other objects using it"}
 //@ui {"widget":"separator"}
 //@input bool overrideParticleCount = false {"hint": "Override the material's particle count"}
 //@input int particleCount = 1000 {"showIf": "overrideParticleCount", "hint": "Number of particles to render"}
@@ -55,8 +56,12 @@ function init() {
 		return;
 	}
 
-	// Make material unique
-	particlesMat = makeMatUnique(meshVisual);
+	// Make material unique if enabled, otherwise use shared material
+	if (script.makeUniqueMaterial) {
+		particlesMat = makeMatUnique(meshVisual);
+	} else {
+		particlesMat = material;
+	}
 
 	// Override particle count if specified
 	if (script.overrideParticleCount && particlesMat.mainPass) {
@@ -181,7 +186,7 @@ script.isRunning = function() {
 	return isRunning;
 };
 
-script.createEvent("OnStartEvent").bind(init);
+init();
 
 // Helpers
 function makeMatUnique(meshVis) {
