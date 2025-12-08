@@ -1,6 +1,6 @@
 # Fader
 
-Flexible fading system with support for fade, scale, and slide animations in Lens Studio. Provides centralized management of visibility animations with easing, delays, callbacks, and batch operations.
+Flexible fading system with support for fade, scale, slide and move animations in Lens Studio. Provides centralized management of visibility animations with easing, delays, callbacks, and batch operations.
 
 ## Overview
 
@@ -21,11 +21,11 @@ A controller that handles visibility animations with multiple modes and extensiv
 **Basic Setup:**
 1. Attach Fader script to any SceneObject you want to animate
 2. Choose initial state (Visible or Hidden)
-3. Configure In and Out animation modes (fade, scale, or slide)
+3. Configure In and Out animation modes (fade, scale, slide, or move)
 4. Optionally set a custom name or tags for batch operations
 
 **Key Features:**
-- Three animation modes: fade, scale, and slide
+- Four animation modes: fade, scale, slide, and move
 - Independent in/out animation settings
 - 11 easing functions with In/Out/InOut types
 - Delay and duration control
@@ -49,6 +49,10 @@ Animates the scale transform. Works with both ScreenTransform (for UI elements) 
 ### Slide Mode
 
 Animates ScreenTransform anchor positions, creating slide-in/slide-out effects. Useful for UI panels and overlays.
+
+### Move Mode
+
+Animates the position of objects, supporting both 2D (ScreenTransform) and 3D (Transform) components. By default, positions are applied as offsets from the object's starting position, making it easy to create relative motion effects. Can use local or world coordinates for 3D transforms.
 
 ## Usage
 
@@ -152,6 +156,7 @@ global.faderManager.setAlpha("myPanel", 0.5);
 myFader.setAlpha(1);
 myFader.setScale(new vec3(2, 2, 2));
 myFader.setRect(new vec4(-1, 1, -1, 1));
+myFader.setPosition(new vec2(-0.5, 0));
 ```
 
 ## Inspector Configuration
@@ -169,15 +174,15 @@ myFader.setRect(new vec4(-1, 1, -1, 1));
 
 ### Animation Settings
 
-- **Mode** - Choose fade, scale, or slide
+- **Mode** - Choose fade, scale, slide, or move
 - **Time** - Animation duration in seconds
 - **Advanced** - Expand for additional options:
-  - **Value/Scale/Rect** - Target value for the animation
+  - **Value/Scale/Rect/Position** - Target value for the animation
   - **Easing Func** - Easing function (Linear, Quadratic, Cubic, etc.)
   - **Easing Type** - In, Out, or InOut
   - **Recursive** - Apply to children (fade mode only)
   - **Parameter** - Material parameter to animate (fade mode only)
-  - **Local** - Use local vs world scale (scale mode only)
+  - **Local** - Use local vs world scale/position (scale or position mode)
 
 ### Optional Settings
 
@@ -186,6 +191,7 @@ myFader.setRect(new vec4(-1, 1, -1, 1));
 - **Fader Tags** - Tags for batch operations
 - **Disable When Hidden** - Disable the SceneObject when fully hidden
 - **Make Materials Unique** - Clone materials to prevent affecting other instances
+- **Apply Move As Offset** - When enabled (default), move positions are relative to the object's starting position rather than absolute
 
 ## Common Patterns
 
@@ -295,6 +301,7 @@ fader.stop();                           // Stop all animations
 fader.setAlpha(alpha);                  // Set alpha instantly
 fader.setScale(scale, local);           // Set scale instantly
 fader.setRect(rect);                    // Set anchors instantly
+fader.setPositon(position);             // Set position instantly
 fader.refreshCache();                   // Refresh component cache
 
 // State checking
@@ -350,6 +357,9 @@ global.faderManager.remove(fader);      // Remove fader
 - If using "Disable When Hidden" on the script's own object, the script can't re-enable itself
 - Target a child object instead, or disable "Disable When Hidden"
 
+**GPU Particles Support:**
+- For GPU particle systems, set the material parameter to `particles` in the Advanced settings. This will animate all particle alpha parameters (alphaStart, alphaEnd, alphaMinStart, alphaMinEnd, alphaMaxStart, alphaMaxEnd) together.
+
 ## Example Project
 
 Check the [Example](./Example/) folder for working demonstrations showing:
@@ -357,3 +367,4 @@ Check the [Example](./Example/) folder for working demonstrations showing:
 - Elements with differing in and out animation modes
 - Tag-based batch operations
 - Callback operations
+- Fading GPU particles

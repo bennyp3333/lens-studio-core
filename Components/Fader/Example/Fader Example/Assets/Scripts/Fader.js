@@ -1,7 +1,7 @@
 /*
 Fader.js
-Version: 0.1.1
-Description: Flexible fading system with support for fade, scale, and slide animations
+Version: 0.1.2
+Description: Flexible fading system with support for fade, scale, slide, and move animations
 Author: Bennyp3333 [https://benjamin-p.dev]
 
  ==== Usage ====
@@ -56,6 +56,7 @@ Author: Bennyp3333 [https://benjamin-p.dev]
  - setAlpha(alpha) - Sets alpha instantly
  - setScale(scale, local) - Sets scale instantly
  - setRect(rect) - Sets screenTransform anchors instantly
+ - setPosition(position) - Sets position instantly
  - refreshCache() - Refreshes component cache (call if components added/removed at runtime)
  
  FaderManager Methods:
@@ -74,7 +75,7 @@ Author: Bennyp3333 [https://benjamin-p.dev]
  Anim Options (for show/hide/toggle):
  - time: Animation duration in seconds (default: fadeTime input, 0 = instant)
  - delay: Delay before animation starts in seconds (default: 0)
- - mode: Animation mode - "fade", "scale", or "slide" (default: inMode/outMode input)
+ - mode: Animation mode - "fade", "scale", "slide", or "move" (default: inMode/outMode input)
  - cancel: How to handle existing animations - "none", "active", or "all" (default: "none")
    * "none" - Don't cancel any animations (allows queuing multiple animations)
    * "active" - Only cancel animations that have started (respects delays)
@@ -83,7 +84,7 @@ Author: Bennyp3333 [https://benjamin-p.dev]
  - onComplete: Callback function called when animation completes
 
  ==== Notes ====
- - Supports fade, scale, and slide modes
+ - Supports fade, scale, slide and move modes
  - Different in/out animations per fader
  - Recursive alpha for children
  - Tag-based batch operations
@@ -97,34 +98,38 @@ Author: Bennyp3333 [https://benjamin-p.dev]
 //@ui {"widget":"separator"}
 
 //@ui {"widget":"group_start", "label":"In"}
-//@input string inMode = "fade" {"label":"Mode", "widget":"combobox", "values":[{"label":"Fade", "value":"fade"}, {"label":"Scale", "value":"scale"}, {"label":"Slide", "value":"slide"}]}
+//@input string inMode = "fade" {"label":"Mode", "widget":"combobox", "values":[{"label":"Fade", "value":"fade"}, {"label":"Scale", "value":"scale"}, {"label":"Slide", "value":"slide"}, {"label":"Move", "value":"move"}]}
 //@input float inTime = 0.75 {"label":"Time"}
 //@input bool inAdvanced = false {"label":"Advanced"}
 //@ui {"widget":"group_start", "label":"Advanced", "showIf":"inAdvanced"}
 //@input float inAlpha = 1.0 {"label":"Value", "showIf":"inMode", "showIfValue":"fade"}
 //@input vec3 inScale = {1, 1, 1} {"label":"Scale", "showIf":"inMode", "showIfValue":"scale"}
 //@input vec4 inRect = {-1, 1, -1, 1} {"label":"Rect", "showIf":"inMode", "showIfValue":"slide"}
+//@input vec3 inPosition = {0, 0, 0} {"label":"Position", "showIf":"inMode", "showIfValue":"move"}
 //@input string inEasing = "Quadratic" {"label":"Easing Func", "widget":"combobox", "values":[{"label":"Linear", "value":"Linear"}, {"label":"Quadratic", "value":"Quadratic"}, {"label":"Cubic", "value":"Cubic"}, {"label":"Quartic", "value":"Quartic"}, {"label":"Quintic", "value":"Quintic"}, {"label":"Sinusoidal", "value":"Sinusoidal"}, {"label":"Exponential", "value":"Exponential"}, {"label":"Circular", "value":"Circular"}, {"label":"Elastic", "value":"Elastic"}, {"label":"Back", "value":"Back"}, {"label":"Bounce", "value":"Bounce"}]}
 //@input string inEasingType = "Out" {"label":"Easing Type", "widget":"combobox", "values":[{"label":"In", "value":"In"}, {"label":"Out", "value":"Out"}, {"label":"In / Out", "value":"InOut"}]}
 //@input bool inRecursiveFade = false {"label":"Recursive", "showIf":"inMode", "showIfValue":"fade"}
 //@input string inFadeMaterialParameter = "baseColor" {"label":"Parameter", "showIf":"inMode", "showIfValue":"fade"}
 //@input string inScaleLocal = "Local" {"label":"Local", "widget":"combobox", "showIf":"inMode", "showIfValue":"scale", "values":[{"label":"World", "value":"World"}, {"label":"Local", "value":"Local"}]}
+//@input string inPositionLocal = "Local" {"label":"Local", "widget":"combobox", "showIf":"inMode", "showIfValue":"move", "values":[{"label":"World", "value":"World"}, {"label":"Local", "value":"Local"}]}
 //@ui {"widget":"group_end"}
 //@ui {"widget":"group_end"}
 
 //@ui {"widget":"group_start", "label":"Out"}
-//@input string outMode = "fade" {"label":"Mode", "widget":"combobox", "values":[{"label":"Fade", "value":"fade"}, {"label":"Scale", "value":"scale"}, {"label":"Slide", "value":"slide"}]}
+//@input string outMode = "fade" {"label":"Mode", "widget":"combobox", "values":[{"label":"Fade", "value":"fade"}, {"label":"Scale", "value":"scale"}, {"label":"Slide", "value":"slide"}, {"label":"Move", "value":"move"}]}
 //@input float outTime = 0.75 {"label":"Time"}
 //@input bool outAdvanced = false {"label":"Advanced"}
 //@ui {"widget":"group_start", "label":"Advanced", "showIf":"outAdvanced"}
 //@input float outAlpha = 0.0 {"label":"Value", "showIf":"outMode", "showIfValue":"fade"}
 //@input vec3 outScale = {0, 0, 0} {"label":"Scale", "showIf":"outMode", "showIfValue":"scale"}
 //@input vec4 outRect = {-1, 1, -1, 1} {"label":"Rect", "showIf":"outMode", "showIfValue":"slide"}
+//@input vec3 outPosition = {0, 0, 0} {"label":"Position", "showIf":"outMode", "showIfValue":"move"}
 //@input string outEasing = "Quadratic" {"label":"Easing Func", "widget":"combobox", "values":[{"label":"Linear", "value":"Linear"}, {"label":"Quadratic", "value":"Quadratic"}, {"label":"Cubic", "value":"Cubic"}, {"label":"Quartic", "value":"Quartic"}, {"label":"Quintic", "value":"Quintic"}, {"label":"Sinusoidal", "value":"Sinusoidal"}, {"label":"Exponential", "value":"Exponential"}, {"label":"Circular", "value":"Circular"}, {"label":"Elastic", "value":"Elastic"}, {"label":"Back", "value":"Back"}, {"label":"Bounce", "value":"Bounce"}]}
 //@input string outEasingType = "Out" {"label":"Easing Type", "widget":"combobox", "values":[{"label":"In", "value":"In"}, {"label":"Out", "value":"Out"}, {"label":"In / Out", "value":"InOut"}]}
 //@input bool outRecursiveFade = false {"label":"Recursive", "showIf":"outMode", "showIfValue":"fade"}
 //@input string outFadeMaterialParameter = "baseColor" {"label":"Parameter", "showIf":"outMode", "showIfValue":"fade"}
 //@input string outScaleLocal = "Local" {"label":"Local", "widget":"combobox", "showIf":"outMode", "showIfValue":"scale", "values":[{"label":"World", "value":"World"}, {"label":"Local", "value":"Local"}]}
+//@input string outPositionLocal = "Local" {"label":"Local", "widget":"combobox", "showIf":"outMode", "showIfValue":"move", "values":[{"label":"World", "value":"World"}, {"label":"Local", "value":"Local"}]}
 //@ui {"widget":"group_end"}
 //@ui {"widget":"group_end"}
 
@@ -135,6 +140,7 @@ Author: Bennyp3333 [https://benjamin-p.dev]
 //@input string[] faderTags {"showIf":"optional"}
 //@input bool disableWhenHidden = false {"showIf":"optional"}
 //@input bool makeMaterialsUnique = true {"showIf":"optional"}
+//@input bool applyMoveAsOffset = true {"showIf":"optional"}
 
 //@ui {"widget":"separator"}
 //@input bool debug
@@ -146,7 +152,8 @@ Author: Bennyp3333 [https://benjamin-p.dev]
 const MODE_KEYS = {
     "fade": "Alpha",
     "scale": "Scale", 
-    "slide": "Rect"
+    "slide": "Rect",
+    "move": "Position"
 };
 
 // ============ FADER CLASS ============
@@ -166,6 +173,7 @@ var Fader = function(sceneObj, options, scriptSettings) {
     this.tags = this.options.tags || [];
     this.disableWhenHidden = this.options.disableWhenHidden || false;
     this.makeMaterialsUnique = this.options.makeMaterialsUnique !== undefined ? this.options.makeMaterialsUnique : true;
+    this.applyMoveAsOffset = this.options.applyMoveAsOffset !== undefined ? this.options.applyMoveAsOffset : true;
         
     this._printDebug("Fader created - name: " + this.name + ", tags: [" + this.tags + "], disableWhenHidden: " + this.disableWhenHidden);
     
@@ -249,6 +257,17 @@ Fader.prototype.setRect = function(rect) {
 };
 
 /**
+ * Sets position instantly without animation
+ * @param {vec2|vec3} position - Position value
+ * @param {string} local - "Local" or "World"
+ */
+Fader.prototype.setPosition = function(position, local) {
+    this._cancelAllAnimations();
+    local = local || "Local";
+    this._setPosition(position, local);
+};
+
+/**
  * Checks if the fader is currently visible
  * @returns {boolean}
  */
@@ -271,14 +290,13 @@ Fader.prototype.refreshCache = function() {
     this._printDebug("Refreshing component cache");
     this._componentCache = null;
     this._cacheComponents();
+    this._cacheStartValues();
 };
 
 // ============ FADER INTERNAL METHODS ============
 
 Fader.prototype._cacheComponents = function() {
     this._printDebug("Caching components...");
-    
-    //TODO: option to make materials unique
 
     this._componentCache = {
         // mainPass components (support baseColor parameter)
@@ -371,6 +389,17 @@ Fader.prototype._makeComponentMaterialsUnique = function() {
     this._printDebug("Materials made unique");
 };
 
+Fader.prototype._cacheStartValues = function() {
+    if(this._componentCache.screenTransform){
+        this.startPosition2D = this._componentCache.screenTransform.anchors.getCenter();
+    }
+
+    if(this._componentCache.transform){
+        var local = this.scriptSettings["inPositionLocal"];
+        this.startPosition3D = this._componentCache.transform["get" + local + "Position"]();
+    }
+}
+
 Fader.prototype._resetOtherModes = function(mode, direction) {
     var oppositeDirection = direction === "in" ? "out" : "in";
     var oppositeMode = this.scriptSettings[oppositeDirection + "Mode"];
@@ -424,12 +453,15 @@ Fader.prototype._animate = function(direction, animOptions, onComplete) {
         endVal = this.scriptSettings[direction + "Alpha"];
         this._printDebug("Fade animation - from: " + startVal + " to: " + endVal);
     } else if (mode === "scale") {
-        var isLocal = this.scriptSettings[direction + "ScaleLocal"] === "Local";
+        var local = this.scriptSettings[direction + "ScaleLocal"];
         endVal = this.scriptSettings[direction + "Scale"];
-        this._printDebug("Scale animation - from: " + startVal.toString() + " to: " + endVal.toString() + ", local: " + isLocal);
+        this._printDebug("Scale animation - from: " + startVal.toString() + " to: " + endVal.toString() + ", local: " + local);
     } else if (mode === "slide") {
         endVal = this.scriptSettings[direction + "Rect"];
         this._printDebug("Slide animation - from: " + startVal.toString() + " to: " + endVal.toString());
+    } else if (mode === "move") {
+        endVal = this.scriptSettings[direction + "Position"];
+        this._printDebug("Move animation - from: " + startVal.toString() + " to: " + endVal.toString());
     } else {
         this._printWarning("Unknown mode '" + mode + "', defaulting to fade");
         endVal = this.scriptSettings[direction + "Alpha"];
@@ -530,6 +562,9 @@ Fader.prototype._getValue = function(mode, direction) {
         case "slide":
             var rect = this._getRect();
             return rect !== null ? rect : (isIn ? this.scriptSettings.outRect : this.scriptSettings.inRect);
+        case "move":
+            var position = this._getPosition(this.scriptSettings[direction + "PositionLocal"]);
+            return position !== null ? position : (isIn ? this.scriptSettings.outPosition : this.scriptSettings.inPosition);
         default:
             return isIn ? 0 : 1;
     }
@@ -542,6 +577,9 @@ Fader.prototype._setValue = function(mode, direction, value) {
             break;
         case "slide":
             this._setRect(value);
+            break;
+        case "move":
+            this._setPosition(value, this.scriptSettings[direction + "PositionLocal"]);
             break;
         case "fade":
         default:
@@ -738,6 +776,50 @@ Fader.prototype._getRect = function() {
             this._componentCache.screenTransform.anchors.bottom,
             this._componentCache.screenTransform.anchors.top
         );
+    }
+    return null;
+};
+
+Fader.prototype._setPosition = function(position, local) {
+    if (this._componentCache.screenTransform) {
+        var vec2Pos = new vec2(position.x, position.y);
+        //this._printDebug("Setting ScreenTransform center to: " + vec2Pos);
+        
+        if (this.applyMoveAsOffset && this.startPosition2D) {
+            this._componentCache.screenTransform.anchors.setCenter(vec2Pos.add(this.startPosition2D));
+        } else {
+            this._componentCache.screenTransform.anchors.setCenter(vec2Pos);
+        }
+    } else if (this._componentCache.transform) {
+        //this._printDebug("Setting Position to: " + position);
+
+        local = local || "Local";
+
+        if (this.applyMoveAsOffset && this.startPosition3D) {
+            this._componentCache.transform["set" + local + "Position"](position.add(this.startPosition3D));
+        } else {
+            this._componentCache.transform["set" + local + "Position"](position);
+        }
+    }
+};
+
+Fader.prototype._getPosition = function(local) {
+    if (this._componentCache.screenTransform) {
+        var vec2Pos = null;
+        if (this.applyMoveAsOffset && this.startPosition2D) {
+            vec2Pos = this._componentCache.screenTransform.anchors.getCenter().sub(this.startPosition2D);
+        } else {
+            vec2Pos = this._componentCache.screenTransform.anchors.getCenter();
+        }
+        return new vec3(vec2Pos.x, vec2Pos.y, 0);
+    } else if (this._componentCache.transform) {
+        local = local || "Local";
+
+        if (this.applyMoveAsOffset && this.startPosition3D) {
+            return this._componentCache.transform["get" + local + "Position"]().sub(this.startPosition3D);
+        } else {
+            return this._componentCache.transform["get" + local + "Position"]();
+        }
     }
     return null;
 };
@@ -1364,21 +1446,25 @@ function init() {
         inAlpha: script.inAlpha,
         inScale: script.inScale,
         inRect: script.inRect,
+        inPosition: script.inPosition,
         inEasing: script.inEasing,
         inEasingType: script.inEasingType,
         inRecursiveFade: script.inRecursiveFade,
         inFadeMaterialParameter: script.inFadeMaterialParameter,
         inScaleLocal: script.inScaleLocal,
+        inPositionLocal: script.inPositionLocal,
         outMode: script.outMode,
         outTime: script.outTime,
         outAlpha: script.outAlpha,
         outScale: script.outScale,
         outRect: script.outRect,
+        outPosition: script.outPosition,
         outEasing: script.outEasing,
         outEasingType: script.outEasingType,
         outRecursiveFade: script.outRecursiveFade,
         outFadeMaterialParameter: script.outFadeMaterialParameter,
-        outScaleLocal: script.outScaleLocal
+        outScaleLocal: script.outScaleLocal,
+        outPositionLocal: script.outPositionLocal
     };
     
     printDebug("Script settings configured - inMode: " + scriptSettings.inMode + ", outMode: " + scriptSettings.outMode);
@@ -1388,7 +1474,8 @@ function init() {
         name: script.faderName || null,
         tags: script.faderTags || [],
         disableWhenHidden: script.disableWhenHidden,
-        makeMaterialsUnique: script.makeMaterialsUnique
+        makeMaterialsUnique: script.makeMaterialsUnique,
+        applyMoveAsOffset: script.applyMoveAsOffset
     };
     
     // Create new Fader instance

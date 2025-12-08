@@ -305,27 +305,32 @@
     inAlpha: true
     inScale: true
     inRect: true
+    inPosition: true
     inEasing: true
     inEasingType: true
     inRecursiveFade: true
     inFadeMaterialParameter: true
     inScaleLocal: true
+    inPositionLocal: true
     outMode: true
     outAdvanced: true
     outAlpha: true
     outScale: true
     outRect: true
+    outPosition: true
     outEasing: true
     outEasingType: true
     outRecursiveFade: true
     outFadeMaterialParameter: true
     outScaleLocal: true
+    outPositionLocal: true
     optional: true
     sceneObject: true
     faderName: true
     faderTags: true
     disableWhenHidden: true
     makeMaterialsUnique: true
+    applyMoveAsOffset: true
     debug: true
     printDebugStatements: true
     printWarningStatements: true
@@ -344,22 +349,26 @@
       inAlpha: !<float> 1.000000
       inScale: !<Vec3> {x: 1.000000, y: 1.000000, z: 1.000000}
       inRect: !<Vec4> {x: -1.000000, y: 1.000000, z: -1.000000, w: 1.000000}
+      inPosition: !<Vec3> {x: 0.000000, y: 0.000000, z: 0.000000}
       inEasing: Quadratic
       inEasingType: Out
       inRecursiveFade: true
       inFadeMaterialParameter: baseColor
       inScaleLocal: Local
+      inPositionLocal: Local
       outMode: fade
       outTime: 0.500000
       outAdvanced: false
       outAlpha: !<float> 0.000000
       outScale: !<Vec3> {x: 0.000000, y: 0.000000, z: 0.000000}
       outRect: !<Vec4> {x: -1.000000, y: 1.000000, z: -1.000000, w: 1.000000}
+      outPosition: !<Vec3> {x: 0.000000, y: 0.000000, z: 0.000000}
       outEasing: Quadratic
       outEasingType: Out
       outRecursiveFade: true
       outFadeMaterialParameter: baseColor
       outScaleLocal: Local
+      outPositionLocal: Local
       optional: false
       sceneObject: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
       faderName: ""
@@ -367,6 +376,7 @@
         []
       disableWhenHidden: false
       makeMaterialsUnique: true
+      applyMoveAsOffset: true
       debug: false
       printDebugStatements: false
       printWarningStatements: true
@@ -386,25 +396,30 @@
     inTime: true
     inAlpha: true
     inScale: true
+    inPosition: true
     inEasing: true
     inEasingType: true
     inRecursiveFade: true
     inFadeMaterialParameter: true
     inScaleLocal: true
+    inPositionLocal: true
     outTime: true
     outAlpha: true
     outScale: true
+    outPosition: true
     outEasing: true
     outEasingType: true
     outRecursiveFade: true
     outFadeMaterialParameter: true
     outScaleLocal: true
+    outPositionLocal: true
     optional: true
     sceneObject: true
     faderName: true
     faderTags: true
     disableWhenHidden: true
     makeMaterialsUnique: true
+    applyMoveAsOffset: true
     debug: true
     printDebugStatements: true
     printWarningStatements: true
@@ -423,22 +438,26 @@
       inAlpha: !<float> 1.000000
       inScale: !<Vec3> {x: 1.000000, y: 1.000000, z: 1.000000}
       inRect: !<Vec4> {x: 0.600000, y: 1.000000, z: -1.000000, w: -0.250000}
+      inPosition: !<Vec3> {x: 0.000000, y: 0.000000, z: 0.000000}
       inEasing: Quadratic
       inEasingType: Out
       inRecursiveFade: true
       inFadeMaterialParameter: baseColor
       inScaleLocal: Local
+      inPositionLocal: Local
       outMode: slide
       outTime: 0.750000
       outAdvanced: true
       outAlpha: !<float> 0.000000
       outScale: !<Vec3> {x: 0.000000, y: 0.000000, z: 0.000000}
       outRect: !<Vec4> {x: 1.000000, y: 1.400000, z: -1.000000, w: -0.250000}
+      outPosition: !<Vec3> {x: 0.000000, y: 0.000000, z: 0.000000}
       outEasing: Quadratic
       outEasingType: Out
       outRecursiveFade: true
       outFadeMaterialParameter: baseColor
       outScaleLocal: Local
+      outPositionLocal: Local
       optional: false
       sceneObject: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
       faderName: ""
@@ -446,6 +465,7 @@
         []
       disableWhenHidden: false
       makeMaterialsUnique: true
+      applyMoveAsOffset: true
       debug: false
       printDebugStatements: false
       printWarningStatements: true
@@ -467,24 +487,29 @@
     inAlpha: true
     inScale: true
     inRect: true
+    inPosition: true
     inEasing: true
     inEasingType: true
     inRecursiveFade: true
     inFadeMaterialParameter: true
     inScaleLocal: true
+    inPositionLocal: true
     outAdvanced: true
     outAlpha: true
     outScale: true
     outRect: true
+    outPosition: true
     outEasing: true
     outEasingType: true
     outRecursiveFade: true
     outFadeMaterialParameter: true
     outScaleLocal: true
+    outPositionLocal: true
     sceneObject: true
     faderName: true
     disableWhenHidden: true
     makeMaterialsUnique: true
+    applyMoveAsOffset: true
     debug: true
     printDebugStatements: true
     printWarningStatements: true
@@ -503,22 +528,26 @@
       inAlpha: !<float> 1.000000
       inScale: !<Vec3> {x: 1.000000, y: 1.000000, z: 1.000000}
       inRect: !<Vec4> {x: -1.000000, y: 1.000000, z: -1.000000, w: 1.000000}
+      inPosition: !<Vec3> {x: 0.000000, y: 0.000000, z: 0.000000}
       inEasing: Quadratic
       inEasingType: Out
       inRecursiveFade: true
       inFadeMaterialParameter: baseColor
       inScaleLocal: Local
+      inPositionLocal: Local
       outMode: scale
       outTime: !<float> 1.000000
       outAdvanced: false
       outAlpha: !<float> 0.000000
       outScale: !<Vec3> {x: 0.000000, y: 0.000000, z: 0.000000}
       outRect: !<Vec4> {x: -1.000000, y: 1.000000, z: -1.000000, w: 1.000000}
+      outPosition: !<Vec3> {x: 0.000000, y: 0.000000, z: 0.000000}
       outEasing: Quadratic
       outEasingType: Out
       outRecursiveFade: true
       outFadeMaterialParameter: baseColor
       outScaleLocal: Local
+      outPositionLocal: Local
       optional: true
       sceneObject: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
       faderName: ""
@@ -526,6 +555,7 @@
         - Colors
       disableWhenHidden: false
       makeMaterialsUnique: true
+      applyMoveAsOffset: true
       debug: false
       printDebugStatements: false
       printWarningStatements: true
@@ -706,26 +736,31 @@
     inAlpha: true
     inScale: true
     inRect: true
+    inPosition: true
     inEasing: true
     inEasingType: true
     inRecursiveFade: true
     inFadeMaterialParameter: true
     inScaleLocal: true
+    inPositionLocal: true
     outMode: true
     outTime: true
     outAdvanced: true
     outAlpha: true
     outScale: true
     outRect: true
+    outPosition: true
     outEasing: true
     outEasingType: true
     outRecursiveFade: true
     outFadeMaterialParameter: true
     outScaleLocal: true
+    outPositionLocal: true
     sceneObject: true
     faderName: true
     faderTags: true
     disableWhenHidden: true
+    applyMoveAsOffset: true
     debug: true
     printDebugStatements: true
     printWarningStatements: true
@@ -744,22 +779,26 @@
       inAlpha: !<float> 1.000000
       inScale: !<Vec3> {x: 1.000000, y: 1.000000, z: 1.000000}
       inRect: !<Vec4> {x: -1.000000, y: 1.000000, z: -1.000000, w: 1.000000}
+      inPosition: !<Vec3> {x: 0.000000, y: 0.000000, z: 0.000000}
       inEasing: Quadratic
       inEasingType: Out
       inRecursiveFade: true
       inFadeMaterialParameter: baseColor
       inScaleLocal: Local
+      inPositionLocal: Local
       outMode: fade
       outTime: 0.750000
       outAdvanced: false
       outAlpha: !<float> 0.000000
       outScale: !<Vec3> {x: 0.000000, y: 0.000000, z: 0.000000}
       outRect: !<Vec4> {x: -1.000000, y: 1.000000, z: -1.000000, w: 1.000000}
+      outPosition: !<Vec3> {x: 0.000000, y: 0.000000, z: 0.000000}
       outEasing: Quadratic
       outEasingType: Out
       outRecursiveFade: true
       outFadeMaterialParameter: baseColor
       outScaleLocal: Local
+      outPositionLocal: Local
       optional: true
       sceneObject: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
       faderName: ""
@@ -767,6 +806,7 @@
         []
       disableWhenHidden: false
       makeMaterialsUnique: false
+      applyMoveAsOffset: true
       debug: false
       printDebugStatements: false
       printWarningStatements: true
@@ -804,28 +844,33 @@
     inAdvanced: true
     inAlpha: true
     inRect: true
+    inPosition: true
     inEasing: true
     inEasingType: true
     inRecursiveFade: true
     inFadeMaterialParameter: true
     inScaleLocal: true
+    inPositionLocal: true
     outMode: true
     outTime: true
     outAdvanced: true
     outAlpha: true
     outScale: true
     outRect: true
+    outPosition: true
     outEasing: true
     outEasingType: true
     outRecursiveFade: true
     outFadeMaterialParameter: true
     outScaleLocal: true
+    outPositionLocal: true
     optional: true
     sceneObject: true
     faderName: true
     faderTags: true
     disableWhenHidden: true
     makeMaterialsUnique: true
+    applyMoveAsOffset: true
     debug: true
     printDebugStatements: true
     printWarningStatements: true
@@ -844,22 +889,26 @@
       inAlpha: !<float> 1.000000
       inScale: !<Vec3> {x: 10.000000, y: 10.000000, z: 10.000000}
       inRect: !<Vec4> {x: -1.000000, y: 1.000000, z: -1.000000, w: 1.000000}
+      inPosition: !<Vec3> {x: 0.000000, y: 0.000000, z: 0.000000}
       inEasing: Quadratic
       inEasingType: Out
       inRecursiveFade: true
       inFadeMaterialParameter: baseColor
       inScaleLocal: Local
+      inPositionLocal: Local
       outMode: fade
       outTime: 0.750000
       outAdvanced: false
       outAlpha: !<float> 0.000000
       outScale: !<Vec3> {x: 0.000000, y: 0.000000, z: 0.000000}
       outRect: !<Vec4> {x: -1.000000, y: 1.000000, z: -1.000000, w: 1.000000}
+      outPosition: !<Vec3> {x: 0.000000, y: 0.000000, z: 0.000000}
       outEasing: Quadratic
       outEasingType: Out
       outRecursiveFade: true
       outFadeMaterialParameter: baseColor
       outScaleLocal: Local
+      outPositionLocal: Local
       optional: false
       sceneObject: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
       faderName: ""
@@ -867,6 +916,7 @@
         []
       disableWhenHidden: false
       makeMaterialsUnique: true
+      applyMoveAsOffset: true
       debug: false
       printDebugStatements: false
       printWarningStatements: true
@@ -920,25 +970,30 @@
     inAlpha: true
     inScale: true
     inRect: true
+    inPosition: true
     inEasing: true
     inEasingType: true
     inRecursiveFade: true
     inFadeMaterialParameter: true
     inScaleLocal: true
+    inPositionLocal: true
     outMode: true
     outAdvanced: true
     outAlpha: true
     outScale: true
     outRect: true
+    outPosition: true
     outEasing: true
     outEasingType: true
     outRecursiveFade: true
     outFadeMaterialParameter: true
     outScaleLocal: true
+    outPositionLocal: true
     sceneObject: true
     faderName: true
     disableWhenHidden: true
     makeMaterialsUnique: true
+    applyMoveAsOffset: true
     debug: true
     printDebugStatements: true
     printWarningStatements: true
@@ -957,22 +1012,26 @@
       inAlpha: !<float> 1.000000
       inScale: !<Vec3> {x: 1.000000, y: 1.000000, z: 1.000000}
       inRect: !<Vec4> {x: -1.000000, y: 1.000000, z: -1.000000, w: 1.000000}
+      inPosition: !<Vec3> {x: 0.000000, y: 0.000000, z: 0.000000}
       inEasing: Quadratic
       inEasingType: Out
       inRecursiveFade: true
       inFadeMaterialParameter: baseColor
       inScaleLocal: Local
+      inPositionLocal: Local
       outMode: fade
       outTime: 0.500000
       outAdvanced: false
       outAlpha: !<float> 0.000000
       outScale: !<Vec3> {x: 0.000000, y: 0.000000, z: 0.000000}
       outRect: !<Vec4> {x: -1.000000, y: 1.000000, z: -1.000000, w: 1.000000}
+      outPosition: !<Vec3> {x: 0.000000, y: 0.000000, z: 0.000000}
       outEasing: Quadratic
       outEasingType: Out
       outRecursiveFade: true
       outFadeMaterialParameter: baseColor
       outScaleLocal: Local
+      outPositionLocal: Local
       optional: true
       sceneObject: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
       faderName: ""
@@ -980,6 +1039,7 @@
         - Colors
       disableWhenHidden: false
       makeMaterialsUnique: true
+      applyMoveAsOffset: true
       debug: false
       printDebugStatements: false
       printWarningStatements: true
@@ -1244,12 +1304,13 @@
     autoHideDelay: true
     inAlpha: true
     inScale: true
+    inPosition: true
     inEasing: true
     inEasingType: true
     inRecursiveFade: true
     inFadeMaterialParameter: true
     inScaleLocal: true
-    outMode: true
+    inPositionLocal: true
     outAlpha: true
     outScale: true
     outEasing: true
@@ -1257,10 +1318,12 @@
     outRecursiveFade: true
     outFadeMaterialParameter: true
     outScaleLocal: true
+    outPositionLocal: true
     sceneObject: true
     faderTags: true
     disableWhenHidden: true
     makeMaterialsUnique: true
+    applyMoveAsOffset: true
     debug: true
     printDebugStatements: true
     printWarningStatements: true
@@ -1273,28 +1336,32 @@
       autoShowDelay: !<float> 2.000000
       autoHide: false
       autoHideDelay: !<float> 2.000000
-      inMode: slide
+      inMode: move
       inTime: 0.500000
       inAdvanced: true
       inAlpha: !<float> 1.000000
       inScale: !<Vec3> {x: 1.000000, y: 1.000000, z: 1.000000}
       inRect: !<Vec4> {x: -1.000000, y: -0.600000, z: -1.000000, w: 1.000000}
+      inPosition: !<Vec3> {x: 0.000000, y: 0.000000, z: 0.000000}
       inEasing: Quadratic
       inEasingType: Out
       inRecursiveFade: true
       inFadeMaterialParameter: baseColor
       inScaleLocal: Local
-      outMode: fade
+      inPositionLocal: Local
+      outMode: move
       outTime: 0.500000
       outAdvanced: true
       outAlpha: !<float> 0.000000
       outScale: !<Vec3> {x: 0.000000, y: 0.000000, z: 0.000000}
       outRect: !<Vec4> {x: -1.400000, y: -1.000000, z: -1.000000, w: 1.000000}
+      outPosition: !<Vec3> {x: -0.500000, y: 0.000000, z: 0.000000}
       outEasing: Quadratic
       outEasingType: Out
       outRecursiveFade: true
       outFadeMaterialParameter: baseColor
       outScaleLocal: Local
+      outPositionLocal: Local
       optional: true
       sceneObject: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
       faderName: Smile
@@ -1302,6 +1369,7 @@
         []
       disableWhenHidden: false
       makeMaterialsUnique: true
+      applyMoveAsOffset: true
       debug: false
       printDebugStatements: false
       printWarningStatements: true
@@ -1393,24 +1461,29 @@
     inAlpha: true
     inScale: true
     inRect: true
+    inPosition: true
     inEasing: true
     inEasingType: true
     inRecursiveFade: true
     inFadeMaterialParameter: true
     inScaleLocal: true
+    inPositionLocal: true
     outAdvanced: true
     outAlpha: true
     outScale: true
     outRect: true
+    outPosition: true
     outEasing: true
     outEasingType: true
     outRecursiveFade: true
     outFadeMaterialParameter: true
     outScaleLocal: true
+    outPositionLocal: true
     sceneObject: true
     faderName: true
     disableWhenHidden: true
     makeMaterialsUnique: true
+    applyMoveAsOffset: true
     debug: true
     printDebugStatements: true
     printWarningStatements: true
@@ -1429,22 +1502,26 @@
       inAlpha: !<float> 1.000000
       inScale: !<Vec3> {x: 1.000000, y: 1.000000, z: 1.000000}
       inRect: !<Vec4> {x: -1.000000, y: 1.000000, z: -1.000000, w: 1.000000}
+      inPosition: !<Vec3> {x: 0.000000, y: 0.000000, z: 0.000000}
       inEasing: Quadratic
       inEasingType: Out
       inRecursiveFade: true
       inFadeMaterialParameter: baseColor
       inScaleLocal: Local
+      inPositionLocal: Local
       outMode: scale
       outTime: !<float> 1.000000
       outAdvanced: false
       outAlpha: !<float> 0.000000
       outScale: !<Vec3> {x: 0.000000, y: 0.000000, z: 0.000000}
       outRect: !<Vec4> {x: -1.000000, y: 1.000000, z: -1.000000, w: 1.000000}
+      outPosition: !<Vec3> {x: 0.000000, y: 0.000000, z: 0.000000}
       outEasing: Quadratic
       outEasingType: Out
       outRecursiveFade: true
       outFadeMaterialParameter: baseColor
       outScaleLocal: Local
+      outPositionLocal: Local
       optional: true
       sceneObject: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
       faderName: ""
@@ -1452,6 +1529,7 @@
         - Colors
       disableWhenHidden: false
       makeMaterialsUnique: true
+      applyMoveAsOffset: true
       debug: false
       printDebugStatements: false
       printWarningStatements: true
@@ -1631,25 +1709,30 @@
     inAlpha: true
     inScale: true
     inRect: true
+    inPosition: true
     inEasing: true
     inEasingType: true
     inRecursiveFade: true
     inScaleLocal: true
+    inPositionLocal: true
     outMode: true
     outTime: true
     outAlpha: true
     outScale: true
     outRect: true
+    outPosition: true
     outEasing: true
     outEasingType: true
     outRecursiveFade: true
     outScaleLocal: true
+    outPositionLocal: true
     optional: true
     sceneObject: true
     faderName: true
     faderTags: true
     disableWhenHidden: true
     makeMaterialsUnique: true
+    applyMoveAsOffset: true
     debug: true
     printDebugStatements: true
     printWarningStatements: true
@@ -1668,22 +1751,26 @@
       inAlpha: !<float> 1.000000
       inScale: !<Vec3> {x: 1.000000, y: 1.000000, z: 1.000000}
       inRect: !<Vec4> {x: -1.000000, y: 1.000000, z: -1.000000, w: 1.000000}
+      inPosition: !<Vec3> {x: 0.000000, y: 0.000000, z: 0.000000}
       inEasing: Quadratic
       inEasingType: Out
       inRecursiveFade: true
       inFadeMaterialParameter: particles
       inScaleLocal: Local
+      inPositionLocal: Local
       outMode: fade
       outTime: 0.750000
       outAdvanced: true
       outAlpha: !<float> 0.000000
       outScale: !<Vec3> {x: 0.000000, y: 0.000000, z: 0.000000}
       outRect: !<Vec4> {x: -1.000000, y: 1.000000, z: -1.000000, w: 1.000000}
+      outPosition: !<Vec3> {x: 0.000000, y: 0.000000, z: 0.000000}
       outEasing: Quadratic
       outEasingType: Out
       outRecursiveFade: true
       outFadeMaterialParameter: particles
       outScaleLocal: Local
+      outPositionLocal: Local
       optional: false
       sceneObject: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
       faderName: ""
@@ -1691,6 +1778,7 @@
         []
       disableWhenHidden: false
       makeMaterialsUnique: true
+      applyMoveAsOffset: true
       debug: false
       printDebugStatements: false
       printWarningStatements: true
