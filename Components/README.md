@@ -29,6 +29,15 @@ Flexible fading system with support for multiple animation modes:
 
 Ideal for UI transitions, menu systems, tooltips, and any visibility animations. See the [Fader README](./Fader/) for detailed documentation and examples.
 
+### [Games/](./Games/)
+
+Utility components for game mechanics and scoring:
+
+- **Timer** - Flexible countdown/countup timer with formatting, text display, and callbacks
+- **Score** - Score tracking with formatting, multipliers, and persistent high score storage
+
+Essential for any game or timed experience. See the [Games README](./Games/) for detailed documentation and examples.
+
 ### [GPU Particles/](./GPU%20Particles/)
 
 Controller for GPU-based particle systems:
@@ -36,6 +45,15 @@ Controller for GPU-based particle systems:
 - **GPUParticlesController** - Start, stop, pause, and reset GPU particle effects with programmatic control
 
 Essential for effects that need to be triggered or controlled at runtime. See the [GPU Particles README](./GPU%20Particles/) for implementation details.
+
+### [Spawnable/](./Spawnable/)
+
+Base scripts for objects that are dynamically spawned at runtime:
+
+- **SpawnableBase** - Template script with lifecycle callbacks and self-management methods
+- **Popup** - Ready-to-use animated screen popup that fades, slides, and self-destructs
+
+Use with [SpawnManager](../Managers/README.md#spawnmanagerjs) for runtime object instantiation. See the [Spawnable README](./Spawnable/) for detailed documentation and examples.
 
 ## General Components
 
