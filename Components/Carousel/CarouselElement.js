@@ -1,6 +1,6 @@
 /*
 CarouselElement.js
-Version: 0.1.0
+Version: 0.1.1
 Description: Individual element controller for LinearCarousel.
              Receives distance-from-center values and handles visual styling (scale, opacity, rotation).
 Author: Bennyp3333 [https://benjamin-p.dev]
@@ -84,6 +84,8 @@ Author: Bennyp3333 [https://benjamin-p.dev]
 //@ui {"widget":"separator"}
 //@input bool enableLogging = false {"label":"Enable Debug Logging"}
 
+var sceneObject = script.getSceneObject();
+
 // Carousel Marker
 script.isCarouselElement = true;
 
@@ -109,9 +111,9 @@ function initialize() {
     if (script.screenTransform) {
         st = script.screenTransform;
     } else {
-        st = script.getSceneObject().getComponent("Component.ScreenTransform");
+        st = sceneObject.getComponent("Component.ScreenTransform");
         if (!st) {
-            var parent = script.getSceneObject().getParent();
+            var parent = sceneObject.getParent();
             if (parent) {
                 st = parent.getComponent("Component.ScreenTransform");
             }
@@ -128,9 +130,9 @@ function initialize() {
     if (script.imageComponent) {
         img = script.imageComponent;
     } else {
-        img = script.getSceneObject().getComponent("Component.Image");
+        img = sceneObject.getComponent("Component.Image");
         if (!img) {
-            var parent = script.getSceneObject().getParent();
+            var parent = sceneObject.getParent();
             if (parent) {
                 img = parent.getComponent("Component.Image");
             }
@@ -230,7 +232,7 @@ function callCustomVisuals(normalizedDistance, rawDistance, isCenter) {
     var func = script.customVisualScript[script.customFunctionName];
     if (func) {
         try {
-            func(normalizedDistance, rawDistance, isCenter, script.getSceneObject());
+            func(normalizedDistance, rawDistance, isCenter, sceneObject);
         } catch (e) {
             debugLog("ERROR: Custom function failed - " + e, true);
         }
@@ -249,7 +251,7 @@ script.setTexture = function(texture) {
     if (img) {
         img.mainPass.baseTex = texture;
     } else {
-        var foundImg = script.getSceneObject().getComponent("Component.Image");
+        var foundImg = sceneObject.getComponent("Component.Image");
         if (foundImg) {
             foundImg.mainPass.baseTex = texture;
         }
@@ -331,7 +333,7 @@ function lerp(a, b, t) {
 
 function debugLog(message, force) {
     if (!force && !script.enableLogging) return;
-    var newLog = "[CarouselElement] " + message;
+    var newLog = "[CarouselElement]-" + sceneObject.name + " " + message;
     if (global.textLogger) global.logToScreen(newLog);
     print(newLog);
 }
