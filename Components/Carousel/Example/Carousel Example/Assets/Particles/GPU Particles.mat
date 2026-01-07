@@ -1,0 +1,166 @@
+- !<Material/6f5a9a98-2924-4b7a-b031-e759dad69475>
+  PackagePath: ""
+  PassesInfo:
+    - !<own> 009009cc-6e26-42e9-aeae-948d0284780e
+- !<PassInfo/009009cc-6e26-42e9-aeae-948d0284780e>
+  CachedProperties:
+    - alphaEnd:
+        typeIdx: 1
+        value: 1.000000
+    - alphaStart:
+        typeIdx: 1
+        value: 1.000000
+    - lifeTimeMinMax:
+        typeIdx: 3
+        value: {x: 1.000000, y: 2.000000}
+  DepthWrite: false
+  DepthTest: true
+  DepthFunction: LessEqual
+  TwoSided: true
+  ColorMask: {x: true, y: true, z: true, w: true}
+  CullMode: Back
+  PolygonOffset: {x: 0.000000, y: 0.000000}
+  FrustumCulling: Auto
+  FrustumCullPad: 0.000000
+  InstanceCount: 100
+  Defines:
+    - ALIGN_PARTICLES_TO_OPTION 0
+    - ALPHAMINMAX
+    - BASETEXTURE
+    - ENABLE_FACE_TEX
+    - MESHTYPE 0
+    - NODE_13_DROPLIST_ITEM 0
+    - NODE_213_DROPLIST_ITEM 0
+    - NODE_23_DROPLIST_ITEM 0
+    - NODE_67_DROPLIST_ITEM 0
+    - NODE_76_DROPLIST_ITEM 0
+    - TRAILBEHAVIOR 0
+    - rotationSpace 0
+    - ENABLE_BASE_TEX
+    - INILOCATION
+    - BOXSPAWN
+    - ALIGN_TO_CAMERA 1
+    - NOISE
+  BlendMode: PremultipliedAlphaAuto
+  Properties:
+    Port_AO_N014:
+      typeIdx: 4
+      value: {x: 1.000000, y: 1.000000, z: 1.000000}
+    Port_Emissive_N014:
+      typeIdx: 4
+      value: {x: 1.000000, y: 1.000000, z: 1.000000}
+    Port_SpecularAO_N014:
+      typeIdx: 4
+      value: {x: 1.000000, y: 1.000000, z: 1.000000}
+    PreviewEnabled:
+      typeIdx: 0
+      value: 0
+    alphaMaxEnd:
+      typeIdx: 1
+      value: 0.500000
+    alphaMaxStart:
+      typeIdx: 1
+      value: 1.000000
+    alphaMinEnd:
+      typeIdx: 1
+      value: 0.000000
+    alphaMinStart:
+      typeIdx: 1
+      value: 1.000000
+    colorEnd:
+      typeIdx: 4
+      value: {x: 1.000000, y: 1.000000, z: 1.000000}
+    colorStart:
+      typeIdx: 4
+      value: {x: 1.000000, y: 1.000000, z: 1.000000}
+    customForceOrigin:
+      typeIdx: 4
+      value: {x: 0.000000, y: 0.000000, z: 0.000000}
+    customForceStrength:
+      typeIdx: 1
+      value: 1.000000
+    externalSeed:
+      typeIdx: 1
+      value: 0.000000
+    gravity:
+      typeIdx: 1
+      value: -3.000000
+    lifeTimeConstant:
+      typeIdx: 1
+      value: 5.000000
+    mainTexture:
+      typeIdx: 9
+      value:
+        id: c540ac51-4417-495f-a4f9-253c0dbf9b45
+        sampler:
+          filteringMode: Trilinear
+          wrapModeU: ClampToEdge
+          wrapModeV: ClampToEdge
+          wrapModeW: ClampToEdge
+          borderColor: {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
+          mipmaps: false
+        type: Texture2D
+    mainTextureTransform:
+      typeIdx: 7
+      value:
+        0: {x: 1.000000, y: 0.000000, z: 0.000000}
+        1: {x: 0.000000, y: 1.000000, z: 0.000000}
+        2: {x: 0.000000, y: 0.000000, z: 1.000000}
+    metallic:
+      typeIdx: 1
+      value: 0.000000
+    noiseFrequency:
+      typeIdx: 4
+      value: {x: 1.000000, y: 1.000000, z: 0.000000}
+    noiseMult:
+      typeIdx: 4
+      value: {x: 1.000000, y: 1.000000, z: 0.000000}
+    normalTexTransform:
+      typeIdx: 7
+      value:
+        0: {x: 1.000000, y: 0.000000, z: 0.000000}
+        1: {x: 0.000000, y: 1.000000, z: 0.000000}
+        2: {x: 0.000000, y: 0.000000, z: 1.000000}
+    rotationDrag:
+      typeIdx: 1
+      value: 0.000000
+    rotationRandom:
+      typeIdx: 3
+      value: {x: -360.000000, y: 360.000000}
+    rotationRate:
+      typeIdx: 3
+      value: {x: -1.000000, y: 1.000000}
+    roughness:
+      typeIdx: 1
+      value: 0.000000
+    sizeEnd:
+      typeIdx: 3
+      value: {x: 0.000000, y: 0.000000}
+    sizeSpeed:
+      typeIdx: 1
+      value: 1.000000
+    sizeStart:
+      typeIdx: 3
+      value: {x: 1.000000, y: 1.000000}
+    spawnBox:
+      typeIdx: 4
+      value: {x: 8.000000, y: 0.000000, z: 0.000000}
+    spawnDuration:
+      typeIdx: 1
+      value: 0.000000
+    spawnLocation:
+      typeIdx: 4
+      value: {x: 0.000000, y: 8.000000, z: 0.000000}
+    timeGlobal:
+      typeIdx: 1
+      value: 1.000000
+    velocityDrag:
+      typeIdx: 4
+      value: {x: 1.000000, y: 1.000000, z: 1.000000}
+    velocityMax:
+      typeIdx: 4
+      value: {x: 1.000000, y: 0.000000, z: 0.000000}
+    velocityMin:
+      typeIdx: 4
+      value: {x: -1.000000, y: 0.000000, z: 0.000000}
+  Pass: !<reference> b0b6a33e-aa82-4f6e-afa7-86f09a4c314e
