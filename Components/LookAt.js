@@ -1,116 +1,174 @@
-//@input SceneObject target
-//@input string mode = "lookAt" {"widget":"combobox", "values":[{"label":"Look At Point", "value":"lookAt"}, {"label":"Look At Direction", "value":"lookAtDir"}, {"label":"Billboard", "value":"billboard"}]}
-//@ui {"widget":"separator"}
-//@input string constrainAxis = "y" {"widget":"combobox", "values":[{"label":"X", "value":"x"}, {"label":"Y", "value":"y"}, {"label":"Z", "value":"z"}], "showIf":"mode", "showIfValue":"billboard"}
-//@input string up = "y" {"widget":"combobox", "values":[{"label":"X", "value":"x"}, {"label":"Y", "value":"y"}, {"label":"Z", "value":"z"}]}
-//@input string local = "world" {"widget":"combobox", "values":[{"label":"World", "value":"world"}, {"label":"Local", "value":"local"}]}
-//@input vec3 offsetRotation
-//@ui {"widget":"separator"}
-//@input bool smoothing
-//@input float smoothingVal = 5 {"showIf":"smoothing"}
-//@ui {"widget":"separator"}
-//@input bool flipFacingDir
-//@input bool onUpdate
-//@input bool onStart
+/*
+LookAt.js
+Version: 0.1.1
+Description: Rotates this SceneObject to face a target using various modes.
+             Supports Look At Point, Look At Direction, and Billboard modes
+             with optional axis constraints, smoothing, and rotation offsets.
+Author: Bennyp3333 [https://benjamin-p.dev]
 
-var self = script.getSceneObject();
-var selfTransform = self.getTransform();
+ ==== USAGE ====
+ 1. Add this script to the SceneObject you want to rotate
+ 2. Assign a target (defaults to main camera if not set)
+ 3. Choose a mode: Look At Point, Look At Direction, or Billboard
+ 4. Configure up vector, smoothing, and other options as needed
 
+ ==== API ====
+ script.lookAt(instant?) - Manually trigger look at calculation
+ script.start() - Enable continuous updates
+ script.stop() - Disable continuous updates
+ script.setTarget(SceneObject) - Change target at runtime
+*/
+
+//@input SceneObject target {"hint": "Target to look at (defaults to camera)"}
+//@input string mode = "lookAt" {"widget": "combobox", "values": [{"label": "Look At Point", "value": "lookAt"}, {"label": "Look At Direction", "value": "lookAtDir"}, {"label": "Billboard", "value": "billboard"}]}
+
+//@ui {"widget": "separator"}
+//@ui {"widget": "label", "label": "Orientation"}
+//@input string constrainAxis = "y" {"label": "Constrain Axis", "widget": "combobox", "values": [{"label": "X", "value": "x"}, {"label": "Y", "value": "y"}, {"label": "Z", "value": "z"}], "showIf": "mode", "showIfValue": "billboard"}
+//@input string up = "y" {"label": "Up Vector", "widget": "combobox", "values": [{"label": "X", "value": "x"}, {"label": "Y", "value": "y"}, {"label": "Z", "value": "z"}]}
+//@input string space = "world" {"label": "Space", "widget": "combobox", "values": [{"label": "World", "value": "world"}, {"label": "Local", "value": "local"}]}
+//@input vec3 offsetRotation {"label": "Rotation Offset", "hint": "Offset in degrees"}
+//@input bool flipFacingDir {"label": "Flip Direction"}
+
+//@ui {"widget": "separator"}
+//@ui {"widget": "label", "label": "Smoothing"}
+//@input bool enableSmoothing {"label": "Enable Smoothing"}
+//@input float smoothingSpeed = 5 {"label": "Smoothing Speed", "showIf": "enableSmoothing", "hint": "Higher = faster"}
+
+//@ui {"widget": "separator"}
+//@ui {"widget": "label", "label": "Execution"}
+//@input bool runOnStart = true {"label": "Run On Start"}
+//@input bool runOnUpdate = true {"label": "Run On Update"}
+
+//@ui {"widget": "separator"}
+//@input bool enableLogging = false {"label": "Enable Logging"}
+
+var sceneObject = script.getSceneObject();
+var transform = sceneObject.getTransform();
 var targetTransform = null;
-var targetPos = new vec3(0, 0, 0);
-var selfPos = new vec3(0, 0, 0);
+
+// ===== Initialization =====
 
 function init() {
     if (!script.target) {
         script.target = global.MainCamera ? global.MainCamera : findCamera();
     }
+    
+    if (!script.target) {
+        debugLog("WARNING: No target found", true);
+        return;
+    }
+    
     targetTransform = script.target.getTransform();
-    updateEvent.enabled = script.onUpdate;
-    if (script.onStart) {
-        script.lookAt();
+    updateEvent.enabled = script.runOnUpdate;
+    
+    debugLog("Initialized - Mode: " + script.mode + ", Target: " + script.target.name);
+    
+    if (script.runOnStart) {
+        doLookAt(true);
     }
 }
 
-script.start = function () {
-    updateEvent.enabled = true;
-};
+// ===== Core Functions =====
 
-script.stop = function () {
-    updateEvent.enabled = false;
-};
-
-script.lookAt = function () {
-    if (!targetTransform || !selfTransform) {
-        print("[LookAt] Missing transforms.");
+function doLookAt(instant) {
+    if (!targetTransform || !transform) {
+        debugLog("WARNING: Missing transforms", true);
         return;
     }
 
     var upVec = getUpVector(script.up);
-    var localMode = script.local === "local";
-
+    var isLocal = script.space === "local";
     var targetPos = targetTransform.getWorldPosition();
-    var selfPos = selfTransform.getWorldPosition();
-
-    var parentTransform = self.getParent() ? self.getParent().getTransform() : null;
-    var worldToLocalMat = parentTransform ? parentTransform.getWorldTransform().inverse() : mat4.identity();
+    var selfPos = transform.getWorldPosition();
 
     var lookQuat = null;
 
     if (script.mode === "lookAt") {
         var dir = script.flipFacingDir ? selfPos.sub(targetPos) : targetPos.sub(selfPos);
         if (dir.lengthSquared === 0) return;
-
         lookQuat = quat.lookAt(dir.normalize(), upVec);
+        
     } else if (script.mode === "lookAtDir") {
-        var forwardVec = script.flipFacingDir ? targetTransform.forward.uniformScale(-1) : targetTransform.forward;
+        var forwardVec = script.flipFacingDir 
+            ? targetTransform.forward.uniformScale(-1) 
+            : targetTransform.forward;
         if (forwardVec.lengthSquared === 0) return;
-
         lookQuat = quat.lookAt(forwardVec.normalize(), upVec);
+        
     } else if (script.mode === "billboard") {
         var lookDir = script.flipFacingDir ? selfPos.sub(targetPos) : targetPos.sub(selfPos);
-        lookDir = constrainDir(lookDir, script.constrainAxis);
+        lookDir = constrainDirection(lookDir, script.constrainAxis);
         if (lookDir.lengthSquared === 0) return;
-
         lookQuat = quat.lookAt(lookDir.normalize(), upVec);
     }
 
-    lookQuat = applyRotOffset(lookQuat, script.offsetRotation);
+    lookQuat = applyRotationOffset(lookQuat, script.offsetRotation);
 
-    if(script.smoothing){
-        var currentRotation = localMode ? selfTransform.getLocalRotation() : selfTransform.getWorldRotation();
-        lookQuat = quat.slerp(currentRotation, lookQuat, script.smoothingVal * getDeltaTime());
+    if (script.enableSmoothing && !instant) {
+        var currentRotation = isLocal 
+            ? transform.getLocalRotation() 
+            : transform.getWorldRotation();
+        lookQuat = quat.slerp(currentRotation, lookQuat, script.smoothingSpeed * getDeltaTime());
     }
     
-    if (localMode) {
-        selfTransform.setLocalRotation(lookQuat);
+    if (isLocal) {
+        transform.setLocalRotation(lookQuat);
     } else {
-        selfTransform.setWorldRotation(lookQuat);
+        transform.setWorldRotation(lookQuat);
     }
+}
+
+// ===== Public API =====
+
+script.lookAt = function(instant) {
+    doLookAt(instant);
 };
 
-var updateEvent = script.createEvent("UpdateEvent");
-updateEvent.enabled = false;
-updateEvent.bind(script.lookAt);
+script.start = function() {
+    updateEvent.enabled = true;
+    debugLog("Started updates");
+};
 
-function constrainDir(dir, axis) {
-    var constrainedDir = new vec3(dir.x, dir.y, dir.z);
-    if (axis === "x") { constrainedDir.x = 0; }
-    if (axis === "y") { constrainedDir.y = 0; }
-    if (axis === "z") { constrainedDir.z = 0; }
-    return constrainedDir;
+script.stop = function() {
+    updateEvent.enabled = false;
+    debugLog("Stopped updates");
+};
+
+script.setTarget = function(newTarget) {
+    if (!newTarget) {
+        debugLog("WARNING: setTarget called with null", true);
+        return;
+    }
+    script.target = newTarget;
+    targetTransform = newTarget.getTransform();
+    debugLog("Target changed to: " + newTarget.name);
+};
+
+// ===== Helper Functions =====
+
+function constrainDirection(dir, axis) {
+    var constrained = new vec3(dir.x, dir.y, dir.z);
+    if (axis === "x") constrained.x = 0;
+    if (axis === "y") constrained.y = 0;
+    if (axis === "z") constrained.z = 0;
+    return constrained;
 }
 
 function getUpVector(axis) {
-    if (axis === "x") { return new vec3(1, 0, 0); }
-    if (axis === "y") { return new vec3(0, 1, 0); }
-    if (axis === "z") { return new vec3(0, 0, 1); }
+    if (axis === "x") return new vec3(1, 0, 0);
+    if (axis === "y") return new vec3(0, 1, 0);
+    if (axis === "z") return new vec3(0, 0, 1);
     return new vec3(0, 1, 0);
 }
 
-function applyRotOffset(rotation, offsetRotDeg) {
-    var rotToApply = quat.fromEulerAngles(degToRad(offsetRotDeg.x), 
-        degToRad(offsetRotDeg.y), degToRad(offsetRotDeg.z));
-    return rotation.multiply(rotToApply);
+function applyRotationOffset(rotation, offsetDeg) {
+    var offsetQuat = quat.fromEulerAngles(
+        degToRad(offsetDeg.x), 
+        degToRad(offsetDeg.y), 
+        degToRad(offsetDeg.z)
+    );
+    return rotation.multiply(offsetQuat);
 }
 
 function degToRad(degrees) {
@@ -119,12 +177,42 @@ function degToRad(degrees) {
 
 function findCamera() {
     for (var i = 0; i < global.scene.getRootObjectsCount(); i++) {
-        var object = global.scene.getRootObject(i);
-        if (object.getComponents("Component.Camera").length > 0) {
-            print("[LookAt] Found camera: " + object.name);
-            return object;
-        }
+        var rootObject = global.scene.getRootObject(i);
+        var found = findCameraInHierarchy(rootObject);
+        if (found) return found;
     }
+    debugLog("WARNING: No camera found in scene", true);
+    return null;
 }
+
+function findCameraInHierarchy(obj) {
+    if (obj.getComponents("Component.Camera").length > 0) {
+        debugLog("Found camera: " + obj.name);
+        return obj;
+    }
+    
+    for (var i = 0; i < obj.getChildrenCount(); i++) {
+        var found = findCameraInHierarchy(obj.getChild(i));
+        if (found) return found;
+    }
+    return null;
+}
+
+// ===== Debug =====
+
+function debugLog(message, force) {
+    if (!force && !script.enableLogging) return;
+    var newLog = "[LookAt]-" + sceneObject.name + " " + message;
+    if (global.textLogger) global.logToScreen(newLog);
+    print(newLog);
+}
+
+// ===== Events =====
+
+var updateEvent = script.createEvent("UpdateEvent");
+updateEvent.enabled = false;
+updateEvent.bind(function() {
+    doLookAt(false);
+});
 
 script.createEvent("OnStartEvent").bind(init);

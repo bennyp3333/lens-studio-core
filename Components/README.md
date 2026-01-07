@@ -104,22 +104,39 @@ Makes objects orient themselves toward a target with multiple facing modes.
 - Configurable up vector and axis constraints
 - Rotation offset support
 - World or local space operation
-- Can be triggered on update, on start, or manually
+- Runtime target switching via API
 
 **Common Use Cases:**
 - UI elements that face the camera
 - Characters or objects tracking a target
 - Billboarded sprites and effects
 
+### [ScreenToWorld.js](./ScreenToWorld.js)
+
+Places an object at a screen position converted to world space.
+
+**Key Features:**
+- Normalized screen coordinates (0-1)
+- Configurable world depth from camera
+- Optional position smoothing
+- Auto-finds perspective camera if not assigned
+- Runtime position updates via API
+
+**Common Use Cases:**
+- Screen-anchored 3D elements
+- Touch/tap position indicators
+- HUD elements in world space
+- Screen-relative object placement
+
 ### [SmoothFollow.js](./SmoothFollow.js)
 
 Makes an object smoothly follow another object's position and/or rotation.
 
 **Key Features:**
-- Independent position and rotation smoothing
-- Adjustable smoothing speeds
-- Can be started, stopped, and reset programmatically
-- Update attachment target at runtime
+- Independent position and rotation following
+- Adjustable smoothing speeds for each
+- Instant snap option for manual updates
+- Runtime target switching via API
 
 **Common Use Cases:**
 - Smooth camera following
