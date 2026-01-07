@@ -8,7 +8,7 @@ The Classes folder contains core JavaScript classes that can be instantiated and
 
 ## Available Classes
 
-### CallbackTracker
+### [CallbackTracker.js](./CallbackTracker.js)
 
 A flexible callback management system that supports multiple callback types and event-driven architecture.
 
@@ -57,7 +57,7 @@ tracker.removeCallback("onTap", myCallback);
 
 ---
 
-### DelayManager
+### [DelayManager.js](./DelayManager.js)
 
 A comprehensive timing and delayed execution system with support for loops, tags, and both time-based and frame-based delays.
 
