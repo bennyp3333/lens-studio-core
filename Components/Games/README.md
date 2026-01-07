@@ -1,12 +1,12 @@
 # Games
 
-Utility components for game mechanics including timers and score tracking in Lens Studio.
+Utility components for game mechanics including timers, score tracking, and input detection in Lens Studio.
 
 ## Overview
 
-The Games folder contains components commonly needed for game-style lenses. These scripts handle timing, scoring, and persistent data storage, allowing you to focus on gameplay rather than boilerplate.
+The Games folder contains components commonly needed for game-style lenses. These scripts handle timing, scoring, input detection, and persistent data storage, allowing you to focus on gameplay rather than boilerplate.
 
-Both components follow the same patterns: configure via Inspector for quick setup, or use the chainable API for programmatic control. They support automatic text display updates and integrate with the Core prefab's debug logging.
+All components follow the same patterns: configure via Inspector for quick setup, or use the chainable/event-based API for programmatic control. They support automatic text display updates and integrate with the Core prefab's debug logging.
 
 ## Components
 
@@ -47,6 +47,25 @@ Score tracking with formatting options, multiplier support, and persistent high 
 - Persistent high score via Lens Studio storage
 - Separate text components for current score and high score
 - Callbacks for score changes and new high scores
+
+### [SwipeDetector.js](./SwipeDetector.js)
+
+Generalized swipe detection with configurable thresholds and event-based callbacks.
+
+**Basic Setup:**
+1. Attach SwipeDetector script to a SceneObject
+2. Configure swipe thresholds (max time, min distance) in the Inspector
+3. Bind to swipe events programmatically or configure callbacks in Inspector
+4. React to `onSwipeStart`, `onSwipeUpdate`, and `onSwipeEnd` events
+
+**Key Features:**
+- Three distinct events: start, update, and end
+- Automatic swipe validation based on configurable thresholds
+- Direction, distance, speed, and duration data
+- Programmatic event binding via `add()`/`remove()`
+- Inspector-configured global or custom script callbacks
+- Enable/disable detection at runtime
+- Optional update tracking during swipe
 
 ## Usage
 
@@ -170,6 +189,98 @@ function restartGame() {
 }
 ```
 
+### SwipeDetector Examples
+
+**Basic Swipe Detection:**
+```javascript
+//@input Component.ScriptComponent swipeDetector
+
+// Listen for completed swipes
+script.swipeDetector.onSwipeEnd.add(function(data) {
+    if (!data.isValid) return;
+    print("Swipe direction: " + data.direction.x + ", " + data.direction.y);
+});
+```
+
+**Flick to Shoot (Physics):**
+```javascript
+//@input Component.ScriptComponent swipeDetector
+//@input Component.ScriptComponent projectileController
+
+var forceMultiplier = 10000;
+var hopMultiplier = 1000;
+
+script.swipeDetector.onSwipeEnd.add(function(data) {
+    if (!data.isValid) return;
+    
+    // Convert 2D swipe to 3D force
+    var force = new vec3(data.direction.x, 0, data.direction.y);
+    force = force.uniformScale(forceMultiplier);
+    force.y = data.speed * hopMultiplier;
+    
+    script.projectileController.shoot(force);
+});
+```
+
+**Visual Swipe Feedback:**
+```javascript
+//@input Component.ScriptComponent swipeDetector
+//@input SceneObject swipeIndicator
+
+script.swipeDetector.onSwipeStart.add(function(data) {
+    script.swipeIndicator.enabled = true;
+    setIndicatorPosition(data.touchPos);
+});
+
+script.swipeDetector.onSwipeUpdate.add(function(data) {
+    updateIndicatorArrow(data.direction, data.distance);
+});
+
+script.swipeDetector.onSwipeEnd.add(function(data) {
+    script.swipeIndicator.enabled = false;
+});
+```
+
+**Directional Swipe Actions:**
+```javascript
+//@input Component.ScriptComponent swipeDetector
+
+script.swipeDetector.onSwipeEnd.add(function(data) {
+    if (!data.isValid) return;
+    
+    // Determine primary direction
+    var dir = data.direction;
+    if (Math.abs(dir.x) > Math.abs(dir.y)) {
+        // Horizontal swipe
+        if (dir.x > 0) {
+            onSwipeRight();
+        } else {
+            onSwipeLeft();
+        }
+    } else {
+        // Vertical swipe
+        if (dir.y > 0) {
+            onSwipeUp();
+        } else {
+            onSwipeDown();
+        }
+    }
+});
+```
+
+**Disable During UI:**
+```javascript
+function openMenu() {
+    script.swipeDetector.setEnabled(false);
+    showMenuUI();
+}
+
+function closeMenu() {
+    hideMenuUI();
+    script.swipeDetector.setEnabled(true);
+}
+```
+
 ## Inspector Configuration
 
 ### Timer Settings
@@ -201,6 +312,26 @@ function restartGame() {
 | **highScoreTextComponent** | Text component for high score | None |
 | **highScoreText3DComponent** | Text3D for high score | None |
 
+### SwipeDetector Settings
+
+| Property | Description | Default |
+|----------|-------------|---------|
+| **enabled** | Enable swipe detection | true |
+| **maxSwipeTime** | Maximum duration for valid swipe (seconds) | 0.5 |
+| **minSwipeDistance** | Minimum distance for valid swipe (screen units) | 0.1 |
+| **enableCallbacks** | Enable Inspector-configured callbacks | false |
+| **callbackType** | Global Function (0) or Custom Script (1) | 0 |
+| **onSwipeStartGlobalName** | Global function for swipe start | "" |
+| **onSwipeUpdateGlobalName** | Global function for swipe update | "" |
+| **onSwipeEndGlobalName** | Global function for swipe end | "" |
+| **customScript** | Script component for custom callbacks | None |
+| **onSwipeStartFunctionName** | Function name for swipe start | "" |
+| **onSwipeUpdateFunctionName** | Function name for swipe update | "" |
+| **onSwipeEndFunctionName** | Function name for swipe end | "" |
+| **touchBlockingEnabled** | Block touches from passing through | true |
+| **trackUpdates** | Fire onSwipeUpdate during swipe | true |
+| **enableLogging** | Enable debug logging | false |
+
 ## Format Tokens (Timer)
 
 | Token | Description | Example |
@@ -222,6 +353,37 @@ function restartGame() {
 - `"s"` → "90" (total seconds when no h/m tokens)
 - `"ss.S"` → "05.3"
 - `"h:mm:ss"` → "1:02:30"
+
+## Event Data (SwipeDetector)
+
+### onSwipeStart
+
+| Property | Type | Description |
+|----------|------|-------------|
+| **touchPos** | vec2 | Screen position where touch started |
+| **time** | number | Timestamp of touch start |
+
+### onSwipeUpdate
+
+| Property | Type | Description |
+|----------|------|-------------|
+| **startPos** | vec2 | Screen position where swipe started |
+| **currentPos** | vec2 | Current touch position |
+| **direction** | vec2 | Normalized direction vector |
+| **distance** | number | Distance traveled so far |
+| **elapsed** | number | Time elapsed since start |
+
+### onSwipeEnd
+
+| Property | Type | Description |
+|----------|------|-------------|
+| **startPos** | vec2 | Screen position where swipe started |
+| **endPos** | vec2 | Screen position where touch ended |
+| **direction** | vec2 | Normalized direction vector |
+| **distance** | number | Total distance traveled |
+| **duration** | number | Total swipe duration in seconds |
+| **speed** | number | Average speed (distance/duration) |
+| **isValid** | boolean | Whether swipe meets threshold criteria |
 
 ## Timer API
 
@@ -287,6 +449,26 @@ script.getMultiplier()            // Get current multiplier
 script.resetMultiplier()          // Reset multiplier to 1
 ```
 
+## SwipeDetector API
+
+```javascript
+// Events (add/remove callbacks)
+script.onSwipeStart.add(callback)     // Called on touch start: (data)
+script.onSwipeStart.remove(callback)  // Remove callback
+script.onSwipeUpdate.add(callback)    // Called during swipe: (data)
+script.onSwipeUpdate.remove(callback) // Remove callback
+script.onSwipeEnd.add(callback)       // Called on touch end: (data)
+script.onSwipeEnd.remove(callback)    // Remove callback
+
+// Control
+script.setEnabled(bool)           // Enable/disable detection
+script.resetSwipe()               // Reset swipe state
+
+// State
+script.isEnabled()                // Check if detection is enabled
+script.isSwiping()                // Check if swipe is in progress
+```
+
 ## Common Patterns
 
 ### Timed Game Round
@@ -325,10 +507,71 @@ function onPlayerDeath() {
 }
 ```
 
+### Swipe-to-Throw Game
+
+```javascript
+//@input Component.ScriptComponent swipeDetector
+//@input Component.ScriptComponent score
+//@input Component.ScriptComponent timer
+
+var forceMultiplier = 5000;
+
+function startGame() {
+    script.score.reset();
+    script.swipeDetector.setEnabled(true);
+    script.timer.start(endGame);
+}
+
+script.swipeDetector.onSwipeEnd.add(function(data) {
+    if (!data.isValid) return;
+    
+    var force = new vec3(data.direction.x, data.speed * 0.5, data.direction.y);
+    force = force.uniformScale(forceMultiplier);
+    
+    throwProjectile(force, function(hitTarget) {
+        if (hitTarget) {
+            script.score.increment(10);
+        }
+    });
+});
+
+function endGame() {
+    script.swipeDetector.setEnabled(false);
+    showFinalScore(script.score.getScore());
+}
+```
+
+### Multi-Directional Swipe Menu
+
+```javascript
+//@input Component.ScriptComponent swipeDetector
+
+var swipeThreshold = 0.7; // How "straight" the swipe needs to be
+
+script.swipeDetector.onSwipeEnd.add(function(data) {
+    if (!data.isValid) return;
+    
+    var dir = data.direction;
+    
+    // Check for cardinal direction swipes
+    if (dir.y > swipeThreshold) {
+        navigateUp();
+    } else if (dir.y < -swipeThreshold) {
+        navigateDown();
+    } else if (dir.x > swipeThreshold) {
+        navigateRight();
+    } else if (dir.x < -swipeThreshold) {
+        navigateLeft();
+    }
+});
+```
+
 ## Best Practices
 
 - **Configure in Inspector** - Set defaults in Inspector, override programmatically only when needed
-- **Use Callbacks** - React to timer completion and score changes via callbacks
+- **Use Callbacks** - React to timer completion, score changes, and swipe events via callbacks
 - **Unique Storage Keys** - Use descriptive keys for high scores if you have multiple score types
 - **Reset on Restart** - Call `reset()` and `stop()` when restarting games
-- **Debug During Development** - Enable debug logging to trace timer ticks and score changes
+- **Check isValid** - Always check `data.isValid` in `onSwipeEnd` before processing swipes
+- **Disable When Needed** - Use `setEnabled(false)` to disable swipe detection during menus or cutscenes
+- **Debug During Development** - Enable debug logging to trace timer ticks, score changes, and swipe events
