@@ -33,7 +33,7 @@ function clamp(val, min, max) {
 function remap(val, inMin, inMax, outMin, outMax, shouldClamp) {
     var mapped = ((val - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
     if (shouldClamp) {
-        mapped = clamp(mapped, outMin, outMax);
+        mapped = clamp(mapped, Math.min(outMin, outMax), Math.max(outMin, outMax));
     }
     return mapped;
 }
