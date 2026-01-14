@@ -4,7 +4,7 @@ Utility components for game mechanics including timers, score tracking, and inpu
 
 ## Overview
 
-The Games folder contains components commonly needed for game-style lenses. These scripts handle timing, scoring, input detection, and persistent data storage, allowing you to focus on gameplay rather than boilerplate.
+The Games folder contains components commonly needed for game-style lenses. These scripts handle timing, scoring, input detection (touch and head tracking), and persistent data storage, allowing you to focus on gameplay rather than boilerplate.
 
 All components follow the same patterns: configure via Inspector for quick setup, or use the chainable/event-based API for programmatic control. They support automatic text display updates and integrate with the Core prefab's debug logging.
 
@@ -66,6 +66,26 @@ Generalized swipe detection with configurable thresholds and event-based callbac
 - Inspector-configured global or custom script callbacks
 - Enable/disable detection at runtime
 - Optional update tracking during swipe
+
+### [HeadTiltDetector.js](./HeadTiltDetector.js)
+
+Generalized head tilt detection for left/right decision-making with configurable thresholds and event-based callbacks.
+
+**Basic Setup:**
+1. Attach HeadTiltDetector script to a SceneObject
+2. Assign a Head component in the Inspector
+3. Configure tilt thresholds and timing to taste
+4. Bind to `onTiltUpdate` for continuous feedback or `onTiltDecision` for committed decisions
+
+**Key Features:**
+- Two distinct events: continuous tilt updates and committed decisions
+- Normalized tilt output (-1 to 1) based on commit threshold for easy UI feedback
+- Velocity-influenced detection rewards quick, intentional head tilts
+- Configurable activation/commit thresholds and hold duration
+- Pending direction and confidence values for visual feedback before commit
+- Cooldown system prevents accidental double-triggers
+- Programmatic event binding via `add()`/`remove()`
+- Inspector-configured global or custom script callbacks
 
 ## Usage
 
@@ -281,6 +301,98 @@ function closeMenu() {
 }
 ```
 
+### HeadTiltDetector Examples
+
+**Basic Decision Detection:**
+```javascript
+//@input Component.ScriptComponent headTiltDetector
+
+// Listen for committed decisions
+script.headTiltDetector.onTiltDecision.add(function(data) {
+    if (data.isRight) {
+        selectRightOption();
+    } else {
+        selectLeftOption();
+    }
+});
+```
+
+**Visual Tilt Feedback:**
+```javascript
+//@input Component.ScriptComponent headTiltDetector
+//@input SceneObject tiltIndicator
+
+script.headTiltDetector.onTiltUpdate.add(function(data) {
+    // Use normalized value (-1 to 1) to position indicator
+    var indicatorPos = script.tiltIndicator.getTransform().getLocalPosition();
+    indicatorPos.x = data.normalized * maxOffset;
+    script.tiltIndicator.getTransform().setLocalPosition(indicatorPos);
+});
+```
+
+**Pending Decision Feedback:**
+```javascript
+//@input Component.ScriptComponent headTiltDetector
+//@input SceneObject leftHighlight
+//@input SceneObject rightHighlight
+
+script.headTiltDetector.onTiltUpdate.add(function(data) {
+    // Show which option is about to be selected
+    script.leftHighlight.enabled = (data.pendingDirection === -1);
+    script.rightHighlight.enabled = (data.pendingDirection === 1);
+    
+    // Optionally scale highlight by confidence
+    if (data.pendingDirection !== 0) {
+        var highlight = data.pendingDirection === 1 ? script.rightHighlight : script.leftHighlight;
+        var scale = 0.8 + (data.confidence * 0.4); // Scale from 0.8 to 1.2
+        highlight.getTransform().setLocalScale(new vec3(scale, scale, scale));
+    }
+});
+```
+
+**This or That Game:**
+```javascript
+//@input Component.ScriptComponent headTiltDetector
+//@input Component.ScriptComponent score
+
+var currentQuestion = 0;
+var questions = [
+    { left: "Pizza", right: "Tacos" },
+    { left: "Beach", right: "Mountains" },
+    { left: "Coffee", right: "Tea" }
+];
+
+script.headTiltDetector.onTiltDecision.add(function(data) {
+    var choice = data.isRight ? questions[currentQuestion].right : questions[currentQuestion].left;
+    print("You chose: " + choice);
+    
+    script.score.increment();
+    currentQuestion++;
+    
+    if (currentQuestion >= questions.length) {
+        showResults();
+    } else {
+        showNextQuestion();
+    }
+});
+```
+
+**Disable During Transitions:**
+```javascript
+//@input Component.ScriptComponent headTiltDetector
+
+function onDecisionMade() {
+    // Disable detection during animation
+    script.headTiltDetector.setEnabled(false);
+    
+    playTransitionAnimation(function() {
+        // Re-enable after animation completes
+        script.headTiltDetector.resetState();
+        script.headTiltDetector.setEnabled(true);
+    });
+}
+```
+
 ## Inspector Configuration
 
 ### Timer Settings
@@ -330,6 +442,30 @@ function closeMenu() {
 | **onSwipeEndFunctionName** | Function name for swipe end | "" |
 | **touchBlockingEnabled** | Block touches from passing through | true |
 | **trackUpdates** | Fire onSwipeUpdate during swipe | true |
+| **enableLogging** | Enable debug logging | false |
+
+### HeadTiltDetector Settings
+
+| Property | Description | Default |
+|----------|-------------|---------|
+| **head** | Head component for tracking | None |
+| **enabled** | Enable tilt detection | true |
+| **activationThreshold** | Tilt amount to start tracking potential decision | 0.2 |
+| **commitThreshold** | Tilt amount required to confirm decision | 0.3 |
+| **neutralZone** | Dead zone around center to prevent drift | 0.1 |
+| **holdDuration** | Seconds to hold tilt before confirming | 0.2 |
+| **cooldownDuration** | Seconds after decision before next can be made | 0.25 |
+| **smoothingFactor** | Responsiveness (higher = more responsive) | 0.4 |
+| **velocityInfluence** | How much quick movements boost signal | 0.5 |
+| **quickTiltMultiplier** | Threshold multiplier for fast snappy tilts | 1.3 |
+| **enableCallbacks** | Enable Inspector-configured callbacks | false |
+| **callbackType** | Global Function (0) or Custom Script (1) | 0 |
+| **onTiltUpdateGlobalName** | Global function for tilt updates | "" |
+| **onTiltDecisionGlobalName** | Global function for decisions | "" |
+| **customScript** | Script component for custom callbacks | None |
+| **onTiltUpdateFunctionName** | Function name for tilt updates | "" |
+| **onTiltDecisionFunctionName** | Function name for decisions | "" |
+| **trackUpdates** | Fire onTiltUpdate every frame | true |
 | **enableLogging** | Enable debug logging | false |
 
 ## Format Tokens (Timer)
@@ -384,6 +520,28 @@ function closeMenu() {
 | **duration** | number | Total swipe duration in seconds |
 | **speed** | number | Average speed (distance/duration) |
 | **isValid** | boolean | Whether swipe meets threshold criteria |
+
+## Event Data (HeadTiltDetector)
+
+### onTiltUpdate
+
+| Property | Type | Description |
+|----------|------|-------------|
+| **raw** | number | Unfiltered head tilt value |
+| **smoothed** | number | Smoothed/filtered tilt value |
+| **normalized** | number | Tilt mapped to -1 (left) to 1 (right) based on commitThreshold |
+| **velocity** | number | Rate of tilt change |
+| **pendingDirection** | number | Direction about to be selected (-1 left, 0 none, 1 right) |
+| **confidence** | number | How close to committing (0 to 1) |
+| **isInCooldown** | boolean | Whether in cooldown period after a decision |
+
+### onTiltDecision
+
+| Property | Type | Description |
+|----------|------|-------------|
+| **isRight** | boolean | True if tilted right, false if tilted left |
+| **direction** | number | -1 for left, 1 for right |
+| **confidence** | number | Confidence level at time of decision (0 to 1) |
 
 ## Timer API
 
@@ -467,6 +625,27 @@ script.resetSwipe()               // Reset swipe state
 // State
 script.isEnabled()                // Check if detection is enabled
 script.isSwiping()                // Check if swipe is in progress
+```
+
+## HeadTiltDetector API
+
+```javascript
+// Events (add/remove callbacks)
+script.onTiltUpdate.add(callback)     // Called every frame: (data)
+script.onTiltUpdate.remove(callback)  // Remove callback
+script.onTiltDecision.add(callback)   // Called on committed decision: (data)
+script.onTiltDecision.remove(callback) // Remove callback
+
+// Control
+script.setEnabled(bool)           // Enable/disable detection
+script.resetState()               // Reset tilt tracking state
+
+// State
+script.isEnabled()                // Check if detection is enabled
+script.getSmoothedTilt()          // Get current smoothed tilt value
+script.getRawTilt()               // Get current raw tilt value
+script.getPendingDirection()      // Get pending direction (-1, 0, 1)
+script.getConfidence()            // Get current decision confidence (0-1)
 ```
 
 ## Common Patterns
@@ -566,12 +745,53 @@ script.swipeDetector.onSwipeEnd.add(function(data) {
 });
 ```
 
+### Head Tilt Decision Game
+
+```javascript
+//@input Component.ScriptComponent headTiltDetector
+//@input Component.ScriptComponent score
+//@input Component.ScriptComponent timer
+
+function startGame() {
+    script.score.reset();
+    script.headTiltDetector.setEnabled(true);
+    script.timer.start(endGame);
+    showNextQuestion();
+}
+
+script.headTiltDetector.onTiltDecision.add(function(data) {
+    var isCorrect = checkAnswer(data.isRight);
+    
+    if (isCorrect) {
+        script.score.increment(10);
+        playCorrectSound();
+    } else {
+        playWrongSound();
+    }
+    
+    // Brief pause before next question
+    script.headTiltDetector.setEnabled(false);
+    delayedCall(0.5, function() {
+        script.headTiltDetector.resetState();
+        script.headTiltDetector.setEnabled(true);
+        showNextQuestion();
+    });
+});
+
+function endGame() {
+    script.headTiltDetector.setEnabled(false);
+    showFinalScore(script.score.getScore());
+}
+```
+
 ## Best Practices
 
 - **Configure in Inspector** - Set defaults in Inspector, override programmatically only when needed
-- **Use Callbacks** - React to timer completion, score changes, and swipe events via callbacks
+- **Use Callbacks** - React to timer completion, score changes, swipe events, and tilt decisions via callbacks
 - **Unique Storage Keys** - Use descriptive keys for high scores if you have multiple score types
 - **Reset on Restart** - Call `reset()` and `stop()` when restarting games
 - **Check isValid** - Always check `data.isValid` in `onSwipeEnd` before processing swipes
-- **Disable When Needed** - Use `setEnabled(false)` to disable swipe detection during menus or cutscenes
-- **Debug During Development** - Enable debug logging to trace timer ticks, score changes, and swipe events
+- **Disable When Needed** - Use `setEnabled(false)` to disable input detection during menus or transitions
+- **Reset State After Disable** - Call `resetState()` on HeadTiltDetector after re-enabling to clear any pending decisions
+- **Use Normalized Tilt** - Use `data.normalized` from onTiltUpdate for UI feedback (maps to -1 to 1 range)
+- **Debug During Development** - Enable debug logging to trace timer ticks, score changes, swipe events, and tilt decisions
