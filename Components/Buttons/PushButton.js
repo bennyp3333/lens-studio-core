@@ -1,5 +1,5 @@
 // PushButton.js
-// Version: 0.1.0
+// Version: 0.1.1
 // Description: Trigger events by press.
 // Author: Bennyp3333 [https://benjamin-p.dev]
 //
@@ -248,7 +248,7 @@ function pressCallback() {
 function applyColor(color) {
 	if (!buttonImage || !buttonImage.mainPass) return;
 
-	currentAlpha = buttonImage.mainPass.baseColor.a;
+	var currentAlpha = buttonImage.mainPass.baseColor.a;
 
 	var newColor = new vec4(color.r, color.g, color.b, currentAlpha);
 	buttonImage.mainPass.baseColor = newColor;
