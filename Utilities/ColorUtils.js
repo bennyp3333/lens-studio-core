@@ -1,3 +1,10 @@
+/*
+ColorUtils.js
+Version: 1.0.0
+Description: Color space conversion and manipulation utilities for RGB, HSV, and hex color formats.
+Author: Bennyp3333 [https://benjamin-p.dev]
+*/
+
 /**
  * Converts an RGB color to HSV color space.
  * @param {vec3|vec4} color - The color in RGB space. Can be a vec3 (r, g, b) or vec4 (r, g, b, a).
@@ -26,13 +33,13 @@ function rgbToHsv(color) {
     }
 
     s = max === 0 ? 0 : delta / max;
-    
+
     if (color.w !== undefined) {
-        return new vec4(h, s, v, color.a);
+        return new vec4(h, s, v, color.w);
     } else {
         return new vec3(h, s, v);
     }
-    
+
 }
 
 /**
@@ -58,9 +65,9 @@ function hsvToRgb(color) {
     else if (hh < 4) { r = 0; g = x; b = c; }
     else if (hh < 5) { r = x; g = 0; b = c; }
     else { r = c; g = 0; b = x; }
-    
+
     if (color.w !== undefined) {
-        return new vec4(r + m, g + m, b + m, color.a);
+        return new vec4(r + m, g + m, b + m, color.w);
     } else {
         return new vec3(r + m, g + m, b + m);
     }

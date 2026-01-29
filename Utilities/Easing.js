@@ -1,3 +1,10 @@
+/*
+Easing.js
+Version: 1.0.0
+Description: Comprehensive collection of easing functions for smooth animations and transitions.
+Author: Bennyp3333 [https://benjamin-p.dev]
+*/
+
 // No easing, no acceleration
 function linear(t) {
     return t;

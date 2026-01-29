@@ -1,3 +1,10 @@
+/*
+ComponentUtils.js
+Version: 1.0.0
+Description: Component-level utilities for managing alpha values and material instances on visual components.
+Author: Bennyp3333 [https://benjamin-p.dev]
+*/
+
 /**
  * Retrieves the alpha value from the appropriate visual component on the given SceneObject.
  * Supports RenderMeshVisual, Image, Text3D, and Text components.

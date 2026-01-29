@@ -1,3 +1,10 @@
+/*
+SceneUtils.js
+Version: 1.0.0
+Description: Scene object search, traversal, and manipulation utilities for finding, filtering, and modifying scene hierarchies.
+Author: Bennyp3333 [https://benjamin-p.dev]
+*/
+
 /**
  * Sets the enabled/disabled state for objects/components.
  * @param {SceneObject|SceneObject[]|Component|Component[]} obj - The object/component or array of objects/components to enable or disable.

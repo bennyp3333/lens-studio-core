@@ -1,3 +1,10 @@
+/*
+ObjectUtils.js
+Version: 1.0.0
+Description: Object manipulation utilities for setting default values and managing object properties.
+Author: Bennyp3333 [https://benjamin-p.dev]
+*/
+
 /**
  * Sets a default value for a specified key in an object if the key does not already exist.
  * @param {Object} obj - The object to check and possibly modify.

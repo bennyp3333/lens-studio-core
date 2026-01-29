@@ -1,3 +1,10 @@
+/*
+SimpleTween.js
+Version: 1.0.0
+Description: Lightweight value tweening utility with update callbacks and delay support.
+Author: Bennyp3333 [https://benjamin-p.dev]
+*/
+
 /**
  * Performs a simple tweening animation between a starting and ending value over a specified time.
  * The tweening effect updates at a fixed rate, and both an update and a completion callback can be provided.

@@ -1,3 +1,10 @@
+/*
+StringUtils.js
+Version: 1.0.0
+Description: String manipulation and text processing utilities for similarity comparison, chunking, and ID generation.
+Author: Bennyp3333 [https://benjamin-p.dev]
+*/
+
 /**
  * Calculates the similarity between two strings based on their edit distance.
  * The result is a value between 0.0 (completely different) and 1.0 (exactly the same).
@@ -106,7 +113,7 @@ function chunkText(txt, len) {
                         splitsScore[s] = null;
                     }
                 }
-                var idxMaxScore = global.myTools.indexOfMax(splitsScore);
+                var idxMaxScore = global.utils.indexOfMax(splitsScore);
                 if (idxMaxScore != null) {
                     splitAt = splitsFound[idxMaxScore];
                 }

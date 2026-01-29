@@ -1,3 +1,10 @@
+/*
+MathUtils.js
+Version: 1.0.0
+Description: Mathematical operations and helper functions for interpolation, clamping, remapping, and conversions.
+Author: Bennyp3333 [https://benjamin-p.dev]
+*/
+
 /**
  * Linearly interpolates between two values a and b based on the interpolation factor t.
  * @param {number} a - The start value.

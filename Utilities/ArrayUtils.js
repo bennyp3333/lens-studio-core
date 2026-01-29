@@ -1,3 +1,10 @@
+/*
+ArrayUtils.js
+Version: 1.0.0
+Description: Array manipulation and utility functions for creating, cloning, filtering, and transforming arrays.
+Author: Bennyp3333 [https://benjamin-p.dev]
+*/
+
 /**
  * Creates a multi-dimensional array of the specified length.
  * @param {Number} length - The length of the array.
@@ -23,7 +30,7 @@ function createArray(length) {
 function cloneArray(array) {
     var clonedArray = Array(array.length);
 
-    for (i = 0; i < array.length; i++) {
+    for (var i = 0; i < array.length; i++) {
         clonedArray[i] = array[i];
     }
 
@@ -69,9 +76,11 @@ function arrayRemoveDuplicates(array) {
  * @param {Array} array - The array to shuffle.
  */
 function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
+    for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
     }
 }
 

@@ -1,3 +1,10 @@
+/*
+RandomUtils.js
+Version: 1.0.0
+Description: Random number generation and selection utilities for ranges, arrays, and objects.
+Author: Bennyp3333 [https://benjamin-p.dev]
+*/
+
 /**
  * Generates a random number between the specified range [lo, hi].
  * @param {number} lo - The lower bound of the range.
