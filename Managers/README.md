@@ -286,7 +286,7 @@ The Core prefab sets up these managers in the following order:
 
 This initialization order ensures dependencies are available when needed.
 
-> **Note:** All managers are enabled by default. Feel free to disable or remove any managers you're not using from the Core prefab hierarchy.
+> **Important:** For performance reasons, GlobalEvents, DelayManager, SpawnManager, GlobalUtils, and TextLogger scripts are **disabled by default** in the Core prefab's scene hierarchy. You must enable the specific manager scripts you need for your project before they become available. This prevents unnecessary overhead from unused managers.
 
 ## Integration Between Managers
 

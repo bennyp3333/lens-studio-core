@@ -12,7 +12,7 @@ Lens Studio Core is a foundational package designed to be added at the start of 
 2. **Add the Prefab**: Drag `Core.prefab` into the top of your Objects panel hierarchy
 3. **Start Building**: Access utilities, events, and managers throughout your project
 
-That's it! The Core prefab sets up global managers and utilities that are immediately available for use.
+> **Note**: Manager scripts are disabled in the scene hierarchy by default to avoid performance overhead. Enable the specific manager scripts you need (GlobalEvents, DelayManager, SpawnManager, Utilities, TextLogger) by checking them in the Core prefab hierarchy.
 
 ## What's Included
 
