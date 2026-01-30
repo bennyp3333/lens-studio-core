@@ -174,6 +174,36 @@ var bigObjects = global.utils.searchByPredicate(null, function(obj) {
 });
 ```
 
+### [ScreenUtils.js](./ScreenUtils.js)
+
+Screen space conversion and 2D collision detection utilities for ScreenTransform components.
+
+**Key Functions:**
+- `screenPoint01ToNormalized(point)` - Convert 0-1 screen space to -1 to 1 space
+- `screenPointNormalizedTo01(point)` - Convert -1 to 1 screen space to 0-1 space
+- `localToScreenRect(st, localRect)` - Convert local bounds to screen space
+- `screenToLocalRect(st, screenRect)` - Convert screen space bounds to local space
+- `pointInRect(point, rect)` - Check if a point is within a Rect
+- `rectsOverlap(a, b)` - Check if two Rects overlap
+- `isCenterWithinBounds(innerSt, outerSt)` - Check if center of one ScreenTransform is within another
+- `doBoundsOverlap(stA, stB)` - Check if two ScreenTransforms overlap in screen space
+- `getScreenSpaceDistance(stA, stB, camera)` - Calculate distance between ScreenTransform centers
+
+**Usage Example:**
+```javascript
+// Check if a UI element is within another's bounds
+var isInside = global.utils.isCenterWithinBounds(buttonSt, panelSt);
+
+// Check if two UI elements overlap
+var overlapping = global.utils.doBoundsOverlap(element1St, element2St);
+
+// Get distance between UI elements (with aspect ratio correction)
+var distance = global.utils.getScreenSpaceDistance(st1, st2, camera);
+
+// Convert screen coordinates
+var normalized = global.utils.screenPoint01ToNormalized(touchPoint);
+```
+
 ### [ComponentUtils.js](./ComponentUtils.js)
 
 Component-specific utilities for common operations.
