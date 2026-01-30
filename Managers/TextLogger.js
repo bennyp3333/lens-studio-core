@@ -1,5 +1,5 @@
 // ScreenLogger.js
-// Version: 2.1.0
+// Version: 2.1.1
 // Description: Prints the given message on the screen
 // Author: Bennyp3333 [https://benjamin-p.dev]
 
@@ -104,9 +104,9 @@ global.textLogger = {
         }else{
            queue.push(message.toString()); 
         }
-        
+
         var combText = "> " + queue.join("\n> ");
-        var croppedMessage = combText.substring(message.length - stringLength * script.logLimit);
+        var croppedMessage = combText.substring(Math.max(0, combText.length - stringLength * script.logLimit));
         if (textComponent) {
             textComponent.text = croppedMessage;
         }

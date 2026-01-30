@@ -1,6 +1,9 @@
-// -----JS CODE-----
-
-////// GLOBAL EVENT SYSTEM ////////////////////////////////////////////////
+/*
+GlobalEvents.js
+Version: 1.0.0
+Description: Global event system for triggering, adding, and removing custom event callbacks.
+Author: Bennyp3333 [https://benjamin-p.dev]
+*/
 
 var callbackTracker = null;
 if (global.CallbackTracker) {

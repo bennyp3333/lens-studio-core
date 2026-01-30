@@ -1,3 +1,10 @@
+/*
+GlobalUtils.js
+Version: 1.0.0
+Description: Consolidates utility functions from multiple utility modules into a single global.utils object.
+Author: Bennyp3333 [https://benjamin-p.dev]
+*/
+
 function tryRequire(file){
     try {
       return require(file);
@@ -27,7 +34,7 @@ function consolidateUtils() {
     
     // get utility functions from all scripts on this sceneobject
     const scripts = script.getSceneObject().getComponents("Component.ScriptComponent");
-    for (scriptKey in scripts) {
+    for (var scriptKey in scripts) {
         const scriptComp = scripts[scriptKey];
         if (!scriptComp.isSame(script)) {
             const utils = scriptComp.exports;

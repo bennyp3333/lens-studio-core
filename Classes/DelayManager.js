@@ -1,6 +1,6 @@
 /*
 DelayManager.js
-Version: 1.1.0
+Version: 1.1.1
 Description: A utility script for managing delayed function execution with support for time-based and frame-based delays, looping, tagging, and purging.
 Author: Bennyp3333 [https://benjamin-p.dev]
 
@@ -361,17 +361,17 @@ function ManagedDelay(manager, options){
         currentLoopIndex = 0;
 
         if(debug){
-            startMessage = "[ManagedDelay] Started delay " + this.id;
+            var startMessage = "[ManagedDelay] Started delay " + this.id;
             if(useFrames){
                 startMessage += " with frames: " + frameWait;
             }else{
                 startMessage += " with time: " + timeWait;
             }
-            
+
             if(loopCount > 1){
                 startMessage += ", loops: " + loopCount;
             }
-            
+
             print(startMessage);
         }
 

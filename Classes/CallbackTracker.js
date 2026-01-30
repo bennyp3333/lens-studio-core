@@ -1,3 +1,10 @@
+/*
+CallbackTracker.js
+Version: 1.0.0
+Description: Event callback management system with support for behaviors, global behaviors, and custom function invocation.
+Author: Bennyp3333 [https://benjamin-p.dev]
+*/
+
 global.CallbackTracker = CallbackTracker;
 
 function removeFromArray(array, element) {
