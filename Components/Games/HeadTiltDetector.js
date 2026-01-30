@@ -1,6 +1,6 @@
 /*
 HeadTiltDetector.js
-Version: 0.1.0
+Version: 0.1.1
 Description: Generalized head tilt detection with configurable thresholds and event binding options.
 Author: Bennyp3333 [https://benjamin-p.dev]
 
@@ -48,7 +48,7 @@ script.headTiltDetector.onTiltUpdate.add(function(data) {
 
 //@ui {"widget":"label", "label":"Head Tilt Detection Settings"}
 //@input Component.Head head {"label":"Head Component"}
-//@input bool enabled = true
+//@input bool detectionEnabled = true {"label":"Enabled"}
 
 //@ui {"widget":"separator"}
 //@ui {"widget":"label", "label":"Thresholds"}
@@ -175,7 +175,7 @@ function init() {
 
 // ===== Update Loop =====
 function onUpdate(eventData) {
-    if (!script.enabled || !headTransform) return;
+    if (!script.detectionEnabled || !headTransform) return;
     
     var deltaTime = eventData.getDeltaTime();
     
@@ -363,14 +363,14 @@ function triggerCallback(eventType, data) {
 
 // ===== Control Functions =====
 function setEnabled(bool) {
-    script.enabled = bool;
+    script.detectionEnabled = bool;
     if (!bool) {
         resetState();
     }
 }
 
 function isEnabled() {
-    return script.enabled;
+    return script.detectionEnabled;
 }
 
 function getSmoothedTilt() {
