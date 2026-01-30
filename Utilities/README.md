@@ -114,12 +114,30 @@ var color = global.utils.randomColorHue(0.8, 1.0, 1.0);
 
 ### [StringUtils.js](./StringUtils.js)
 
-String manipulation and analysis.
+String manipulation, analysis, and text animation utilities.
 
 **Key Functions:**
 - `stringSimilarity(s1, s2)` - Calculate similarity between strings (0.0 to 1.0)
 - `randomId(len)` - Generate random alphanumeric string
 - `chunkText(txt, len)` - Split text into chunks intelligently
+- `typeWrite(text, setter, options, callback)` - Typewriter effect for progressively revealing or deleting text
+
+**Usage Example:**
+```javascript
+// Typewriter effect on a Text component
+global.utils.typeWrite("Hello World!", function(txt) {
+    textComp.text = txt;
+}, { charDuration: 0.05 }, function() {
+    print("Done typing!");
+});
+
+// Delete text with typewriter effect
+global.utils.typeWrite("", function(txt) {
+    textComp.text = txt;
+}, { startText: textComp.text }, function() {
+    print("Text deleted!");
+});
+```
 
 ### [RandomUtils.js](./RandomUtils.js)
 

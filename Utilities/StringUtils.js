@@ -1,6 +1,6 @@
 /*
 StringUtils.js
-Version: 1.0.0
+Version: 1.1.0
 Description: String manipulation and text processing utilities for similarity comparison, chunking, and ID generation.
 Author: Bennyp3333 [https://benjamin-p.dev]
 */
@@ -126,11 +126,56 @@ function chunkText(txt, len) {
     return chunks;
 }
 
+/**
+ * Creates a typewriter effect that progressively reveals or deletes text.
+ * Uses global.simpleTween for animation timing.
+ *
+ * @param {string} text - The target text to type. Pass empty string "" to delete existing text.
+ * @param {function} setter - Function that receives the current text state, e.g., function(txt) { textComp.text = txt; }
+ * @param {object} [options] - Optional configuration object.
+ * @param {string} [options.startText=""] - The starting text (used when deleting). Defaults to empty string.
+ * @param {number} [options.charDuration=0.01] - Duration per character in seconds (for typing). Defaults to 0.01.
+ * @param {number} [options.deleteDuration=0.15] - Total duration for delete animation in seconds. Defaults to 0.15.
+ * @param {number} [options.delay=0] - Delay before starting the animation in seconds. Defaults to 0.
+ * @param {function} [callback] - Optional callback function called when the animation completes.
+ * @returns {Event|null} The tween update event for cancellation, or null if no animation needed.
+ */
+function typeWrite(text, setter, options, callback) {
+    var opts = options || {};
+    var charDuration = opts.charDuration !== undefined ? opts.charDuration : 0.01;
+    var deleteDuration = opts.deleteDuration !== undefined ? opts.deleteDuration : 0.15;
+    var delay = opts.delay !== undefined ? opts.delay : 0;
+    var startText = opts.startText !== undefined ? opts.startText : "";
+
+    var isDeleting = text === "";
+    var charCount = isDeleting ? startText.length : text.length;
+
+    if (charCount === 0) {
+        if (callback) callback();
+        return null;
+    }
+
+    var duration = isDeleting ? deleteDuration : charCount * charDuration;
+
+    return global.simpleTween(0, charCount, duration, delay, function(val) {
+        var charIndex = Math.floor(val);
+        if (isDeleting) {
+            setter(startText.substring(0, charCount - charIndex));
+        } else {
+            setter(text.substring(0, charIndex));
+        }
+    }, function() {
+        setter(isDeleting ? "" : text);
+        if (callback) callback();
+    });
+}
+
 // Exporting the functions
 var exports = {
     stringSimilarity,
     randomId,
-    chunkText
+    chunkText,
+    typeWrite
 };
 
 if(script){
