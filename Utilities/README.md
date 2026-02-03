@@ -147,6 +147,39 @@ Random number and selection utilities.
 - `randomRange(lo, hi)` - Random number in range
 - `arrayRandom(arr)` - Select random element from array
 - `objectRandom(obj)` - Select random element from object
+- `createDistributedRandom(min, max, minSpacing, historySize)` - Create a generator that produces evenly spaced random values
+
+`createDistributedRandom` returns a reusable generator function (not a value directly). Each call to the generator avoids clustering by rejecting values too close to recent outputs. This is useful for things like spawn positions or random timing where visual bunching looks unnatural. If no valid value is found after 50 attempts, it falls back to a purely random value.
+
+**Parameters:**
+- `min` - Minimum value of the range (inclusive)
+- `max` - Maximum value of the range (exclusive)
+- `minSpacing` - Minimum required distance between consecutive values
+- `historySize` *(optional, default 3)* - How many previous values to check against
+
+**Usage Example:**
+```javascript
+// Random range
+var angle = global.utils.randomRange(0, 360);
+
+// Random array element
+var color = global.utils.arrayRandom(["red", "green", "blue"]);
+
+// Distributed random - create the generator once, then call it repeatedly
+var getSpawnX = global.utils.createDistributedRandom(0, 1, 0.2, 3);
+
+// Each call returns a value at least 0.2 away from the last 3 values
+var x1 = getSpawnX(); // e.g., 0.72
+var x2 = getSpawnX(); // e.g., 0.31 (guaranteed ≥0.2 away from x1)
+var x3 = getSpawnX(); // e.g., 0.95 (guaranteed ≥0.2 away from x1 and x2)
+
+// Practical example: spawning objects without clustering
+var getSpawnPos = global.utils.createDistributedRandom(-2, 2, 0.8, 4);
+for (var i = 0; i < 5; i++) {
+    var pos = getSpawnPos();
+    spawnObject(new vec3(pos, 0, 0));
+}
+```
 
 ### [ObjectUtils.js](./ObjectUtils.js)
 
