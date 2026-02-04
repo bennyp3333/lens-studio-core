@@ -24,7 +24,7 @@ A flexible timer supporting countdown and countup modes with customizable displa
 - Countdown or countup modes
 - Flexible time formatting with tokens (hours, minutes, seconds, milliseconds)
 - Configurable tick interval for sub-second precision
-- Pause, resume, and stop controls
+- Pause, resume, stop, and reset controls
 - Callbacks for each tick and on completion
 - Auto-updates assigned Text components
 
@@ -204,8 +204,8 @@ function onEnemyDefeated(points) {
 ```javascript
 function restartGame() {
     script.score.reset();
-    script.timer.stop();
-    script.timer.start();
+    script.timer.reset(); // Reset display to initial time
+    script.timer.start(); // Start fresh
 }
 ```
 
@@ -562,6 +562,7 @@ script.start(onComplete?)         // Start timer
 script.pause()                    // Pause timer
 script.resume()                   // Resume from pause
 script.stop()                     // Stop and reset
+script.reset()                    // Reset to initial time without starting
 
 // State
 script.getTime()                  // Get current time in seconds

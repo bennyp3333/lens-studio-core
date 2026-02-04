@@ -1,6 +1,6 @@
 /*
 Timer.js
-Version: 0.1.0
+Version: 1.0.0
 Description: Generalized timer utility for Lens Studio
 Author: Bennyp3333 [https://benjamin-p.dev]
 
@@ -48,6 +48,7 @@ Author: Bennyp3333 [https://benjamin-p.dev]
  - pause()                    - Pause the timer
  - resume()                   - Resume from paused state
  - stop()                     - Stop and reset the timer
+ - reset()                    - Reset time to initial value without starting
  - getTime()                  - Get current time in seconds
  - getFormattedTime()         - Get current formatted time string
  - isRunning()                - Check if timer is active
@@ -218,6 +219,7 @@ script.start = function(completeCallback) {
         delayEvent = script.createEvent("DelayedCallbackEvent");
         delayEvent.bind(tick);
     }
+    delayEvent.enabled = true;
     delayEvent.reset(tickInterval);
     
     printDebug("Timer started - " + (countUp ? "counting up to " : "counting down from ") + maxTime + "s");
@@ -260,6 +262,20 @@ script.stop = function() {
     time = countUp ? 0 : maxTime;
     updateText();
     printDebug("Timer stopped and reset");
+    return script;
+};
+
+/**
+ * Reset the timer to its initial value without starting it
+ */
+script.reset = function() {
+    isRunning = false;
+    if (delayEvent) {
+        delayEvent.enabled = false;
+    }
+    time = countUp ? 0 : maxTime;
+    updateText();
+    printDebug("Timer reset to " + time + "s");
     return script;
 };
 
