@@ -29,15 +29,20 @@ def sync_files():
         # Ensure destination exists
         dest_dir.mkdir(parents=True, exist_ok=True)
 
-        # Copy all .js files
-        js_files = list(source_dir.glob("*.js"))
+        # Copy all .js files (recursive, but skip Example/Cache dirs)
+        js_files = [
+            f for f in source_dir.glob("**/*.js")
+            if not any(part in ("Example", "Cache") for part in f.relative_to(source_dir).parts)
+        ]
 
         if not js_files:
             print(f"  {folder}: No JS files found")
             continue
 
         for js_file in js_files:
-            dest_file = dest_dir / js_file.name
+            rel_path = js_file.relative_to(source_dir)
+            dest_file = dest_dir / rel_path
+            dest_file.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(js_file, dest_file)
             total_copied += 1
 
