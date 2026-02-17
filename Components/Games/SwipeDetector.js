@@ -45,7 +45,7 @@ script.swipeDetector.onSwipeUpdate.add(function(data) {
 */
 
 //@ui {"widget":"label", "label":"Swipe Detection Settings"}
-//@input bool enabled = true
+//@input bool detectionEnabled = true {"label":"Enabled"}
 //@input float maxSwipeTime = 0.5 {"label":"Max Swipe Time (s)", "hint":"Maximum duration for a valid swipe"}
 //@input float minSwipeDistance = 0.1 {"label":"Min Swipe Distance", "hint":"Minimum distance for a valid swipe (screen units)"}
 
@@ -142,8 +142,8 @@ init();
 // ===== Touch Events =====
 var touchStartEvent = script.createEvent("TouchStartEvent");
 touchStartEvent.bind(function(eventData) {
-    if (!script.enabled) { return; }
-    
+    if (!script.detectionEnabled) { return; }
+
     swipeActive = true;
     swipeStartTime = getTime();
     startTouchPos = eventData.getTouchPosition();
@@ -165,7 +165,7 @@ touchStartEvent.bind(function(eventData) {
 
 var touchMoveEvent = script.createEvent("TouchMoveEvent");
 touchMoveEvent.bind(function(eventData) {
-    if (!script.enabled || !swipeActive || !script.trackUpdates) { return; }
+    if (!script.detectionEnabled || !swipeActive || !script.trackUpdates) { return; }
     
     currentTouchPos = eventData.getTouchPosition();
     
@@ -191,7 +191,7 @@ touchMoveEvent.bind(function(eventData) {
 
 var touchEndEvent = script.createEvent("TouchEndEvent");
 touchEndEvent.bind(function(eventData) {
-    if (!script.enabled || !swipeActive) { return; }
+    if (!script.detectionEnabled || !swipeActive) { return; }
     
     swipeActive = false;
     
@@ -278,14 +278,14 @@ function triggerCallback(eventType, data) {
 
 // ===== Control Functions =====
 function setEnabled(bool) {
-    script.enabled = bool;
+    script.detectionEnabled = bool;
     if (!bool && swipeActive) {
         resetSwipe();
     }
 }
 
 function isEnabled() {
-    return script.enabled;
+    return script.detectionEnabled;
 }
 
 function isSwiping() {
