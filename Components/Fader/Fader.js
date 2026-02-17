@@ -276,6 +276,14 @@ Fader.prototype.isVisible = function() {
 };
 
 /**
+ * Checks if the fader's SceneObject has been destroyed
+ * @returns {boolean}
+ */
+Fader.prototype.isDestroyed = function() {
+    return isNull(this.sceneObj);
+};
+
+/**
  * Checks if any animations are running
  * @returns {boolean}
  */
@@ -1035,6 +1043,46 @@ FaderManager.prototype._executeFaderMethod = function(methodName, identifier, an
 };
 
 /**
+ * Removes all faders whose SceneObjects have been destroyed
+ */
+FaderManager.prototype._cleanupDestroyed = function() {
+    var removedCount = 0;
+
+    // Clean faders by name
+    for (var name in this.faders) {
+        var faderList = this.faders[name];
+        for (var i = faderList.length - 1; i >= 0; i--) {
+            if (faderList[i].isDestroyed()) {
+                this._printDebug("Cleaning up destroyed fader: " + faderList[i].name);
+                faderList[i]._cancelAllAnimations();
+                faderList.splice(i, 1);
+                removedCount++;
+            }
+        }
+        if (faderList.length === 0) {
+            delete this.faders[name];
+        }
+    }
+
+    // Clean faders by tag
+    for (var tag in this.fadersByTag) {
+        var tagList = this.fadersByTag[tag];
+        for (var i = tagList.length - 1; i >= 0; i--) {
+            if (tagList[i].isDestroyed()) {
+                tagList.splice(i, 1);
+            }
+        }
+        if (tagList.length === 0) {
+            delete this.fadersByTag[tag];
+        }
+    }
+
+    if (removedCount > 0) {
+        this._printDebug("Cleaned up " + removedCount + " destroyed fader(s)");
+    }
+};
+
+/**
  * Resolves identifiers to fader instances
  * @param {string|string[]|SceneObject|SceneObject[]|null} identifier
  * @returns {Fader[]} Array of matching faders
@@ -1044,7 +1092,10 @@ FaderManager.prototype._resolveFaders = function(identifier) {
         this._printWarning("Failed to resolve - identifier undefined");
         return [];
     }
-    
+
+    // Clean up any destroyed faders before resolving
+    this._cleanupDestroyed();
+
     var result = [];
     var added = {};
     
@@ -1096,7 +1147,7 @@ FaderManager.prototype._resolveSingleIdentifier = function(identifier) {
         for (var name in this.faders) {
             var faderList = this.faders[name];
             for (var i = 0; i < faderList.length; i++) {
-                if (faderList[i].sceneObj.isSame(identifier)) {
+                if (!faderList[i].isDestroyed() && faderList[i].sceneObj.isSame(identifier)) {
                     result.push(faderList[i]);
                 }
             }
