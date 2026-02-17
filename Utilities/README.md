@@ -147,6 +147,10 @@ Random number and selection utilities.
 - `randomRange(lo, hi)` - Random number in range
 - `arrayRandom(arr)` - Select random element from array
 - `objectRandom(obj)` - Select random element from object
+- `randomVec2(min, max)` - Random vec2 with optional min/max applied to all components (default 0–1)
+- `randomVec3(min, max)` - Random vec3 with optional min/max applied to all components (default 0–1)
+- `randomVec4(min, max)` - Random vec4 with optional min/max applied to all components (default 0–1)
+- `randomQuaternion()` - Uniformly distributed random rotation quaternion
 - `createDistributedRandom(min, max, minSpacing, historySize)` - Create a generator that produces evenly spaced random values
 
 `createDistributedRandom` returns a reusable generator function (not a value directly). Each call to the generator avoids clustering by rejecting values too close to recent outputs. This is useful for things like spawn positions or random timing where visual bunching looks unnatural. If no valid value is found after 50 attempts, it falls back to a purely random value.
@@ -164,6 +168,14 @@ var angle = global.utils.randomRange(0, 360);
 
 // Random array element
 var color = global.utils.arrayRandom(["red", "green", "blue"]);
+
+// Random vectors
+var dir = global.utils.randomVec3(-1, 1);       // vec3 with components in [-1, 1]
+var uv = global.utils.randomVec2();              // vec2 with components in [0, 1]
+var color = global.utils.randomVec4(0, 255);     // vec4 with components in [0, 255]
+
+// Random rotation
+var rotation = global.utils.randomQuaternion();  // uniform random rotation
 
 // Distributed random - create the generator once, then call it repeatedly
 var getSpawnX = global.utils.createDistributedRandom(0, 1, 0.2, 3);

@@ -1,7 +1,7 @@
 /*
 RandomUtils.js
-Version: 1.1.0
-Description: Random number generation and selection utilities for ranges, arrays, and objects.
+Version: 1.2.0
+Description: Random number generation and selection utilities for ranges, arrays, vectors, and quaternions.
 Author: Bennyp3333 [https://benjamin-p.dev]
 */
 
@@ -77,12 +77,88 @@ function createDistributedRandom(min, max, minSpacing, historySize = 3) {
     };
 }
 
+/**
+ * Generates a random vec2 with each component in the range [min, max].
+ * @param {number} [min=0] - The lower bound for each component.
+ * @param {number} [max=1] - The upper bound for each component.
+ * @returns {vec2} A random vec2.
+ */
+function randomVec2(min, max) {
+    if (min === undefined) min = 0;
+    if (max === undefined) max = 1;
+    return new vec2(
+        randomRange(min, max),
+        randomRange(min, max)
+    );
+}
+
+/**
+ * Generates a random vec3 with each component in the range [min, max].
+ * @param {number} [min=0] - The lower bound for each component.
+ * @param {number} [max=1] - The upper bound for each component.
+ * @returns {vec3} A random vec3.
+ */
+function randomVec3(min, max) {
+    if (min === undefined) min = 0;
+    if (max === undefined) max = 1;
+    return new vec3(
+        randomRange(min, max),
+        randomRange(min, max),
+        randomRange(min, max)
+    );
+}
+
+/**
+ * Generates a random vec4 with each component in the range [min, max].
+ * @param {number} [min=0] - The lower bound for each component.
+ * @param {number} [max=1] - The upper bound for each component.
+ * @returns {vec4} A random vec4.
+ */
+function randomVec4(min, max) {
+    if (min === undefined) min = 0;
+    if (max === undefined) max = 1;
+    return new vec4(
+        randomRange(min, max),
+        randomRange(min, max),
+        randomRange(min, max),
+        randomRange(min, max)
+    );
+}
+
+/**
+ * Generates a uniformly distributed random quaternion rotation.
+ * Uses the subgroup algorithm for uniform random rotations.
+ * @returns {quat} A random unit quaternion.
+ */
+function randomQuaternion() {
+    var u1 = Math.random();
+    var u2 = Math.random();
+    var u3 = Math.random();
+
+    var sqrt1MinusU1 = Math.sqrt(1 - u1);
+    var sqrtU1 = Math.sqrt(u1);
+
+    var theta1 = 2 * Math.PI * u2;
+    var theta2 = 2 * Math.PI * u3;
+
+    return new quat(
+        sqrt1MinusU1 * Math.sin(theta1),
+        sqrt1MinusU1 * Math.cos(theta1),
+        sqrtU1 * Math.sin(theta2),
+        sqrtU1 * Math.cos(theta2)
+    );
+}
+
 // Exporting the functions
 var exports = {
     randomRange,
     arrayRandom,
     objectRandom,
-    createDistributedRandom
+    createDistributedRandom,
+    randomVec2,
+    randomVec3,
+    randomVec4,
+    randomQuaternion
 };
 
 if(script){
