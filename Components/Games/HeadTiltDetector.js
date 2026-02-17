@@ -1,6 +1,6 @@
 /*
 HeadTiltDetector.js
-Version: 0.1.1
+Version: 1.0.0
 Description: Generalized head tilt detection with configurable thresholds and event binding options.
 Author: Bennyp3333 [https://benjamin-p.dev]
 

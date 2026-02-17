@@ -1,6 +1,6 @@
 /*
 SwipeDetector.js
-Version: 0.1.0
+Version: 1.0.0
 Description: Generalized swipe detection with configurable thresholds and multiple event binding options.
 Author: Bennyp3333 [https://benjamin-p.dev]
 
