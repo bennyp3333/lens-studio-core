@@ -1,6 +1,6 @@
 /*
 Fader.js
-Version: 1.2.1
+Version: 1.2.2
 Description: Flexible fading system with support for fade, scale, slide, and move animations
 Author: Bennyp3333 [https://benjamin-p.dev]
 
@@ -99,7 +99,7 @@ Author: Bennyp3333 [https://benjamin-p.dev]
 
 //@ui {"widget":"group_start", "label":"In"}
 //@input string inMode = "fade" {"label":"Mode", "widget":"combobox", "values":[{"label":"Fade", "value":"fade"}, {"label":"Scale", "value":"scale"}, {"label":"Slide", "value":"slide"}, {"label":"Move", "value":"move"}]}
-//@input float inTime = 0.75 {"label":"Time"}
+//@input float inTime = 0.5 {"label":"Time"}
 //@input bool inAdvanced = false {"label":"Advanced"}
 //@ui {"widget":"group_start", "label":"Advanced", "showIf":"inAdvanced"}
 //@input float inAlpha = 1.0 {"label":"Value", "showIf":"inMode", "showIfValue":"fade"}
@@ -117,7 +117,7 @@ Author: Bennyp3333 [https://benjamin-p.dev]
 
 //@ui {"widget":"group_start", "label":"Out"}
 //@input string outMode = "fade" {"label":"Mode", "widget":"combobox", "values":[{"label":"Fade", "value":"fade"}, {"label":"Scale", "value":"scale"}, {"label":"Slide", "value":"slide"}, {"label":"Move", "value":"move"}]}
-//@input float outTime = 0.75 {"label":"Time"}
+//@input float outTime = 0.25 {"label":"Time"}
 //@input bool outAdvanced = false {"label":"Advanced"}
 //@ui {"widget":"group_start", "label":"Advanced", "showIf":"outAdvanced"}
 //@input float outAlpha = 0.0 {"label":"Value", "showIf":"outMode", "showIfValue":"fade"}
