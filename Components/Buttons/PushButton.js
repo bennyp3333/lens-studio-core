@@ -1,5 +1,5 @@
 // PushButton.js
-// Version: 0.1.2
+// Version: 1.0.0
 // Description: Trigger events by press.
 // Author: Bennyp3333 [https://benjamin-p.dev]
 //
@@ -10,11 +10,15 @@
 //
 // ----- LOCAL API USAGE -----
 //
-// Add callback function to press event
+// Add callback function to press events
 // script.onPress.add(function(buttonID, data) { ... })
+// script.onPressDown.add(function(buttonID) { ... })
+// script.onPressUp.add(function(buttonID) { ... })
 //
-// Remove callback function from press event
+// Remove callback function from press events
 // script.onPress.remove(callbackFunction)
+// script.onPressDown.remove(callbackFunction)
+// script.onPressUp.remove(callbackFunction)
 //
 // Manually set interactability
 // script.setInteractable(bool)
@@ -123,8 +127,12 @@ EventDispatcher.prototype.trigger = function(buttonID, data) {
 
 // ===== Public API =====
 var onPressEvent = new EventDispatcher();
+var onPressDownEvent = new EventDispatcher();
+var onPressUpEvent = new EventDispatcher();
 
 script.onPress = onPressEvent;
+script.onPressDown = onPressDownEvent;
+script.onPressUp = onPressUpEvent;
 script.press = press;
 script.setInteractable = setInteractable;
 script.getButtonID = getButtonID;
@@ -182,6 +190,9 @@ touchStartEvent.bind(function(eventData) {
 	if (script.scaleOnPress) {
 		buttonTransform.setLocalScale(vec3.one().uniformScale(script.pressedScale));
 	}
+
+	printDebug("Button " + script.buttonID + " Press Down");
+	onPressDownEvent.trigger(script.buttonID, null);
 });
 
 var touchEndEvent = script.createEvent("TouchEndEvent");
@@ -196,6 +207,9 @@ touchEndEvent.bind(function(eventData) {
 	if (script.scaleOnPress) {
 		buttonTransform.setLocalScale(vec3.one());
 	}
+
+	printDebug("Button " + script.buttonID + " Press Up");
+	onPressUpEvent.trigger(script.buttonID, null);
 });
 
 var tapEvent = script.createEvent("TapEvent");

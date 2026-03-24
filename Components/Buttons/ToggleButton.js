@@ -1,5 +1,5 @@
 // ToggleButton.js
-// Version: 0.1.1
+// Version: 1.0.0
 // Description: Trigger events by toggle.
 // Author: Bennyp3333 [https://benjamin-p.dev]
 //
@@ -13,10 +13,14 @@
 // Add callback function to select/deselect events
 // script.onSelect.add(function(buttonID, data) { ... })
 // script.onDeselect.add(function(buttonID, data) { ... })
+// script.onPressDown.add(function(buttonID) { ... })
+// script.onPressUp.add(function(buttonID) { ... })
 //
 // Remove callback function from events
 // script.onSelect.remove(callbackFunction)
 // script.onDeselect.remove(callbackFunction)
+// script.onPressDown.remove(callbackFunction)
+// script.onPressUp.remove(callbackFunction)
 //
 // Register with a button array (called automatically by ButtonArray)
 // script.registerArray(arrayScript)
@@ -142,9 +146,13 @@ EventDispatcher.prototype.trigger = function(buttonID, data) {
 // ===== Public API =====
 var onSelectEvent = new EventDispatcher();
 var onDeselectEvent = new EventDispatcher();
+var onPressDownEvent = new EventDispatcher();
+var onPressUpEvent = new EventDispatcher();
 
 script.onSelect = onSelectEvent;
 script.onDeselect = onDeselectEvent;
+script.onPressDown = onPressDownEvent;
+script.onPressUp = onPressUpEvent;
 script.select = select;
 script.deselect = deselect;
 script.setInteractable = setInteractable;
@@ -215,6 +223,9 @@ touchStartEvent.bind(function(eventData) {
 	if (script.scaleOnPress) {
 		buttonTransform.setLocalScale(vec3.one().uniformScale(script.pressedScale));
 	}
+
+	printDebug("Button " + script.buttonID + " Press Down");
+	onPressDownEvent.trigger(script.buttonID, null);
 });
 
 var touchEndEvent = script.createEvent("TouchEndEvent");
@@ -223,6 +234,9 @@ touchEndEvent.bind(function(eventData) {
 	if (script.scaleOnPress) {
 		buttonTransform.setLocalScale(vec3.one());
 	}
+
+	printDebug("Button " + script.buttonID + " Press Up");
+	onPressUpEvent.trigger(script.buttonID, null);
 });
 
 var tapEvent = script.createEvent("TapEvent");
