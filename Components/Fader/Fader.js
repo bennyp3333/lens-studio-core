@@ -1,6 +1,6 @@
 /*
 Fader.js
-Version: 1.2.0
+Version: 1.2.1
 Description: Flexible fading system with support for fade, scale, slide, and move animations
 Author: Bennyp3333 [https://benjamin-p.dev]
 
@@ -977,7 +977,7 @@ FaderManager.prototype.stop = function(identifier) {
     this._printDebug("Stopping " + faders.length + " fader(s)");
     
     for (var i = 0; i < faders.length; i++) {
-        faders[i].cancel();
+        faders[i].stop();
     }
 };
 
