@@ -1,6 +1,6 @@
 /*
 Timer.js
-Version: 1.0.0
+Version: 1.1.0
 Description: Generalized timer utility for Lens Studio
 Author: Bennyp3333 [https://benjamin-p.dev]
 
@@ -91,7 +91,10 @@ var countUp = false;
 var format = "ss"; // default format
 
 var textComps = [];
-var delayEvent = null;
+var updateEvent = null;
+var lastUpdateTime = 0;
+var tickAccumulator = 0;
+
 var onTick = null;
 var onComplete = null;
 var isRunning = false;
@@ -213,14 +216,16 @@ script.start = function(completeCallback) {
     
     isRunning = true;
     updateText();
+
+    lastUpdateTime = getTime();
+    tickAccumulator = 0;
     
-    // Create or reset the delay event
-    if (!delayEvent) {
-        delayEvent = script.createEvent("DelayedCallbackEvent");
-        delayEvent.bind(tick);
+    // Create update event (frame-based)
+    if (!updateEvent) {
+        updateEvent = script.createEvent("UpdateEvent");
+        updateEvent.bind(tick);
     }
-    delayEvent.enabled = true;
-    delayEvent.reset(tickInterval);
+    updateEvent.enabled = true;
     
     printDebug("Timer started - " + (countUp ? "counting up to " : "counting down from ") + maxTime + "s");
     return script;
@@ -231,9 +236,6 @@ script.start = function(completeCallback) {
  */
 script.pause = function() {
     isRunning = false;
-    if (delayEvent) {
-        delayEvent.enabled = false;
-    }
     printDebug("Timer paused at " + time + "s");
     return script;
 };
@@ -242,10 +244,9 @@ script.pause = function() {
  * Resume the timer
  */
 script.resume = function() {
-    if (!isRunning && delayEvent) {
+    if (!isRunning) {
+        lastUpdateTime = getTime(); // prevent jump
         isRunning = true;
-        delayEvent.enabled = true;
-        delayEvent.reset(tickInterval);
         printDebug("Timer resumed from " + time + "s");
     }
     return script;
@@ -256,9 +257,6 @@ script.resume = function() {
  */
 script.stop = function() {
     isRunning = false;
-    if (delayEvent) {
-        delayEvent.enabled = false;
-    }
     time = countUp ? 0 : maxTime;
     updateText();
     printDebug("Timer stopped and reset");
@@ -270,9 +268,6 @@ script.stop = function() {
  */
 script.reset = function() {
     isRunning = false;
-    if (delayEvent) {
-        delayEvent.enabled = false;
-    }
     time = countUp ? 0 : maxTime;
     updateText();
     printDebug("Timer reset to " + time + "s");
@@ -323,12 +318,16 @@ function isTypeText(comp) {
 
 function tick() {
     if (!isRunning) return;
+
+    var currentTime = getTime();
+    var deltaTime = currentTime - lastUpdateTime;
+    lastUpdateTime = currentTime;
     
-    // Update time
+    // Update time using REAL elapsed time
     if (countUp) {
-        time += tickInterval;
+        time += deltaTime;
     } else {
-        time -= tickInterval;
+        time -= deltaTime;
     }
     
     // Clamp and check completion
@@ -343,11 +342,16 @@ function tick() {
     
     updateText();
     
-    // Fire callbacks
+    // Fire callbacks (throttled by tickInterval)
+    tickAccumulator += deltaTime;
+    
     var formatted = formatTime(time);
     
-    if (onTick) {
-        onTick(time, formatted);
+    if (tickAccumulator >= tickInterval) {
+        tickAccumulator = 0;
+        if (onTick) {
+            onTick(time, formatted);
+        }
     }
     
     if (completed) {
@@ -356,8 +360,6 @@ function tick() {
         if (onComplete) {
             onComplete(time, formatted);
         }
-    } else {
-        delayEvent.reset(tickInterval);
     }
 }
 
