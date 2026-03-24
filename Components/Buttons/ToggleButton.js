@@ -1,5 +1,5 @@
 // ToggleButton.js
-// Version: 0.1.0
+// Version: 0.1.1
 // Description: Trigger events by toggle.
 // Author: Bennyp3333 [https://benjamin-p.dev]
 //
@@ -93,6 +93,9 @@
 //@input bool useAudio = false;
 //@input Asset.AudioTrackAsset selectAudioTrack {"showIf":"useAudio"}
 //@input Asset.AudioTrackAsset deselectAudioTrack {"showIf":"useAudio"}
+
+//@ui {"widget":"separator"}
+//@input bool useHaptics = false;
 
 //@ui {"widget":"separator"}
 //@input bool editAdvancedOptions
@@ -252,6 +255,10 @@ function select() {
 			selectAudioComp.play(1);
 		}
 
+		if (script.useHaptics) {
+			global.hapticFeedbackSystem.hapticFeedback(HapticFeedbackType.TapticEngine);
+		}
+
 		buttonImage.mainPass.baseTex = script.activeTexture;
 
 		// Notify array if registered
@@ -319,6 +326,10 @@ function deselect() {
 
 		if (script.useAudio && deselectAudioComp.audioTrack) {
 			deselectAudioComp.play(1);
+		}
+
+		if (script.useHaptics) {
+			global.hapticFeedbackSystem.hapticFeedback(HapticFeedbackType.TapticEngine);
 		}
 
 		buttonImage.mainPass.baseTex = script.inactiveTexture;

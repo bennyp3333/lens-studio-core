@@ -1,5 +1,5 @@
 // PushButton.js
-// Version: 0.1.1
+// Version: 0.1.2
 // Description: Trigger events by press.
 // Author: Bennyp3333 [https://benjamin-p.dev]
 //
@@ -75,6 +75,9 @@
 //@ui {"widget":"separator"}
 //@input bool useAudio = false;
 //@input Asset.AudioTrackAsset tapAudioTrack {"showIf":"useAudio"}
+
+//@ui {"widget":"separator"}
+//@input bool useHaptics = false;
 
 //@ui {"widget":"separator"}
 //@input bool editAdvancedOptions
@@ -207,6 +210,10 @@ function press() {
 
 	if (script.useAudio) {
 		tapAudioComp.play(1);
+	}
+
+	if (script.useHaptics) {
+		global.hapticFeedbackSystem.hapticFeedback(HapticFeedbackType.TapticEngine);
 	}
 
 	// Trigger all programmatically added callbacks
