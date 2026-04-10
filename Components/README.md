@@ -182,6 +182,24 @@ Automatically clones all materials on a Scene Object so they become unique insta
 - Animating or modifying material parameters per object
 - Avoiding global changes to materials shared across multiple visuals
 
+### [ScreenWiggle.js](./ScreenWiggle.js)
+
+Applies a sinusoidal bobbing and rotation animation to one or more UI elements' ScreenTransforms.
+
+**Key Features:**
+- Independent horizontal and vertical bobbing with configurable speed and amount
+- Aspect-ratio correction so equal bob amounts produce equal visual displacement regardless of screen orientation
+- Optional tilt rotation animation
+- Per-target randomization so each element moves independently (not in tandem)
+- Multi-target support — assign an array of ScreenTransforms to drive many elements from a single update loop
+- Falls back to the ScreenTransform on the same SceneObject when no targets are assigned
+- `start()` / `stop()` / `reset()` / `randomize()` public API for runtime control
+
+**Common Use Cases:**
+- Idle animation on UI icons or decorative elements
+- Floating/bobbing effects on HUD elements
+- Performance-efficient wiggle across many UI elements using a single script instance
+
 ## Integration with Core Systems
 
 All components are designed to work seamlessly with the Core prefab systems:
