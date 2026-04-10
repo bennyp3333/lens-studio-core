@@ -1,24 +1,31 @@
 /*
 ScreenWiggle.js
-Version: 0.1.0
-Description: Applies a sinusoidal bobbing and rotation animation to a UI element's ScreenTransform.
-             Supports independent horizontal/vertical bobbing with aspect-ratio correction so that
-             equal bob amounts produce equal visual displacement regardless of screen orientation.
-             Optional tilt rotation and per-instance randomization are also supported.
+Version: 0.2.0
+Description: Applies a sinusoidal bobbing and rotation animation to one or more UI elements'
+             ScreenTransforms. Supports independent horizontal/vertical bobbing with aspect-ratio
+             correction so that equal bob amounts produce equal visual displacement regardless of
+             screen orientation. Optional tilt rotation and per-instance randomization are also
+             supported. When multiple targets are provided each one gets its own randomized
+             parameters so they move independently.
 Author: Bennyp3333 [https://benjamin-p.dev]
 
  ==== USAGE ====
- 1. Add this script to a UI SceneObject that has a ScreenTransform component
- 2. Optionally assign a camera for automatic aspect-ratio correction (auto-discovered if not set)
- 3. Configure bob speeds, amounts, and variation settings per axis
- 4. Enable runOnStart to auto-play, or call script.start() manually from another script
+ 1. Add this script to any SceneObject (it does not need a ScreenTransform itself when targets
+    are supplied via the Extra Targets list)
+ 2. Optionally add ScreenTransform components to the "Extra Targets" list. If the list is empty
+    the script falls back to the ScreenTransform on its own SceneObject (original behaviour).
+ 3. Optionally assign a camera for automatic aspect-ratio correction (auto-discovered if not set)
+ 4. Configure bob speeds, amounts, and variation settings per axis
+ 5. Enable runOnStart to auto-play, or call script.start() manually from another script
 
  ==== API ====
- script.start()  - Begin wiggle animation
- script.stop()   - Pause wiggle animation (position is held at last frame)
- script.reset()  - Reset animation time and re-randomize parameters (if randomizeOnStart is true)
+ script.start()      - Begin wiggle animation
+ script.stop()       - Pause wiggle animation (position is held at last frame)
+ script.reset()      - Reset animation time and re-randomize parameters (if randomizeOnStart is true)
+ script.randomize()  - Force re-randomize all targets regardless of the randomizeOnStart setting
 */
 
+//@input Component.ScreenTransform[] screenTransforms {"label":"Extra Targets (Optional)", "hint":"If empty, wiggles the ScreenTransform on this SceneObject."}
 //@input Component.Camera camera {"label":"Camera (Optional)", "hint":"Used for aspect-ratio correction. Auto-discovered if not set."}
 
 //@ui {"widget":"separator"}
@@ -58,62 +65,56 @@ Author: Bennyp3333 [https://benjamin-p.dev]
 // ===== Setup =====
 
 var sceneObject = script.getSceneObject();
-var screenTransform = sceneObject.getComponent("Component.ScreenTransform");
 var camera = script.camera;
 
-var initialCenter;
 var aspectRatio = 1.0;
 var time = 0;
 
-// Randomized Y bob parameters
-var rSpeedY, rAmountY, rPhaseY;
-// Randomized X bob parameters
-var rSpeedX, rAmountX, rPhaseX;
-// Randomized rotation parameters
-var rRotSpeed, rRotAmount, rPhaseRot;
+// Array of per-target state objects.
+// Each entry: { screenTransform, initialCenter,
+//               rSpeedY, rAmountY, rPhaseY,
+//               rSpeedX, rAmountX, rPhaseX,
+//               rRotSpeed, rRotAmount, rPhaseRot }
+var targets = [];
 
 // ===== Core Functions =====
 
-function randomize() {
-    if (script.randomizeOnStart) {
-        rSpeedY  = script.bobSpeedY  * (1 + (Math.random() * 2 - 1) * script.speedVariationY);
-        rAmountY = script.bobAmountY * (1 + (Math.random() * 2 - 1) * script.amountVariationY);
-        rPhaseY  = Math.random() * Math.PI * 2;
+function randomize(state, force) {
+    if (force || script.randomizeOnStart) {
+        state.rSpeedY  = script.bobSpeedY  * (1 + (Math.random() * 2 - 1) * script.speedVariationY);
+        state.rAmountY = script.bobAmountY * (1 + (Math.random() * 2 - 1) * script.amountVariationY);
+        state.rPhaseY  = Math.random() * Math.PI * 2;
 
-        rSpeedX  = script.bobSpeedX  * (1 + (Math.random() * 2 - 1) * script.speedVariationX);
-        rAmountX = script.bobAmountX * (1 + (Math.random() * 2 - 1) * script.amountVariationX);
-        rPhaseX  = Math.random() * Math.PI * 2;
+        state.rSpeedX  = script.bobSpeedX  * (1 + (Math.random() * 2 - 1) * script.speedVariationX);
+        state.rAmountX = script.bobAmountX * (1 + (Math.random() * 2 - 1) * script.amountVariationX);
+        state.rPhaseX  = Math.random() * Math.PI * 2;
 
-        rRotSpeed  = script.rotationSpeed  * (1 + (Math.random() * 2 - 1) * script.speedVariationRot);
-        rRotAmount = script.rotationAmount * (1 + (Math.random() * 2 - 1) * script.amountVariationRot) * (Math.PI / 180);
-        rPhaseRot  = Math.random() * Math.PI * 2;
+        state.rRotSpeed  = script.rotationSpeed  * (1 + (Math.random() * 2 - 1) * script.speedVariationRot);
+        state.rRotAmount = script.rotationAmount * (1 + (Math.random() * 2 - 1) * script.amountVariationRot) * (Math.PI / 180);
+        state.rPhaseRot  = Math.random() * Math.PI * 2;
     } else {
-        rSpeedY  = script.bobSpeedY;
-        rAmountY = script.bobAmountY;
-        rPhaseY  = 0;
+        state.rSpeedY  = script.bobSpeedY;
+        state.rAmountY = script.bobAmountY;
+        state.rPhaseY  = 0;
 
-        rSpeedX  = script.bobSpeedX;
-        rAmountX = script.bobAmountX;
-        rPhaseX  = 0;
+        state.rSpeedX  = script.bobSpeedX;
+        state.rAmountX = script.bobAmountX;
+        state.rPhaseX  = 0;
 
-        rRotSpeed  = script.rotationSpeed;
-        rRotAmount = script.rotationAmount * (Math.PI / 180);
-        rPhaseRot  = 0;
+        state.rRotSpeed  = script.rotationSpeed;
+        state.rRotAmount = script.rotationAmount * (Math.PI / 180);
+        state.rPhaseRot  = 0;
     }
 
     debugLog(
-        "Randomize → X: speed=" + rSpeedX.toFixed(2) + " amt=" + rAmountX.toFixed(3) +
-        " | Y: speed=" + rSpeedY.toFixed(2) + " amt=" + rAmountY.toFixed(3) +
-        " | Rot: speed=" + rRotSpeed.toFixed(2) + " amt=" + (rRotAmount * (180 / Math.PI)).toFixed(2) + "deg"
+        "Randomize [" + state.screenTransform.getSceneObject().name + "]" +
+        " → X: speed=" + state.rSpeedX.toFixed(2) + " amt=" + state.rAmountX.toFixed(3) +
+        " | Y: speed=" + state.rSpeedY.toFixed(2) + " amt=" + state.rAmountY.toFixed(3) +
+        " | Rot: speed=" + state.rRotSpeed.toFixed(2) + " amt=" + (state.rRotAmount * (180 / Math.PI)).toFixed(2) + "deg"
     );
 }
 
 function init() {
-    if (!screenTransform) {
-        debugLog("WARNING: Missing ScreenTransform component!");
-        return false;
-    }
-
     if (!camera) {
         camera = findCamera();
     }
@@ -125,38 +126,69 @@ function init() {
         debugLog("WARNING: No camera found — aspect ratio correction disabled (ratio = 1.0)", true);
     }
 
-    initialCenter = screenTransform.anchors.getCenter();
-    randomize();
+    // Determine which ScreenTransforms to drive.
+    var sourceList;
+    if (script.screenTransforms && script.screenTransforms.length > 0) {
+        sourceList = script.screenTransforms;
+    } else {
+        var localST = sceneObject.getComponent("Component.ScreenTransform");
+        if (!localST) {
+            debugLog("WARNING: No Extra Targets set and no ScreenTransform on this SceneObject!", true);
+            return false;
+        }
+        sourceList = [localST];
+    }
 
-    debugLog("Initialized — runOnStart: " + script.runOnStart);
+    targets = [];
+    for (var i = 0; i < sourceList.length; i++) {
+        var st = sourceList[i];
+        if (!st) continue;
+        var state = {
+            screenTransform: st,
+            initialCenter: st.anchors.getCenter()
+        };
+        randomize(state);
+        targets.push(state);
+    }
+
+    if (targets.length === 0) {
+        debugLog("WARNING: No valid ScreenTransform targets found!", true);
+        return false;
+    }
+
+    debugLog("Initialized — " + targets.length + " target(s), runOnStart: " + script.runOnStart);
     return true;
 }
 
 function onUpdate() {
     time += getDeltaTime();
 
-    var offsetY = 0;
-    if (script.enableVertical) {
-        // bobAmountY is in screen-width units (1.0 = full screen width).
-        // Convert to anchor Y units: screen width = 2 * aspectRatio anchor Y units.
-        offsetY = Math.sin(time * rSpeedY + rPhaseY) * rAmountY * 2 * aspectRatio;
-    }
+    for (var i = 0; i < targets.length; i++) {
+        var s = targets[i];
 
-    var offsetX = 0;
-    if (script.enableHorizontal) {
-        // bobAmountX is in screen-width units (1.0 = full screen width).
-        // Convert to anchor X units: screen width = 2 anchor X units.
-        offsetX = Math.sin(time * rSpeedX + rPhaseX) * rAmountX * 2;
-    }
+        var offsetY = 0;
+        if (script.enableVertical) {
+            // bobAmountY is in screen-width units (1.0 = full screen width).
+            // Convert to anchor Y units: screen width = 2 * aspectRatio anchor Y units.
+            offsetY = Math.sin(time * s.rSpeedY + s.rPhaseY) * s.rAmountY * 2 * aspectRatio;
+        }
 
-    screenTransform.anchors.setCenter(new vec2(
-        initialCenter.x + offsetX,
-        initialCenter.y + offsetY
-    ));
+        var offsetX = 0;
+        if (script.enableHorizontal) {
+            // bobAmountX is in screen-width units (1.0 = full screen width).
+            // Convert to anchor X units: screen width = 2 anchor X units.
+            offsetX = Math.sin(time * s.rSpeedX + s.rPhaseX) * s.rAmountX * 2;
+        }
 
-    if (script.enableRotation) {
-        var rot = Math.sin(time * rRotSpeed + rPhaseRot) * rRotAmount;
-        screenTransform.rotation = quat.angleAxis(rot, vec3.forward());
+        s.screenTransform.anchors.setCenter(new vec2(
+            s.initialCenter.x + offsetX,
+            s.initialCenter.y + offsetY
+        ));
+
+        if (script.enableRotation) {
+            var rot = Math.sin(time * s.rRotSpeed + s.rPhaseRot) * s.rRotAmount;
+            s.screenTransform.rotation = quat.angleAxis(rot, vec3.forward());
+        }
     }
 }
 
@@ -174,8 +206,17 @@ script.stop = function() {
 
 script.reset = function() {
     time = 0;
-    randomize();
+    for (var i = 0; i < targets.length; i++) {
+        randomize(targets[i]);
+    }
     debugLog("Reset wiggle");
+};
+
+script.randomize = function() {
+    for (var i = 0; i < targets.length; i++) {
+        randomize(targets[i], true);
+    }
+    debugLog("Randomized wiggle");
 };
 
 // ===== Camera Discovery =====
@@ -223,4 +264,3 @@ function debugLog(message, force) {
     if (global.textLogger) global.logToScreen(newLog);
     print(newLog);
 }
-
