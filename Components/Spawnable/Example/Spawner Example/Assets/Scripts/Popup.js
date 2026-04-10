@@ -1,8 +1,9 @@
 /*
 Popup.js
-Version: 0.1.1
+Version: 1.0.0
 Description: Animated popup that fades in, slides in a random direction, fades out, and self-destructs.
-    Use with SpawnManager to spawn popups at screen positions.
+    Supports both screen-space (2D) and world-space (3D) modes.
+    Use with SpawnManager to spawn popups at screen or world positions.
 Author: Bennyp3333 [https://benjamin-p.dev]
 
  ==== SETUP ====
@@ -25,11 +26,11 @@ Author: Bennyp3333 [https://benjamin-p.dev]
 //@ input SceneObject popupRef {"hint":"Disabled popup template"}
 //@ input SceneObject popupParent {"hint":"Parent for spawned popups"}
 
-// Basic spawn at screen center:
+// Basic spawn at screen center (2D mode, is3D = false):
 var popup = global.spawn.create(script.popupRef, script.popupParent, "popups");
 popup.script.animate(new vec2(0, 0));
 
-// Spawn at touch position:
+// Spawn at touch position (2D mode):
 var touchEvent = script.createEvent("TouchStartEvent");
 touchEvent.bind(function(eventData) {
     var touchPos = eventData.getTouchPosition();
@@ -41,6 +42,10 @@ touchEvent.bind(function(eventData) {
     var popup = global.spawn.create(script.popupRef, script.popupParent, "popups");
     popup.script.animate(screenPos);
 });
+
+// Spawn at world position (3D mode, is3D = true):
+var popup3D = global.spawn.create(script.popupRef, script.popupParent, "popups");
+popup3D.script.animate(new vec3(0, 0, 0));
 
 // Clear all popups:
 global.spawn.destroyGroup("popups");
@@ -55,7 +60,9 @@ function spawnPopup(screenPos) {
 };
 spawnPopup(new vec2(0, 0));
 */
-
+//@ui {"widget":"label", "label":"Mode"}
+//@input bool is3D {"label": "is 3D", "hint":"Use 3D world space instead of screen space"}
+//@ui {"widget":"separator"}
 //@input Asset.Texture[] textures {"hint":"Random texture selection on spawn"}
 //@ui {"widget":"separator"}
 //@ui {"widget":"label", "label":"Animation"}
@@ -67,6 +74,7 @@ spawnPopup(new vec2(0, 0));
 //@ui {"widget":"label", "label":"Trajectory"}
 //@input vec2 trajectoryX = {-1, 1} {"hint":"Horizontal direction range [min, max]"}
 //@input vec2 trajectoryY = {0, 1} {"hint":"Vertical direction range [min, max]"}
+//@input vec2 trajectoryZ = {0, 0} {"hint":"Z direction range [min, max] (3D mode only)", "showIf":"is3D"}
 //@ui {"widget":"separator"}
 //@input bool debug
 //@input string debugName = "Popup" {"showIf":"debug"}
@@ -88,7 +96,11 @@ var selfScreenTransform = self.getComponent("Component.ScreenTransform");
 var selfImage = self.getComponent("Component.Image");
 var selfMaterial = null;
 
-// LIFECYCLE CALLBACKS 
+var fadeInTween = null;
+var slideTween = null;
+var fadeOutTween = null;
+
+// LIFECYCLE CALLBACKS
 
 script.onSpawned = function() {
     initPopup();
@@ -97,63 +109,85 @@ script.onSpawned = function() {
 
 script.onDespawn = function() {
     debugPrint("Despawning!");
+    if (fadeInTween) { fadeInTween.enabled = false; fadeInTween = null; }
+    if (slideTween)  { slideTween.enabled = false;  slideTween = null;  }
+    if (fadeOutTween){ fadeOutTween.enabled = false; fadeOutTween = null;}
 };
 
 // POPUP FUNCTIONS
 
-function initPopup() {    
+function initPopup() {
     // Make material unique so each popup can have different alpha/texture
     selfMaterial = makeMatUnique(selfImage)[0];
-    
+
     // Set random texture from array
     if (script.textures && script.textures.length > 0) {
         selfMaterial.mainPass.baseTex = script.textures[Math.floor(Math.random() * script.textures.length)];
     }
-    
+
     debugPrint("Initialized!");
 }
 
 /**
- * Animate the popup from a screen position
- * @param {vec2} startPos - Starting screen position (-1 to 1 range)
+ * Animate the popup from a position.
+ * @param {vec2} startPos - Screen position (-1 to 1 range) when is3D is false
+ * @param {vec3} startPos - World position when is3D is true
  */
 script.animate = function(startPos) {
     debugPrint("Animating from: " + startPos);
-    
-    // Set initial position
-    selfScreenTransform.anchors.setCenter(startPos);
 
-    // Set inital alpha
+    // Set initial alpha
     setAlpha(selfImage, 0);
-    
-    // Fade in
-    global.simpleTween(0, 1, script.fadeInTime, 0, function(val) {
-        var easedVal = global.easing.easeOutQuad(val);
-        setAlpha(selfImage, easedVal);
-    }, null);
-    
-    // Calculate random trajectory direction
-    var randomDir = new vec2(
-        randomRange(script.trajectoryX.x, script.trajectoryX.y), 
-        randomRange(script.trajectoryY.x, script.trajectoryY.y)
-    ).normalize();
-    
-    var endPos = startPos.add(randomDir.uniformScale(script.slideDistance));
-    
-    // Slide animation
-    global.simpleTween(0, 1, script.slideTime, 0, function(val) {
-        var easedVal = global.easing.easeOutCubic(val);
-        var lerpedPos = vec2.lerp(startPos, endPos, easedVal);
-        selfScreenTransform.anchors.setCenter(lerpedPos);
-    }, null);
-    
-    // Fade out and despawn
-    global.simpleTween(1, 0, script.fadeOutTime, script.slideTime - script.fadeOutTime, function(val) {
-        var easedVal = global.easing.easeOutQuad(val);
-        setAlpha(selfImage, easedVal);
-    }, function() {
-        script.despawn();
-    });
+
+    if (script.is3D) {
+        // 3D world-space mode
+        selfTransform.setWorldPosition(startPos);
+
+        fadeInTween = global.simpleTween(0, 1, script.fadeInTime, 0, function(val) {
+            setAlpha(selfImage, global.easing.easeOutQuad(val));
+        }, null);
+
+        var randomDir = new vec3(
+            randomRange(script.trajectoryX.x, script.trajectoryX.y),
+            randomRange(script.trajectoryY.x, script.trajectoryY.y),
+            randomRange(script.trajectoryZ.x, script.trajectoryZ.y)
+        ).normalize();
+        var endPos = startPos.add(randomDir.uniformScale(script.slideDistance));
+
+        slideTween = global.simpleTween(0, 1, script.slideTime, 0, function(val) {
+            selfTransform.setWorldPosition(vec3.lerp(startPos, endPos, global.easing.easeOutCubic(val)));
+        }, null);
+
+        fadeOutTween = global.simpleTween(1, 0, script.fadeOutTime, script.slideTime - script.fadeOutTime, function(val) {
+            setAlpha(selfImage, global.easing.easeOutQuad(val));
+        }, function() {
+            script.despawn();
+        });
+
+    } else {
+        // 2D screen-space mode
+        selfScreenTransform.anchors.setCenter(startPos);
+
+        fadeInTween = global.simpleTween(0, 1, script.fadeInTime, 0, function(val) {
+            setAlpha(selfImage, global.easing.easeOutQuad(val));
+        }, null);
+
+        var randomDir2D = new vec2(
+            randomRange(script.trajectoryX.x, script.trajectoryX.y),
+            randomRange(script.trajectoryY.x, script.trajectoryY.y)
+        ).normalize();
+        var endPos2D = startPos.add(randomDir2D.uniformScale(script.slideDistance));
+
+        slideTween = global.simpleTween(0, 1, script.slideTime, 0, function(val) {
+            selfScreenTransform.anchors.setCenter(vec2.lerp(startPos, endPos2D, global.easing.easeOutCubic(val)));
+        }, null);
+
+        fadeOutTween = global.simpleTween(1, 0, script.fadeOutTime, script.slideTime - script.fadeOutTime, function(val) {
+            setAlpha(selfImage, global.easing.easeOutQuad(val));
+        }, function() {
+            script.despawn();
+        });
+    }
 };
 
 // UTILITY FUNCTIONS

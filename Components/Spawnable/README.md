@@ -32,12 +32,19 @@ A template script to copy and modify for your own spawnable objects. Provides th
 
 ### [Popup.js](./Popup.js)
 
-A ready-to-use spawnable that creates animated screen popups. Fades in, slides in a random direction, fades out, and self-destructs.
+A ready-to-use spawnable that creates animated popups. Fades in, slides in a random direction, fades out, and self-destructs. Supports both screen-space (2D) and world-space (3D) modes via an `is3D` toggle.
 
-**Setup:**
+**Setup (2D screen-space mode):**
 1. Create a Screen Image under an Orthographic Camera
 2. Attach Popup.js to the Screen Image
 3. Configure textures and animation parameters
+4. Disable the SceneObject (this is your template)
+5. Spawn copies using SpawnManager
+
+**Setup (3D world-space mode):**
+1. Create a Scene Object with an Image component
+2. Attach Popup.js and enable the `is 3D` toggle
+3. Optionally add a LookAtComponent for billboard behaviour
 4. Disable the SceneObject (this is your template)
 5. Spawn copies using SpawnManager
 
@@ -46,11 +53,19 @@ A ready-to-use spawnable that creates animated screen popups. Fades in, slides i
 //@input SceneObject popupTemplate
 //@input SceneObject popupParent
 
+// 2D screen-space (is3D off) — pass a vec2 in -1 to 1 range
 var popup = global.spawn.create(script.popupTemplate, script.popupParent, "popups");
-popup.script.animate(new vec2(0, 0)); // Animate from screen center
+popup.script.animate(new vec2(0, 0));
+
+// 3D world-space (is3D on) — pass a vec3 world position
+var popup3D = global.spawn.create(script.popupTemplate, script.popupParent, "popups");
+popup3D.script.animate(new vec3(0, 10, 0));
 ```
 
 ### Popup Configuration
+
+**Mode:**
+- **is 3D** - When off (default), uses ScreenTransform and screen-space coordinates. When on, uses the object's Transform and world-space coordinates, and exposes the `trajectoryZ` range.
 
 **Textures:**
 - **textures** - Array of textures to randomly select from on each spawn. Leave empty to use the Image component's default texture. Great for variety (e.g., multiple star sprites, different emoji, hit marker styles).
@@ -59,13 +74,14 @@ popup.script.animate(new vec2(0, 0)); // Animate from screen center
 - **fadeInTime** - Duration of fade-in (seconds). Default: `0.1`
 - **fadeOutTime** - Duration of fade-out (seconds). Default: `0.1`
 - **slideTime** - Total slide animation duration (seconds). Default: `0.5`
-- **slideDistance** - How far the popup travels in screen units (-1 to 1 range). Default: `0.25`
+- **slideDistance** - How far the popup travels (screen units in 2D, world units in 3D). Default: `0.25`
 
 **Trajectory:**
 - **trajectoryX** - Horizontal direction range `[min, max]`. Default: `[-1, 1]` (any horizontal direction)
 - **trajectoryY** - Vertical direction range `[min, max]`. Default: `[0, 1]` (upward only)
+- **trajectoryZ** - Depth direction range `[min, max]`. Default: `[0, 0]` (no Z movement). Only shown when `is 3D` is enabled.
 
-This means you can spawn dozens of popups and each will have its own random texture and trajectory without affecting the others.
+Each spawned popup picks a random direction within the trajectory ranges and normalises it, so you can spawn dozens simultaneously and each will animate independently.
 
 ## Creating Your Own Spawnable
 

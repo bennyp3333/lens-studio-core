@@ -3,6 +3,9 @@
 //@input SceneObject popupRef
 //@input SceneObject popupParent
 //@ui {"widget":"separator"}
+//@input SceneObject popup3DRef
+//@input SceneObject popup3DParent
+//@ui {"widget":"separator"}
 //@input SceneObject objRef
 //@input Asset.ObjectPrefab objPrefab
 //@input SceneObject spawnParent
@@ -27,6 +30,8 @@ touchEvent.bind(function(eventData) {
         var box = global.spawn.create(script.objPrefab, script.spawnParent, "boxes");
         box.script.setPosition(worldPosition);
     }
+
+    spawn3DPopup(worldPosition);
 });
 
 function spawnPopup(screenPos) {
@@ -35,4 +40,12 @@ function spawnPopup(screenPos) {
         popup.script.animate(screenPos);
     }
     return popup;
+};
+
+function spawn3DPopup(worldPos) {
+    var popup3D = global.spawn.create(script.popup3DRef, script.popup3DParent, "3Dpopups");
+    if (popup3D && popup3D.script) {
+        popup3D.script.animate(worldPos);
+    }
+    return popup3D;
 };

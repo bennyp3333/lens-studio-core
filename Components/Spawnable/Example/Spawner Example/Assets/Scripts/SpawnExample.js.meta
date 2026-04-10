@@ -29,6 +29,8 @@
     camera: false
     objPrefab: false
     objRef: false
+    popup3DParent: false
+    popup3DRef: false
     popupParent: false
     popupRef: false
     spawnParent: false
@@ -44,6 +46,8 @@
     - camera: !<reference.Camera> 00000000-0000-0000-0000-000000000000
       popupRef: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
       popupParent: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      popup3DRef: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      popup3DParent: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
       objRef: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
       objPrefab: !<reference.ObjectPrefab> 00000000-0000-0000-0000-000000000000
       spawnParent: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000

@@ -31,11 +31,13 @@
     debugText: false
     fadeInTime: false
     fadeOutTime: false
+    is3D: false
     slideDistance: false
     slideTime: false
     textures: false
     trajectoryX: false
     trajectoryY: false
+    trajectoryZ: false
   ScriptTypesHidden:
     {}
   ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
@@ -45,7 +47,8 @@
   Attachments:
     []
   DefaultScriptInputs:
-    - textures: !<reference.Texture[]>
+    - is3D: false
+      textures: !<reference.Texture[]>
         []
       fadeInTime: 0.100000
       fadeOutTime: 0.100000
@@ -53,6 +56,7 @@
       slideDistance: 0.250000
       trajectoryX: !<Vec2> {x: -1.000000, y: 1.000000}
       trajectoryY: !<Vec2> {x: 0.000000, y: 1.000000}
+      trajectoryZ: !<Vec2> {x: 0.000000, y: 0.000000}
       debug: false
       debugName: Popup
       debugText: !<reference.Text> 00000000-0000-0000-0000-000000000000

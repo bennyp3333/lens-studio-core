@@ -318,6 +318,40 @@
     bottom: -20.000000
     right: 15.000000
     top: 20.000000
+- !<ScriptComponent/44e86b2a-d211-4b0c-bbbf-f3e93a58c701>
+  PrefabRemaps:
+    []
+  Name: Popup
+  Enabled: true
+  ScriptAsset: !<reference> 351f6ed0-59f9-4053-92a9-4be279256da2
+  ScriptInputsDefault:
+    fadeInTime: true
+    fadeOutTime: true
+    trajectoryY: true
+    trajectoryZ: true
+    debugName: true
+    debugText: true
+  ScriptTypesDefault:
+    {}
+  ScriptInputs:
+    "":
+      is3D: true
+      textures: !<reference.Texture[]>
+        - !<reference> 57f1ea0e-4491-485a-8399-d5926464880e
+        - !<reference> ea10c253-5eee-4cce-9090-0dab1967457f
+      fadeInTime: 0.100000
+      fadeOutTime: 0.100000
+      slideTime: 0.750000
+      slideDistance: !<float> 20.000000
+      trajectoryX: !<Vec2> {x: 0.000000, y: 0.000000}
+      trajectoryY: !<Vec2> {x: 0.000000, y: 1.000000}
+      trajectoryZ: !<Vec2> {x: 0.000000, y: 0.000000}
+      debug: true
+      debugName: Popup
+      debugText: !<reference.Text> 00000000-0000-0000-0000-000000000000
+  ScriptTypes:
+    "":
+      {}
 - !<SceneObject/461320bc-94cf-4aea-857d-f978efb1c2a8>
   PrefabRemaps:
     []
@@ -358,18 +392,21 @@
   Enabled: true
   ScriptAsset: !<reference> 351f6ed0-59f9-4053-92a9-4be279256da2
   ScriptInputsDefault:
+    is3D: true
     fadeInTime: true
     fadeOutTime: true
     slideTime: true
     slideDistance: true
     trajectoryX: true
     trajectoryY: true
+    trajectoryZ: true
     debugName: true
     debugText: true
   ScriptTypesDefault:
     {}
   ScriptInputs:
     "":
+      is3D: false
       textures: !<reference.Texture[]>
         - !<reference> 57f1ea0e-4491-485a-8399-d5926464880e
         - !<reference> ea10c253-5eee-4cce-9090-0dab1967457f
@@ -379,12 +416,48 @@
       slideDistance: 0.250000
       trajectoryX: !<Vec2> {x: -1.000000, y: 1.000000}
       trajectoryY: !<Vec2> {x: 0.000000, y: 1.000000}
+      trajectoryZ: !<Vec2> {x: 0.000000, y: 0.000000}
       debug: true
       debugName: Popup
       debugText: !<reference.Text> 00000000-0000-0000-0000-000000000000
   ScriptTypes:
     "":
       {}
+- !<Image/6802f0a2-404c-477c-a03a-739db1f3d686>
+  PrefabRemaps:
+    []
+  Name: Image
+  Enabled: true
+  RenderOrder: 0
+  StretchMode: Fit
+  VerticalAlignment: Center
+  HorizontalAlignment: Center
+  MeshShadowMode: None
+  ShadowColor: {x: 1.000000, y: 1.000000, z: 1.000000, w: 1.000000}
+  ShadowDensity: 1.000000
+  Materials:
+    - !<reference> 3750af3c-10b8-4075-ab76-513762121de5
+  FlipX: false
+  FlipY: false
+  RotationAngle: 0
+  Pivot: {x: 0.000000, y: 0.000000}
+  ExtentsTarget: !<reference> 00000000-0000-0000-0000-000000000000
+- !<SceneObject/712767cb-b4a2-4794-a00b-e70295934204>
+  PrefabRemaps:
+    []
+  Name: 3D Popup
+  Enabled: false
+  Layers: 1
+  LocalTransform: !<TransformEntity>
+    Position: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Rotation: {x: 0.000000, y: 0.000000, z: 0.000000}
+    Scale: {x: 10.000000, y: 10.000000, z: 10.000000}
+    HasSegmentScaleCompensation: false
+  Children:
+    []
+  Components:
+    - !<own> 6802f0a2-404c-477c-a03a-739db1f3d686
+    - !<own> 44e86b2a-d211-4b0c-bbbf-f3e93a58c701
 - !<RenderMeshVisual/727381a8-fd06-4dcc-a287-438c36ac4cfa>
   PrefabRemaps:
     []
@@ -487,6 +560,7 @@
     HasSegmentScaleCompensation: false
   Children:
     - !<own> 1e388890-bcc3-4580-bf97-1596e4896e0f
+    - !<own> 712767cb-b4a2-4794-a00b-e70295934204
   Components:
     []
 - !<SceneObject/a707a106-9f20-4bc8-9c1b-27d5e055c858>
@@ -699,6 +773,8 @@
       camera: !<reference.Camera> 00000000-0000-0065-0000-000000000065
       popupRef: !<reference.SceneObject> 461320bc-94cf-4aea-857d-f978efb1c2a8
       popupParent: !<reference.SceneObject> d6359a10-336d-49af-84d5-dbaa38ad23da
+      popup3DRef: !<reference.SceneObject> 712767cb-b4a2-4794-a00b-e70295934204
+      popup3DParent: !<reference.SceneObject> a03de396-2832-44b8-adf5-ee53a5b9ad21
       objRef: !<reference.SceneObject> 1e388890-bcc3-4580-bf97-1596e4896e0f
       objPrefab: !<reference.ObjectPrefab> 36086dee-a5c9-4213-830b-c7c48dfa9e4d
       spawnParent: !<reference.SceneObject> a03de396-2832-44b8-adf5-ee53a5b9ad21
