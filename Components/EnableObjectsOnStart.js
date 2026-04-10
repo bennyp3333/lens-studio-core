@@ -1,5 +1,5 @@
 // EnableOnStart.js
-// Version: 0.1.2
+// Version: 1.0.0
 // Description: Enables assigned Scene Objects when the lens starts.
 //  Useful for keeping objects disabled in the Scene view to reduce visual clutter while ensuring they activate at runtime.
 //  Also helps with startup performance by deferring the initialization of heavy objects (complex meshes, particle systems, etc.)
@@ -15,6 +15,7 @@
 //    Note: A delay is recommended for performance-intensive objects to avoid blocking the initial load
 
 //@input SceneObject[] objectsToEnable
+//@input Component[] componentsToEnable
 //@input float delay = 0
 
 function onAwake(){
@@ -30,6 +31,9 @@ function onAwake(){
 function enable(){
     script.objectsToEnable.forEach(object => {
         object.enabled = true;
+    });
+    script.componentsToEnable.forEach(component => {
+        component.enabled = true;
     });
 }
 

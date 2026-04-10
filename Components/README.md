@@ -158,16 +158,18 @@ Attach to an object with a Text component for instant FPS monitoring during deve
 
 ### [EnableObjectsOnStart.js](./EnableObjectsOnStart.js)
 
-Enables assigned objects when the lens starts.
+Enables assigned Scene Objects and Components when the lens starts.
 
 **Key Features:**
-- Simple array of objects to enable
+- Array of Scene Objects to enable on start
+- Array of Components to enable on start
+- Optional delay to defer activation and improve startup performance
 - Useful for keeping objects disabled in Scene view to reduce clutter
-- Objects automatically activate at runtime
 
 **Common Use Cases:**
 - Cleaning up the Scene hierarchy during development
 - Organizing complex scenes
+- Deferring heavy objects or components to improve initial load performance
 
 ### [MakeMatUnique.js](./MakeMatUnique.js)
 
