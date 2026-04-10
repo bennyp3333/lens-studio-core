@@ -1,5 +1,5 @@
 // GPUParticlesController.js
-// Version: 0.1.1
+// Version: 1.0.0
 // Description: Handles start/stop/pause/reset operations for GPU particles.
 // Author: Bennyp3333 [https://benjamin-p.dev]
 //
@@ -13,6 +13,66 @@
 // script.stop() - Stop particles
 // script.reset() - Reset particles (stop and prepare for fresh start)
 // script.toggle() - Toggle particles (start if stopped, stop if running)
+//
+// ----- GLOBAL API USAGE -----
+// global.GPUParticles.start("name")               - Start by name (or SceneObject ref)
+// global.GPUParticles.start("name", 0.5, 2.0)     - Start with delays
+// global.GPUParticles.stop("name")                 - Stop by name
+// global.GPUParticles.reset("name")                - Reset by name
+// global.GPUParticles.toggle("name")               - Toggle by name
+// global.GPUParticles.isRunning("name")            - Returns bool (or array if multiple match)
+
+
+// ---- GPUParticlesManager ----
+// Lightweight global registry — instantiated once, shared across all controllers.
+var GPUParticlesManager = function() {
+    this._registry = {};
+};
+
+GPUParticlesManager.prototype._resolve = function(identifier) {
+    if (typeof identifier === "string") {
+        return this._registry[identifier] || [];
+    }
+    var results = [];
+    for (var name in this._registry) {
+        var list = this._registry[name];
+        for (var i = 0; i < list.length; i++) {
+            if (list[i].getSceneObject().isSame(identifier)) results.push(list[i]);
+        }
+    }
+    return results;
+};
+
+GPUParticlesManager.prototype._exec = function(method, identifier, a, b) {
+    var targets = this._resolve(identifier);
+    for (var i = 0; i < targets.length; i++) targets[i][method](a, b);
+};
+
+GPUParticlesManager.prototype.start  = function(id, delayOn, delayOff) { this._exec("start",  id, delayOn, delayOff); };
+GPUParticlesManager.prototype.stop   = function(id) { this._exec("stop",   id); };
+GPUParticlesManager.prototype.reset  = function(id) { this._exec("reset",  id); };
+GPUParticlesManager.prototype.toggle = function(id) { this._exec("toggle", id); };
+
+GPUParticlesManager.prototype.isRunning = function(identifier) {
+    var targets = this._resolve(identifier);
+    if (targets.length === 0) return false;
+    if (targets.length === 1) return targets[0].isRunning();
+    return targets.map(function(t) { return t.isRunning(); });
+};
+
+GPUParticlesManager.prototype._add = function(name, controller) {
+    if (!this._registry[name]) this._registry[name] = [];
+    this._registry[name].push(controller);
+};
+
+GPUParticlesManager.prototype._remove = function(name, controller) {
+    var list = this._registry[name];
+    if (!list) return;
+    var idx = list.indexOf(controller);
+    if (idx !== -1) list.splice(idx, 1);
+    if (list.length === 0) delete this._registry[name];
+};
+// ---- end GPUParticlesManager ----
 
 
 //@input bool startOnInit = true
@@ -24,6 +84,7 @@
 //@ui {"widget":"separator"}
 //@input bool editAdvancedOptions
 //@ui {"widget":"group_start", "label":"Advanced Options", "showIf":"editAdvancedOptions"}
+//@input string particleName {"hint":"Global registry name — defaults to SceneObject name"}
 //@input bool printDebugStatements = false
 //@input bool printWarningStatements = true
 //@ui {"widget":"group_end"}
@@ -82,6 +143,14 @@ function init() {
 	if (script.startOnInit) {
 		start();
 	}
+
+	// Register with global manager
+	var _regName = script.particleName || sceneObject.name;
+	if (!global.GPUParticles) global.GPUParticles = new GPUParticlesManager();
+	global.GPUParticles._add(_regName, script);
+	script.createEvent("OnDestroyEvent").bind(function() {
+		global.GPUParticles._remove(_regName, script);
+	});
 
 	printDebug("Initialized!");
 }

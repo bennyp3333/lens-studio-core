@@ -25,6 +25,7 @@ A controller that handles lifecycle management for GPU particle systems.
 - Toggle particles on/off
 - Unique seed generation for varied effects
 - Override particle count at runtime
+- Global registry for controlling particles by name from any script
 - Debug logging integration
 
 ## Usage
@@ -37,9 +38,33 @@ A controller that handles lifecycle management for GPU particle systems.
 
 **Override Particle Count** - Change the number of particles from material settings
 
-### Programmatic Control
+**Particle Name** *(Advanced Options)* - Custom name for the global registry. Defaults to the SceneObject name.
 
-The controller exposes a simple API for runtime control:
+### Global Control
+
+Every GPUParticlesController automatically registers with `global.GPUParticles` on init. This lets any script control particles by name without needing a direct script reference:
+
+```javascript
+global.GPUParticles.start("Explosion");           // Start immediately
+global.GPUParticles.start("Explosion", 1, 3);     // Start after 1s, auto-stop after 3s
+global.GPUParticles.stop("Explosion");             // Stop
+global.GPUParticles.reset("Explosion");            // Reset
+global.GPUParticles.toggle("Explosion");           // Toggle on/off
+global.GPUParticles.isRunning("Explosion");        // Returns bool
+```
+
+You can also pass a SceneObject reference instead of a name:
+
+```javascript
+global.GPUParticles.start(someSceneObject);
+```
+
+If multiple controllers share the same name, all of them will be targeted.
+
+### Direct Script Control
+
+For local control via a direct script reference:
+
 ```javascript
 var particles = script.getSceneObject().getComponent("Component.ScriptComponent");
 
@@ -61,13 +86,6 @@ particles.start(2);
 particles.start(1, 3);
 ```
 
-**Manual Control:**
-```javascript
-particles.stop();         // Stop playback
-particles.reset();        // Reset to start (stops and resets time)
-particles.toggle();       // Start if stopped, stop if running
-```
-
 **State Checking:**
 ```javascript
 if (particles.isRunning()) {
@@ -79,11 +97,11 @@ if (particles.isRunning()) {
 
 ### Trigger on Tap
 
-Start particles when user taps:
+Start particles when user taps, controlled globally:
 ```javascript
 script.createEvent("TapEvent").bind(function() {
-    particles.reset();
-    particles.start();
+    global.GPUParticles.reset("Explosion");
+    global.GPUParticles.start("Explosion");
 });
 ```
 
@@ -92,7 +110,7 @@ script.createEvent("TapEvent").bind(function() {
 Play particles for a specific duration:
 ```javascript
 // Play particles for exactly 2 seconds
-particles.start(0, 2);
+global.GPUParticles.start("Explosion", 0, 2);
 ```
 
 ### Repeating Effect
@@ -101,8 +119,8 @@ Use with DelayManager for looping effects:
 ```javascript
 var particleLoop = new global.Delay({
     onLoop: function() {
-        particles.reset();
-        particles.start();
+        global.GPUParticles.reset("Explosion");
+        global.GPUParticles.start("Explosion");
     },
     time: 5,
     loops: -1  // Infinite
@@ -114,7 +132,7 @@ var particleLoop = new global.Delay({
 Allow user to turn particles on/off:
 ```javascript
 script.createEvent("TapEvent").bind(function() {
-    particles.toggle();
+    global.GPUParticles.toggle("Explosion");
 });
 ```
 
@@ -132,6 +150,7 @@ This approach gives you full control while maintaining GPU particle performance.
 
 ## Integration with Core
 
+- **Global Registry** - `global.GPUParticles` available as soon as the first controller initializes
 - **Debug Logging** - Outputs to TextLogger when enabled
 - **Delay Manager** - Can be used with `global.Delay()` for complex timing
 - **Global Events** - Can trigger particles via `global.events`
@@ -150,4 +169,4 @@ Check the "Example Project" folder for a working demonstration showing:
 - Basic particle triggering
 - Delayed start and auto-stop
 - Toggle behavior
-- Multiple particle systems
+- Multiple particle systems controlled via `global.GPUParticles`
