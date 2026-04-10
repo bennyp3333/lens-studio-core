@@ -1,10 +1,12 @@
 // ButtonArray.js
-// Version: 0.1.0
+// Version: 1.0.0
 // Description: Controls array of Toggle Buttons.
 // Author: Bennyp3333 [https://benjamin-p.dev]
 //
 // ----- USAGE -----
 // Attach this script to a Scene Object that is parented to Toggle Buttons.
+// Optionally, drag button scripts into the "Manual Buttons" array in the inspector
+// to skip automatic child search. If the array is empty, children are searched as before.
 // Button Id, Button Data and Function Data are passed into custom/global functions
 // Ex. otherScript.customFunction(buttonID int, buttonData string, onSelectFunctionData string)
 //
@@ -42,6 +44,8 @@
 
 //@input bool connectButtons = true;
 //@ui {"widget":"group_start", "label":"Button Connections", "showIf":"connectButtons"}
+//@ui {"widget":"separator"}
+//@input Component.ScriptComponent[] manualButtons = {} {"label":"Manual Buttons (optional)"}
 //@ui {"widget":"separator"}
 //@ui {"widget":"group_start", "label":"Button Selection"}
 //@input bool allowMultiple = false
@@ -154,29 +158,59 @@ function findAndRegisterButtons() {
 	buttonMap = {};
 	var seenIDs = [];
 
-	for (var i = 0; i < sceneObject.getChildrenCount(); i++) {
-		var childObj = sceneObject.getChild(i);
-		var childScript = childObj.getComponent("Component.ScriptComponent");
+	var useManual = script.manualButtons && script.manualButtons.length > 0;
 
-		if (childScript && childScript.getButtonID) {
+	if (useManual) {
+		printDebug("Using " + script.manualButtons.length + " manually assigned buttons");
+
+		for (var i = 0; i < script.manualButtons.length; i++) {
+			var childScript = script.manualButtons[i];
+
+			if (!childScript || !childScript.getButtonID) {
+				printWarning("Manual button at index " + i + " is null or not a valid button script");
+				continue;
+			}
+
 			var childID = childScript.getButtonID();
 
-			// Check for duplicate IDs
 			if (seenIDs.indexOf(childID) > -1) {
 				printWarning("Multiple Buttons with the same ID detected: " + childID);
 			}
 			seenIDs.push(childID);
 
-			// Register button
 			buttonChildren.push(childScript);
 			buttonMap[childID] = childScript;
 
-			// Register this array with the button
 			if (script.connectButtons && childScript.registerArray) {
 				childScript.registerArray(script);
 			}
 
-			printDebug("Registered button ID: " + childID);
+			printDebug("Registered manual button ID: " + childID);
+		}
+	} else {
+		printDebug("No manual buttons set, searching children");
+
+		for (var i = 0; i < sceneObject.getChildrenCount(); i++) {
+			var childObj = sceneObject.getChild(i);
+			var childScript = childObj.getComponent("Component.ScriptComponent");
+
+			if (childScript && childScript.getButtonID) {
+				var childID = childScript.getButtonID();
+
+				if (seenIDs.indexOf(childID) > -1) {
+					printWarning("Multiple Buttons with the same ID detected: " + childID);
+				}
+				seenIDs.push(childID);
+
+				buttonChildren.push(childScript);
+				buttonMap[childID] = childScript;
+
+				if (script.connectButtons && childScript.registerArray) {
+					childScript.registerArray(script);
+				}
+
+				printDebug("Registered button ID: " + childID);
+			}
 		}
 	}
 

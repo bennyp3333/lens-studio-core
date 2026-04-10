@@ -64,6 +64,11 @@ Manages groups of ToggleButtons to create radio button groups, multi-select list
 3. Attach ButtonArray script to the parent
 4. Configure selection rules
 
+**Manual Button Registration (optional):**
+- Drag button Script Components into the **Manual Buttons** array in the Inspector
+- When populated, the array is used instead of searching child objects
+- Useful when buttons are not direct children of the ButtonArray object
+
 **Selection Modes:**
 
 **Radio Button Mode** (default):
@@ -81,7 +86,7 @@ Manages groups of ToggleButtons to create radio button groups, multi-select list
 - Works with both radio and multi-select modes
 
 **Key Features:**
-- Automatic button registration from children
+- Automatic button registration from children (or manual override via Inspector)
 - Centralized callback management
 - Get selected button(s) programmatically
 - Select/deselect buttons by ID
@@ -220,6 +225,7 @@ filterArray.onSelect.add(function(buttonID) {
 
 ### ButtonArray Specific
 
+- **Manual Buttons** - Optional array of button Script Components; when set, skips automatic child search
 - **Allow Multiple** - Enable multi-select mode
 - **Allow None** - Permit zero selected buttons
 - **Force Select** - Auto-select first button if none selected
