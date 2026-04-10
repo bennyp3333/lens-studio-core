@@ -273,20 +273,27 @@ script.despawn(); // Removes from registry and destroys
 - Always use `global.spawn.destroy()` or `script.despawn()` instead of `obj.destroy()` to keep the registry clean
 - Call `global.spawn.cleanup()` periodically if objects may be destroyed externally
 
+### [TouchBlocking.js](./TouchBlocking.js)
+
+Inspector-driven wrapper for `global.touchSystem` touch blocking. Enables blocking of all native Snapchat gestures and exposes per-type exception toggles (Swipe, Tap, DoubleTap, Scale, Pan, Touch, None).
+
+---
+
 ## How Managers Initialize
 
 The Core prefab sets up these managers in the following order:
 
-1. **CallbackTracker** (from Classes) - Loaded first as a dependency
-2. **GlobalEvents** - Uses CallbackTracker for event management
-3. **DelayManager** - Provides timing utilities
-4. **GlobalUtils** - Consolidates all utility functions
-5. **SpawnManager** - Provides spawn management
-6. **TextLogger** - Provides debug output
+1. **TouchBlocking** - Configures native touch blocking
+2. **CallbackTracker** (from Classes) - Loaded first as a dependency
+3. **GlobalEvents** - Uses CallbackTracker for event management
+4. **DelayManager** - Provides timing utilities
+5. **GlobalUtils** - Consolidates all utility functions
+6. **SpawnManager** - Provides spawn management
+7. **TextLogger** - Provides debug output
 
 This initialization order ensures dependencies are available when needed.
 
-> **Important:** For performance reasons, GlobalEvents, DelayManager, SpawnManager, GlobalUtils, and TextLogger scripts are **disabled by default** in the Core prefab's scene hierarchy. You must enable the specific manager scripts you need for your project before they become available. This prevents unnecessary overhead from unused managers.
+> **Important:** For performance reasons, TouchBlocking, GlobalEvents, DelayManager, SpawnManager, GlobalUtils, and TextLogger scripts are **disabled by default** in the Core prefab's scene hierarchy. You must enable the specific manager scripts you need for your project before they become available. This prevents unnecessary overhead from unused managers.
 
 ## Integration Between Managers
 
