@@ -86,7 +86,7 @@
 //@ui {"widget":"separator"}
 //@input bool editAdvancedOptions
 //@ui {"widget":"group_start", "label":"Advanced Options", "showIf":"editAdvancedOptions"}
-//@input bool touchBlockingEnabled = true
+//@input bool touchBlockingEnabled = false
 //@input bool printDebugStatements = false
 //@input bool printWarningStatements = true
 //@ui {"widget":"group_end"}

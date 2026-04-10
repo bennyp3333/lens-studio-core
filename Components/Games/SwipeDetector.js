@@ -66,7 +66,7 @@ script.swipeDetector.onSwipeUpdate.add(function(data) {
 //@ui {"widget":"separator"}
 //@input bool advancedOptions = false
 //@ui {"widget":"group_start", "label":"Advanced Options", "showIf":"advancedOptions"}
-//@input bool touchBlockingEnabled = true
+//@input bool touchBlockingEnabled = false
 //@input bool trackUpdates = true {"hint":"Enable onSwipeUpdate events during swipe"}
 //@input bool enableLogging = false
 //@ui {"widget":"group_end"}

@@ -109,8 +109,6 @@ function initialize() {
 
     // Set direction flag
     isVertical = (script.direction === "vertical");
-
-    global.touchSystem.touchBlocking = true;
     
     if (script.spawnedCarousel) {
         if (!initializeSpawnedElements()) return;
