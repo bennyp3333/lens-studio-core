@@ -223,9 +223,10 @@ AudioManager.prototype._play = function(name, options) {
     comp.fadeOutTime = fadeOutTime;
 
     // Wire up onComplete before play so setOnFinish is set on the exact comp being used.
-    // Always call setOnFinish (even with null) to clear any stale callback from a previous play.
+    // Always call setOnFinish to clear any stale callback from a previous play.
+    // Lens Studio requires a function — pass a no-op to clear rather than null.
     var onComplete = options.onComplete || null;
-    comp.setOnFinish(onComplete ? function() { onComplete(comp); } : null);
+    comp.setOnFinish(onComplete ? function() { onComplete(comp); } : function() {});
 
     if (options.onStart) options.onStart(comp);
 
