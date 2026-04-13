@@ -1,27 +1,51 @@
 /*
 AudioManager.js
-Version: 1.0.0
+Version: 1.1.0
 Description: Global audio manager for playing named audio tracks across scripts.
 Author: Bennyp3333 [https://benjamin-p.dev]
 
-==== SETUP ====
+==== Setup ====
 1. Add this script to a SceneObject in your scene
 2. Assign AudioTrackAssets in the inspector via the audioTracks list
 3. Configure per-track options (volume, loop, fade, allowOverwrite, allowConcurrent)
 
-==== GLOBAL API USAGE ====
-global.audioManager.play("trackName")           - Play by name; returns AudioComponent
-global.audioManager.play("trackName", 2.0)      - Play after 2s delay; returns null (comp unknown until fired)
-global.audioManager.play(["a", "b"])             - Play multiple tracks; returns [AudioComponent, AudioComponent]
-global.audioManager.stop("trackName")            - Stop; returns [AudioComponent] of stopped comps
-global.audioManager.stop("trackName", 1.0)       - Stop after delay; returns null
-global.audioManager.pause("trackName")           - Pause; returns [AudioComponent] of paused comps
-global.audioManager.resume("trackName")          - Resume; returns [AudioComponent] of resumed comps
+==== Global API Usage ====
+global.audioManager.play("trackName")                          - Play with track defaults
+global.audioManager.play("trackName", function() { ... })      - Play; callback fires on complete
+global.audioManager.play("trackName", { delay: 2.0 })          - Play after 2s delay
+global.audioManager.play("trackName", { ... }, onComplete)     - Play with options + callback
+global.audioManager.play(["a", "b"], { onComplete: fn })        - Play multiple; callback fires once (on "a")
+global.audioManager.stop("trackName")                          - Stop (cancels pending delays)
+global.audioManager.stop("trackName", { delay: 1.0 })          - Stop after delay
+global.audioManager.stop("trackName", { fadeOutTime: 0.5 })    - Stop with custom fade
+global.audioManager.pause("trackName")                         - Pause
+global.audioManager.resume("trackName")                        - Resume
+global.audioManager.isPlaying("trackName")                     - Returns true if currently playing
 
-==== DELAY MANAGEMENT ====
-Delayed calls are tracked internally per track. Calling stop() or pause() on a track
-automatically cancels any pending delayed plays for that track. Calling play() with
-allowOverwrite=true also cancels pending delayed plays before restarting.
+==== Options Object ====
+All public methods accept an optional options object as the second argument:
+{
+    delay:           float     - Seconds before the action fires (all methods)
+    loop:            bool      - Override track loop setting for this call (play)
+    volume:          float     - Override track volume for this call (play)
+    fadeInTime:      float     - Override fade-in duration, implies fade in (play)
+    fadeOutTime:     float     - Override fade-out duration, implies fade out (play, stop)
+    allowConcurrent: bool      - Override concurrent behaviour for this call (play)
+    allowOverwrite:  bool      - Override overwrite behaviour for this call (play)
+    onStart:         function  - Called when the sound actually starts, receives AudioComponent (play)
+    onComplete:      function  - Called when the sound finishes, receives AudioComponent (play)
+}
+
+play() also accepts a function as the second argument as a shorthand for onComplete:
+    global.audioManager.play("sfx", function(comp) { print("done"); });
+
+For multi-name calls, onStart and onComplete only fire for the first track in the array.
+
+==== Delay Management ====
+Delayed calls are tracked internally per track. stop() and pause() always cancel pending
+delays immediately — even when called with their own delay option, the cancellation happens
+at call time (not when the delayed action fires). play() with allowOverwrite=true also
+cancels pending delayed plays before restarting.
 
 ==== allowOverwrite / allowConcurrent ====
 allowOverwrite=false, allowConcurrent=false: Skip if already playing
@@ -29,8 +53,9 @@ allowOverwrite=true,  allowConcurrent=false: Stop current, restart
 allowConcurrent=true: Find a free AudioComponent or create a new one (concurrent play)
                       Each track starts with 1 dedicated AudioComponent; more are
                       created on demand and cached for reuse.
+A paused AudioComponent is always treated as available regardless of allowOverwrite.
 
-==== NAMING ====
+==== Naming ====
 Track names must be unique. Duplicate names are rejected with a warning.
 */
 
@@ -57,7 +82,7 @@ Track names must be unique. Duplicate names are rejected with a warning.
 //@input bool printWarningStatements = true
 
 
-// ---- AudioManager ----
+// ============ AUDIOMANAGER CLASS ============
 
 var AudioManager = function() {
     this._tracks = {};         // trackName -> trackConfig
@@ -109,24 +134,21 @@ AudioManager.prototype._getFreeComp = function(name) {
             return comps[i];
         }
     }
-    // All actively playing — create a new one if concurrent is enabled
-    if (this._tracks[name].allowConcurrent) {
-        var newComp = this._createComp(this._tracks[name]);
-        comps.push(newComp);
-        printDebug("Created extra AudioComponent for '" + name + "' (total: " + comps.length + ")");
-        return newComp;
-    }
-    return null;
+    // All actively playing — grow the pool (only called when allowConcurrent is true)
+    var newComp = this._createComp(this._tracks[name]);
+    comps.push(newComp);
+    printDebug("Created extra AudioComponent for '" + name + "' (total: " + comps.length + ")");
+    return newComp;
 };
 
-// Schedules a delayed call to a private method by name. Both `name` and `method` are
-// function parameters so they are safely captured per-call — no closure-in-loop issues.
-AudioManager.prototype._scheduleDelay = function(name, delay, method) {
+// Schedules a delayed call to a private method, forwarding options through.
+// Both `name` and `options` are function parameters — safely captured per-call.
+AudioManager.prototype._scheduleDelay = function(name, delay, options, method) {
     var self = this;
     var delayedEvent = script.createEvent("DelayedCallbackEvent");
     delayedEvent.bind(function() {
         self._removePendingDelay(name, delayedEvent);
-        self[method](name);
+        self[method](name, options);
     });
     delayedEvent.reset(delay);
     if (!this._pendingDelays[name]) this._pendingDelays[name] = [];
@@ -151,24 +173,34 @@ AudioManager.prototype._cancelPendingDelays = function(name) {
     printDebug("Cancelled " + list.length + " pending delay(s) for '" + name + "'");
 };
 
-AudioManager.prototype._play = function(name) {
+AudioManager.prototype._play = function(name, options) {
     if (!this._tracks[name]) {
         printWarning("Track '" + name + "' not found.");
         return null;
     }
     var trackConfig = this._tracks[name];
+    options = options || {};
+
+    // Resolve per-call overrides, falling back to track config
+    var allowConcurrent = options.allowConcurrent !== undefined ? options.allowConcurrent : trackConfig.allowConcurrent;
+    var allowOverwrite  = options.allowOverwrite  !== undefined ? options.allowOverwrite  : trackConfig.allowOverwrite;
+    var loop            = options.loop            !== undefined ? options.loop            : trackConfig.loop;
+    var volume          = options.volume          !== undefined ? options.volume          : (trackConfig.volume !== undefined ? trackConfig.volume : 1.0);
+    var fadeInTime      = options.fadeInTime      !== undefined ? options.fadeInTime      : (trackConfig.fadeIn  ? (trackConfig.fadeInTime  || 0) : 0);
+    var fadeOutTime     = options.fadeOutTime     !== undefined ? options.fadeOutTime     : (trackConfig.fadeOut ? (trackConfig.fadeOutTime || 0) : 0);
+
     var comp;
 
-    if (trackConfig.allowConcurrent) {
+    if (allowConcurrent) {
         comp = this._getFreeComp(name);
     } else {
         // allowOverwrite=true means this call is authoritative — cancel any pending delayed plays
-        if (trackConfig.allowOverwrite) {
+        if (allowOverwrite) {
             this._cancelPendingDelays(name);
         }
         comp = this._audioComps[name][0];
         if (comp.isPlaying()) {
-            if (trackConfig.allowOverwrite) {
+            if (allowOverwrite) {
                 comp.stop(false);
             } else {
                 printDebug("Skipping '" + name + "': already playing (allowOverwrite=false).");
@@ -180,24 +212,44 @@ AudioManager.prototype._play = function(name) {
         }
     }
 
-    if (!comp) return null;
+    if (!comp) {
+        printDebug("No free AudioComponent for '" + name + "' — all busy and allowConcurrent is false for this call.");
+        return null;
+    }
 
-    comp.play(trackConfig.loop ? -1 : 1);
+    // Apply per-call overrides to the comp before playing
+    comp.volume      = volume;
+    comp.fadeInTime  = fadeInTime;
+    comp.fadeOutTime = fadeOutTime;
+
+    // Wire up onComplete before play so setOnFinish is set on the exact comp being used.
+    // Always call setOnFinish (even with null) to clear any stale callback from a previous play.
+    var onComplete = options.onComplete || null;
+    comp.setOnFinish(onComplete ? function() { onComplete(comp); } : null);
+
+    if (options.onStart) options.onStart(comp);
+
+    comp.play(loop ? -1 : 1);
     printDebug("Playing: " + name);
     return comp;
 };
 
-AudioManager.prototype._stop = function(name) {
+AudioManager.prototype._stop = function(name, options) {
     if (!this._audioComps[name]) {
         printWarning("Track '" + name + "' not found.");
         return [];
     }
+    options = options || {};
     this._cancelPendingDelays(name);
     var comps = this._audioComps[name];
-    var fade = this._tracks[name].fadeOut || false;
     var affected = [];
     for (var i = 0; i < comps.length; i++) {
         if (comps[i].isPlaying() || comps[i].isPaused()) {
+            // Apply per-call fadeOutTime override if provided
+            if (options.fadeOutTime !== undefined) {
+                comps[i].fadeOutTime = options.fadeOutTime;
+            }
+            var fade = options.fadeOutTime !== undefined ? true : (this._tracks[name].fadeOut || false);
             comps[i].stop(fade);
             affected.push(comps[i]);
         }
@@ -238,7 +290,7 @@ AudioManager.prototype._resume = function(name) {
     return affected;
 };
 
-// ---- Public API ----
+// ============ PUBLIC API ============
 
 /**
  * Registers one or more audio tracks with the manager. Each track gets its own
@@ -292,51 +344,87 @@ AudioManager.prototype.removeTracks = function(names) {
 };
 
 /**
- * Plays one or more tracks by name. Behaviour on a track that is already playing
- * is controlled by its allowOverwrite and allowConcurrent settings.
- * If allowOverwrite=true and allowConcurrent=false, also cancels any pending delayed plays.
- * @param {string|string[]} name - Track name or array of track names
- * @param {number} [delay] - Optional delay in seconds before playing
- * @returns {AudioComponent|AudioComponent[]|null} The AudioComponent that started playing,
- *          or an array when multiple names are given. Returns null if delayed (the specific
- *          AudioComponent is not known until the delay fires) or if the play was skipped.
+ * Returns true if any AudioComponent for the named track is currently playing.
+ * @param {string} name - Track name
+ * @returns {bool}
  */
-AudioManager.prototype.play = function(name, delay) {
+AudioManager.prototype.isPlaying = function(name) {
+    var comps = this._audioComps[name];
+    if (!comps) return false;
+    for (var i = 0; i < comps.length; i++) {
+        if (comps[i].isPlaying()) return true;
+    }
+    return false;
+};
+
+/**
+ * Plays one or more tracks by name.
+ * @param {string|string[]} name - Track name or array of track names
+ * @param {Object|function} [options] - Options object, or a function used as onComplete shorthand
+ * @param {function} [onComplete] - Called when the sound finishes; merged into options.onComplete
+ * @returns {AudioComponent|AudioComponent[]|null} AudioComponent(s) that started playing,
+ *          or null if delayed. For multiple names, returns an array. onStart/onComplete
+ *          only fire for the first track when multiple names are passed.
+ */
+AudioManager.prototype.play = function(name, options, onComplete) {
+    if (typeof options === "function") { onComplete = options; options = {}; }
+    options = options || {};
+    if (onComplete) options.onComplete = options.onComplete || onComplete;
+
     var names = (name.length !== undefined && typeof name !== "string") ? name : [name];
-    if (delay && delay > 0) {
+    var delay = options.delay || 0;
+
+    // Build a muted copy of options without callbacks for all names after the first
+    var mutedOptions = {};
+    for (var key in options) {
+        if (options.hasOwnProperty(key)) mutedOptions[key] = options[key];
+    }
+    delete mutedOptions.onStart;
+    delete mutedOptions.onComplete;
+
+    if (delay > 0) {
         for (var i = 0; i < names.length; i++) {
             if (!this._tracks[names[i]]) {
                 printWarning("Track '" + names[i] + "' not found.");
                 continue;
             }
-            this._scheduleDelay(names[i], delay, "_play");
+            this._scheduleDelay(names[i], delay, i === 0 ? options : mutedOptions, "_play");
         }
         return null;
     }
+
     var results = [];
-    for (var i = 0; i < names.length; i++) results.push(this._play(names[i]));
+    for (var i = 0; i < names.length; i++) {
+        results.push(this._play(names[i], i === 0 ? options : mutedOptions));
+    }
     return results.length === 1 ? results[0] : results;
 };
 
 /**
- * Stops one or more tracks by name. Immediately cancels all pending delays for
- * each track (including any queued delayed plays). Respects each track's fadeOut setting.
+ * Stops one or more tracks by name. Immediately cancels all pending delays for each track.
+ * Respects each track's fadeOut setting unless overridden in options.
  * @param {string|string[]} name - Track name or array of track names
- * @param {number} [delay] - Optional delay in seconds before stopping
- * @returns {AudioComponent[]|null} Flat array of every AudioComponent that was stopped,
- *          or null if delayed. Useful for attaching setOnFinish callbacks after a manual stop.
+ * @param {Object} [options] - Options object
+ * @param {number} [options.delay] - Seconds before stopping
+ * @param {number} [options.fadeOutTime] - Override fade-out duration for this call
+ * @returns {AudioComponent[]|null} Flat array of AudioComponents that were stopped, or null if delayed
  */
-AudioManager.prototype.stop = function(name, delay) {
+AudioManager.prototype.stop = function(name, options) {
+    options = options || {};
     var names = (name.length !== undefined && typeof name !== "string") ? name : [name];
-    if (delay && delay > 0) {
+    var delay = options.delay || 0;
+
+    if (delay > 0) {
         for (var i = 0; i < names.length; i++) {
-            this._scheduleDelay(names[i], delay, "_stop");
+            this._cancelPendingDelays(names[i]);
+            this._scheduleDelay(names[i], delay, options, "_stop");
         }
         return null;
     }
+
     var results = [];
     for (var i = 0; i < names.length; i++) {
-        var affected = this._stop(names[i]);
+        var affected = this._stop(names[i], options);
         for (var j = 0; j < affected.length; j++) results.push(affected[j]);
     }
     return results;
@@ -346,20 +434,26 @@ AudioManager.prototype.stop = function(name, delay) {
  * Pauses one or more tracks by name. Also cancels all pending delays for each track
  * so queued plays cannot fire and undo the pause.
  * @param {string|string[]} name - Track name or array of track names
- * @param {number} [delay] - Optional delay in seconds before pausing
- * @returns {AudioComponent[]|null} Flat array of every AudioComponent that was paused, or null if delayed.
+ * @param {Object} [options] - Options object
+ * @param {number} [options.delay] - Seconds before pausing
+ * @returns {AudioComponent[]|null} Flat array of AudioComponents that were paused, or null if delayed
  */
-AudioManager.prototype.pause = function(name, delay) {
+AudioManager.prototype.pause = function(name, options) {
+    options = options || {};
     var names = (name.length !== undefined && typeof name !== "string") ? name : [name];
-    if (delay && delay > 0) {
+    var delay = options.delay || 0;
+
+    if (delay > 0) {
         for (var i = 0; i < names.length; i++) {
-            this._scheduleDelay(names[i], delay, "_pause");
+            this._cancelPendingDelays(names[i]);
+            this._scheduleDelay(names[i], delay, options, "_pause");
         }
         return null;
     }
+
     var results = [];
     for (var i = 0; i < names.length; i++) {
-        var affected = this._pause(names[i]);
+        var affected = this._pause(names[i], options);
         for (var j = 0; j < affected.length; j++) results.push(affected[j]);
     }
     return results;
@@ -368,26 +462,31 @@ AudioManager.prototype.pause = function(name, delay) {
 /**
  * Resumes one or more paused tracks by name.
  * @param {string|string[]} name - Track name or array of track names
- * @param {number} [delay] - Optional delay in seconds before resuming
- * @returns {AudioComponent[]|null} Flat array of every AudioComponent that was resumed, or null if delayed.
+ * @param {Object} [options] - Options object
+ * @param {number} [options.delay] - Seconds before resuming
+ * @returns {AudioComponent[]|null} Flat array of AudioComponents that were resumed, or null if delayed
  */
-AudioManager.prototype.resume = function(name, delay) {
+AudioManager.prototype.resume = function(name, options) {
+    options = options || {};
     var names = (name.length !== undefined && typeof name !== "string") ? name : [name];
-    if (delay && delay > 0) {
+    var delay = options.delay || 0;
+
+    if (delay > 0) {
         for (var i = 0; i < names.length; i++) {
-            this._scheduleDelay(names[i], delay, "_resume");
+            this._scheduleDelay(names[i], delay, options, "_resume");
         }
         return null;
     }
+
     var results = [];
     for (var i = 0; i < names.length; i++) {
-        var affected = this._resume(names[i]);
+        var affected = this._resume(names[i], options);
         for (var j = 0; j < affected.length; j++) results.push(affected[j]);
     }
     return results;
 };
 
-// ---- Init ----
+// ============ INITIALIZATION ============
 
 function init() {
     global.audioManager = new AudioManager();
@@ -399,7 +498,7 @@ function init() {
 
 init();
 
-// ---- Debug Helpers ----
+// ============ DEBUG HELPERS ============
 
 function printDebug(message) {
     if (script.printDebugStatements) {

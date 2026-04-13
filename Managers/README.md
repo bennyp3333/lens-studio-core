@@ -26,8 +26,11 @@ global.audioManager
 - Per-track AudioComponent pooling — each track starts with one dedicated component
 - `allowConcurrent` grows the pool on demand so multiple overlapping plays are supported
 - `allowOverwrite` controls whether a new play call interrupts an in-progress sound
-- Delay support on all operations (`play`, `stop`, `pause`, `resume`)
-- Pending delayed plays are automatically cancelled when `stop()` or `pause()` is called
+- Options object on all public methods for per-call setting overrides and callbacks
+- `onStart` / `onComplete` callbacks on `play()` without modifying inspector config
+- Delay support on all operations via `options.delay`
+- Pending delayed plays are cancelled immediately when `stop()` or `pause()` is called, even when those calls themselves use `options.delay`
+- `isPlaying()` query method for conditional logic
 - Duplicate track name detection at startup
 
 **Basic Usage:**
@@ -35,15 +38,34 @@ global.audioManager
 // Play a sound
 global.audioManager.play("bubblePop");
 
-// Play after a delay
-global.audioManager.play("countdown", 2.0);
+// Play with onComplete shorthand
+global.audioManager.play("countdown", function(comp) {
+    print("countdown finished!");
+});
 
-// Stop a sound (cancels any pending delayed plays for that track)
+// Play with full options
+global.audioManager.play("music", {
+    delay:      2.0,
+    loop:       true,
+    volume:     0.5,
+    fadeInTime: 1.0,
+    onStart:    function(comp) { print("music started"); },
+    onComplete: function(comp) { print("music stopped"); }
+});
+
+// Stop a sound (cancels any pending delayed plays, respects track fadeOut)
 global.audioManager.stop("music");
 
-// Play returns the AudioComponent — useful for attaching callbacks
-var comp = global.audioManager.play("explosion");
-comp.setOnFinish(function() { print("boom done"); });
+// Stop with a custom fade for just this call
+global.audioManager.stop("music", { fadeOutTime: 0.5 });
+
+// Stop after a delay
+global.audioManager.stop("music", { delay: 3.0 });
+
+// Check if a track is currently playing
+if (!global.audioManager.isPlaying("music")) {
+    global.audioManager.play("music", { loop: true });
+}
 ```
 
 **Playing Multiple Tracks:**
@@ -51,8 +73,23 @@ comp.setOnFinish(function() { print("boom done"); });
 // Play several tracks at once
 global.audioManager.play(["ambience", "music"]);
 
+// onComplete fires once — only on the first track
+global.audioManager.play(["ambience", "music"], {
+    onComplete: function() { print("ambience finished"); }
+});
+
 // Stop several at once
 global.audioManager.stop(["ambience", "music"]);
+```
+
+**Per-Call Setting Overrides:**
+```javascript
+// Override track settings for a single call — track config is not changed
+global.audioManager.play("sfx", {
+    volume:          0.3,
+    allowConcurrent: false,
+    allowOverwrite:  true
+});
 ```
 
 **Adding Tracks at Runtime:**
@@ -74,15 +111,11 @@ global.audioManager.addTracks({
 global.audioManager.removeTracks("powerUp");
 ```
 
-**allowOverwrite / allowConcurrent:**
-
-| allowConcurrent | allowOverwrite | Behaviour |
-|---|---|---|
-| `true` | — | Find a free AudioComponent or create a new one; supports simultaneous plays |
-| `false` | `false` | Skip if already playing |
-| `false` | `true` | Stop current and restart |
-
-A paused AudioComponent is always treated as available — it will be stopped and replayed regardless of `allowOverwrite`.
+**State Query:**
+```javascript
+// Check if a track is currently playing (any AudioComponent in its pool)
+global.audioManager.isPlaying("music"); // returns bool
+```
 
 **Inspector Options (per track):**
 - **Name** — Unique string key used to reference this track
@@ -94,11 +127,22 @@ A paused AudioComponent is always treated as available — it will be stopped an
 - **allowConcurrent** — Pool multiple AudioComponents for overlapping plays
 - **allowOverwrite** — Stop and restart if already playing (only visible when allowConcurrent is off)
 
+**allowOverwrite / allowConcurrent:**
+
+| allowConcurrent | allowOverwrite | Behaviour |
+|---|---|---|
+| `true` | — | Find a free AudioComponent or create a new one; supports simultaneous plays |
+| `false` | `false` | Skip if already playing |
+| `false` | `true` | Stop current and restart |
+
+A paused AudioComponent is always treated as available — it will be stopped and replayed regardless of `allowOverwrite`.
+
 **Common Use Cases:**
 - UI sound effects (button taps, transitions)
 - Looping background music with clean stop/fade
 - Overlapping SFX (bubble pops, footsteps) via `allowConcurrent`
-- Timed audio cues synced to animations using the delay parameter
+- Timed audio cues synced to animations via `options.delay`
+- Chaining sounds using `onComplete` to trigger the next play
 
 ### [GlobalEvents.js](./GlobalEvents.js)
 
