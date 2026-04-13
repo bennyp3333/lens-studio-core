@@ -1,6 +1,6 @@
 /*
 AudioManager.js
-Version: 1.1.0
+Version: 1.1.1
 Description: Global audio manager for playing named audio tracks across scripts.
 Author: Bennyp3333 [https://benjamin-p.dev]
 
