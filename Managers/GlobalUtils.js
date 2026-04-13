@@ -1,6 +1,6 @@
 /*
 GlobalUtils.js
-Version: 1.0.1
+Version: 1.0.2
 Description: Consolidates utility functions from multiple utility modules into a single global.utils object.
 Author: Bennyp3333 [https://benjamin-p.dev]
 */
@@ -15,6 +15,7 @@ function tryRequire(file){
 
 var utilModules = [
     tryRequire("../Utilities/ArrayUtils.js"),
+    tryRequire("../Utilities/AsyncUtils.js"),
     tryRequire("../Utilities/ColorUtils.js"),
     tryRequire("../Utilities/ComponentUtils.js"),
     tryRequire("../Utilities/MathUtils.js"),

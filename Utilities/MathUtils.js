@@ -1,6 +1,6 @@
 /*
 MathUtils.js
-Version: 1.0.0
+Version: 1.1.0
 Description: Mathematical operations and helper functions for interpolation, clamping, remapping, and conversions.
 Author: Bennyp3333 [https://benjamin-p.dev]
 */
@@ -77,6 +77,41 @@ function radiansToDegrees(radians) {
     return radians * (180 / Math.PI);
 }
 
+/**
+ * Rotates a quaternion by the given angle (in degrees) around an axis vector.
+ * @param {quat} currentRot - The base rotation quaternion.
+ * @param {number} angle - The angle to rotate in degrees.
+ * @param {vec3} axisVector - The axis to rotate around.
+ * @returns {quat} The resulting quaternion after rotation.
+ */
+function rotateQuat(currentRot, angle, axisVector) {
+    var radian = angle * (Math.PI / 180);
+    var rotationToApply = quat.angleAxis(radian, axisVector);
+    return rotationToApply.multiply(currentRot);
+}
+
+/**
+ * Extracts the rotation angle (in degrees) from a quaternion along a single axis component.
+ * Note: Accurate for single-axis rotations. Results may be imprecise for compound rotations.
+ * @param {quat} quatValue - The quaternion to extract the angle from.
+ * @param {string} axis - The axis component to use: "x", "y", or "z".
+ * @returns {number} The angle in degrees.
+ */
+function getAngleOfQuat(quatValue, axis) {
+    var radian = Math.asin(quatValue[axis]) * 2;
+    return radian / Math.PI * 180;
+}
+
+/**
+ * Extracts the total rotation angle (in degrees) from the W component of a quaternion.
+ * Uses the half-angle formula: angle = acos(w) * 2.
+ * @param {quat} quatValue - The quaternion to extract the angle from.
+ * @returns {number} The total rotation angle in degrees.
+ */
+function getWAngleOfQuat(quatValue) {
+    return Math.acos(quatValue.w) * 2 / Math.PI * 180;
+}
+
 // Exporting the functions
 var exports = {
     lerp,
@@ -84,7 +119,10 @@ var exports = {
     remap,
     approxEqual,
     degreesToRadians,
-    radiansToDegrees
+    radiansToDegrees,
+    rotateQuat,
+    getAngleOfQuat,
+    getWAngleOfQuat
 };
 
 if(script){

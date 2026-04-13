@@ -1,5 +1,5 @@
 // BaseTools.js
-// Version: 0.1.1
+// Version: 1.0.0
 // Description: Injects common utility functions directly onto a script reference.
 // Author: Bennyp3333 [https://benjamin-p.dev]
 //
@@ -79,6 +79,26 @@ var BaseTools = function(scriptRef) {
         return delayedEvent;
     };
     
+    /**
+     * Executes a callback after a specified number of frames.
+     * @param {number} endFrame - Number of frames to wait before firing.
+     * @param {function} callback - Function to execute after the delay.
+     * @returns {UpdateEvent} Event object (set .enabled = false to cancel)
+     */
+    scriptRef.delayFrames = function(endFrame, callback) {
+        var counter = 0;
+        var frameEvent = scriptRef.createEvent("UpdateEvent");
+        frameEvent.bind(function() {
+            if (counter >= endFrame) {
+                frameEvent.enabled = false;
+                callback();
+                return;
+            }
+            counter++;
+        });
+        return frameEvent;
+    };
+
     /**
      * Creates an AudioComponent on this script's SceneObject.
      * @param {AudioTrackAsset} [audioTrack] - Audio track to assign

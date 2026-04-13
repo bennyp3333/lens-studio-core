@@ -1,6 +1,6 @@
 /*
 SceneUtils.js
-Version: 1.0.0
+Version: 1.1.0
 Description: Scene object search, traversal, and manipulation utilities for finding, filtering, and modifying scene hierarchies.
 Author: Bennyp3333 [https://benjamin-p.dev]
 */
@@ -378,6 +378,27 @@ function recursiveAlpha(rootObj, alpha, effectDisabled){
     });
 }
 
+/**
+ * Returns a flat array of children of the given scene object up to the specified depth.
+ * @param {SceneObject} sceneObject - The parent scene object.
+ * @param {number} [depth=1] - How many levels deep to collect children.
+ * Use 1 for direct children only, Infinity for all descendants.
+ * @returns {SceneObject[]} Flat array of all SceneObjects within the depth limit.
+ */
+function getChildren(sceneObject, depth) {
+    if (depth === undefined) { depth = 1; }
+    var result = [];
+    var childCount = sceneObject.getChildrenCount();
+    for (var i = 0; i < childCount; i++) {
+        var child = sceneObject.getChild(i);
+        result.push(child);
+        if (depth > 1) {
+            result = result.concat(getChildren(child, depth - 1));
+        }
+    }
+    return result;
+}
+
 // Exporting the functions
 var exports = {
     setEnabled,
@@ -393,7 +414,8 @@ var exports = {
     applyToDescendants,
     findScript,
     findScriptUpwards,
-    recursiveAlpha
+    recursiveAlpha,
+    getChildren
 };
 
 if(script){
