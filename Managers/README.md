@@ -8,6 +8,98 @@ The Managers folder contains three critical systems that are instantiated by the
 
 ## Manager Systems
 
+### [TouchBlocking.js](./TouchBlocking.js)
+
+Inspector-driven wrapper for `global.touchSystem` touch blocking. Enables blocking of all native Snapchat gestures and exposes per-type exception toggles (Swipe, Tap, DoubleTap, Scale, Pan, Touch, None).
+
+### [AudioManager.js](./AudioManager.js)
+
+A global audio manager for playing named audio tracks from any script in your project.
+
+**Access via:**
+```javascript
+global.audioManager
+```
+
+**Key Features:**
+- Reference audio tracks by name from anywhere in your project
+- Per-track AudioComponent pooling — each track starts with one dedicated component
+- `allowConcurrent` grows the pool on demand so multiple overlapping plays are supported
+- `allowOverwrite` controls whether a new play call interrupts an in-progress sound
+- Delay support on all operations (`play`, `stop`, `pause`, `resume`)
+- Pending delayed plays are automatically cancelled when `stop()` or `pause()` is called
+- Duplicate track name detection at startup
+
+**Basic Usage:**
+```javascript
+// Play a sound
+global.audioManager.play("bubblePop");
+
+// Play after a delay
+global.audioManager.play("countdown", 2.0);
+
+// Stop a sound (cancels any pending delayed plays for that track)
+global.audioManager.stop("music");
+
+// Play returns the AudioComponent — useful for attaching callbacks
+var comp = global.audioManager.play("explosion");
+comp.setOnFinish(function() { print("boom done"); });
+```
+
+**Playing Multiple Tracks:**
+```javascript
+// Play several tracks at once
+global.audioManager.play(["ambience", "music"]);
+
+// Stop several at once
+global.audioManager.stop(["ambience", "music"]);
+```
+
+**Adding Tracks at Runtime:**
+```javascript
+// Tracks can also be registered from script at runtime
+global.audioManager.addTracks({
+    trackName:       "powerUp",
+    track:           script.powerUpAsset,
+    volume:          0.8,
+    loop:            false,
+    fadeIn:          false,
+    fadeOut:         true,
+    fadeOutTime:     0.3,
+    allowOverwrite:  true,
+    allowConcurrent: false
+});
+
+// Remove a track and destroy its AudioComponents
+global.audioManager.removeTracks("powerUp");
+```
+
+**allowOverwrite / allowConcurrent:**
+
+| allowConcurrent | allowOverwrite | Behaviour |
+|---|---|---|
+| `true` | — | Find a free AudioComponent or create a new one; supports simultaneous plays |
+| `false` | `false` | Skip if already playing |
+| `false` | `true` | Stop current and restart |
+
+A paused AudioComponent is always treated as available — it will be stopped and replayed regardless of `allowOverwrite`.
+
+**Inspector Options (per track):**
+- **Name** — Unique string key used to reference this track
+- **track** — The AudioTrackAsset to play
+- **volume** — Volume multiplier (0–1), default 1.0
+- **loop** — Loop indefinitely, default false
+- **fadeIn / fadeInTime** — Fade in on play
+- **fadeOut / fadeOutTime** — Fade out on stop
+- **allowConcurrent** — Pool multiple AudioComponents for overlapping plays
+- **allowOverwrite** — Stop and restart if already playing (only visible when allowConcurrent is off)
+
+**Common Use Cases:**
+- UI sound effects (button taps, transitions)
+- Looping background music with clean stop/fade
+- Overlapping SFX (bubble pops, footsteps) via `allowConcurrent`
+- Timed audio cues synced to animations using the delay parameter
+
 ### [GlobalEvents.js](./GlobalEvents.js)
 
 A global event system for decoupled communication between scripts throughout your project.
@@ -277,10 +369,6 @@ script.despawn(); // Removes from registry and destroys
 - Always use `global.spawn.destroy()` or `script.despawn()` instead of `obj.destroy()` to keep the registry clean
 - Call `global.spawn.cleanup()` periodically if objects may be destroyed externally
 
-### [TouchBlocking.js](./TouchBlocking.js)
-
-Inspector-driven wrapper for `global.touchSystem` touch blocking. Enables blocking of all native Snapchat gestures and exposes per-type exception toggles (Swipe, Tap, DoubleTap, Scale, Pan, Touch, None).
-
 ---
 
 ## How Managers Initialize
@@ -288,16 +376,17 @@ Inspector-driven wrapper for `global.touchSystem` touch blocking. Enables blocki
 The Core prefab sets up these managers in the following order:
 
 1. **TouchBlocking** - Configures native touch blocking
-2. **CallbackTracker** (from Classes) - Loaded first as a dependency
-3. **GlobalEvents** - Uses CallbackTracker for event management
-4. **DelayManager** - Provides timing utilities
-5. **GlobalUtils** - Consolidates all utility functions
-6. **SpawnManager** - Provides spawn management
-7. **TextLogger** - Provides debug output
+2. **AudioManager** - Registers audio tracks and exposes global playback API
+3. **CallbackTracker** (from Classes) - Loaded first as a dependency
+4. **GlobalEvents** - Uses CallbackTracker for event management
+5. **DelayManager** - Provides timing utilities
+6. **GlobalUtils** - Consolidates all utility functions
+7. **SpawnManager** - Provides spawn management
+8. **TextLogger** - Provides debug output
 
 This initialization order ensures dependencies are available when needed.
 
-> **Important:** For performance reasons, TouchBlocking, GlobalEvents, DelayManager, SpawnManager, GlobalUtils, and TextLogger scripts are **disabled by default** in the Core prefab's scene hierarchy. You must enable the specific manager scripts you need for your project before they become available. This prevents unnecessary overhead from unused managers.
+> **Important:** For performance reasons, TouchBlocking, AudioManager, GlobalEvents, DelayManager, SpawnManager, GlobalUtils, and TextLogger scripts are **disabled by default** in the Core prefab's scene hierarchy. You must enable the specific manager scripts you need for your project before they become available. This prevents unnecessary overhead from unused managers.
 
 ## Integration Between Managers
 
@@ -377,6 +466,7 @@ After Core initializes, the following are available globally:
 ```javascript
 global.events          // Event system
 global.utils           // All utility functions
+global.audioManager    // Audio track management
 global.spawn           // Spawn management system
 global.textLogger      // Logger object
 global.logToScreen()   // Quick log function

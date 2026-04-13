@@ -12,7 +12,7 @@ Lens Studio Core is a foundational package designed to be added at the start of 
 2. **Add the Prefab**: Drag `Core.prefab` into the top of your Objects panel hierarchy
 3. **Start Building**: Access utilities, events, and managers throughout your project
 
-> **Note**: Manager scripts are disabled in the scene hierarchy by default to avoid performance overhead. Enable the specific manager scripts you need (TouchBlocking, GlobalEvents, DelayManager, SpawnManager, Utilities, TextLogger) by checking them in the Core prefab hierarchy.
+> **Note**: Manager scripts are disabled in the scene hierarchy by default to avoid performance overhead. Enable the specific manager scripts you need (TouchBlocking, AudioManager, GlobalEvents, DelayManager, SpawnManager, Utilities, TextLogger) by checking them in the Core prefab hierarchy.
 
 ## What's Included
 
@@ -21,6 +21,7 @@ Lens Studio Core is a foundational package designed to be added at the start of 
 The Core prefab automatically sets up essential systems:
 
 - **TouchBlocking**: Block native Snapchat gestures and configure per-type exceptions
+- **AudioManager**: Global audio playback for named tracks with pooling, fade, and delay support
 - **GlobalEvents**: Event management system for decoupled communication between scripts
 - **DelayManager**: Handle delayed callbacks and time-based operations
 - **SpawnManager**: Spawn and manage objects from prefabs or scene templates
