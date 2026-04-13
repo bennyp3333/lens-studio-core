@@ -61,10 +61,14 @@ global.utils
 ```
 
 **What it does:**
-- Automatically imports all utility modules
+- Imports utility modules (configurable per-module via Advanced Options)
 - Merges utility functions into `global.utils`
 - Detects naming conflicts between utilities
 - Can load additional utilities from scripts on the same object
+
+**Advanced Options:**
+
+Enable the **Advanced Options** toggle in the inspector to reveal individual per-module toggles. Each of the 10 utility modules can be disabled to skip loading it at startup — useful for reducing overhead in projects that only use a subset of utilities. All modules are enabled by default.
 
 **Available Utilities:**
 
