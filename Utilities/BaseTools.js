@@ -100,6 +100,30 @@ var BaseTools = function(scriptRef) {
     };
 
     /**
+     * Repeatedly calls a callback on a timed interval.
+     * @param {number} time - Seconds between calls
+     * @param {function} callback - Function to execute each cycle
+     * @param {number} [firstTime=0] - Delay before the very first call (defaults to 0)
+     * @returns {{ event: DelayedCallbackEvent, setInterval: function, stop: function, start: function }}
+     */
+    scriptRef.makeLoop = function(time, callback, firstTime) {
+        var currentTime = time;
+        var evt = scriptRef.createEvent("DelayedCallbackEvent");
+        function fire() {
+            callback();
+            evt.reset(currentTime);
+        }
+        evt.bind(fire);
+        evt.reset(firstTime !== undefined ? firstTime : 0);
+        return {
+            event: evt,
+            setInterval: function(newTime) { currentTime = newTime; },
+            stop: function() { evt.enabled = false; },
+            start: function(firstTime) { evt.enabled = true; evt.reset(firstTime !== undefined ? firstTime : currentTime); }
+        };
+    };
+
+    /**
      * Creates an AudioComponent on this script's SceneObject.
      * @param {AudioTrackAsset} [audioTrack] - Audio track to assign
      * @returns {AudioComponent}

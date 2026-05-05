@@ -21,7 +21,15 @@ Injects common utility functions directly onto a script reference for convenient
 - `delayTween(delayTime, object, tweenName)` - Start a tween after delay
 - `delayAudio(delayTime, action, audio, loops)` - Play/stop audio after delay
 - `delayEnable(delayTime, object, state)` - Enable/disable object after delay
+- `delayFrames(endFrame, callback)` - Execute callback after N frames, returns event
+- `makeLoop(time, callback, firstTime?)` - Repeatedly call a callback on an interval, returns a loop controller
 - `createAudioComp(audioTrack)` - Create AudioComponent on this SceneObject
+
+**`makeLoop` controller:**
+- `loop.setInterval(newTime)` - Change the interval; takes effect on the next cycle
+- `loop.stop()` - Pause the loop
+- `loop.start(firstTime?)` - Resume the loop, with an optional delay before the next fire
+- `loop.event` - Direct access to the underlying `DelayedCallbackEvent`
 
 **Usage Example:**
 ```javascript
@@ -41,6 +49,15 @@ script.delayTween(1.5, tweenObj, "fadeIn");
 script.delayEnable(2.0, someObject, false);
 
 script.delayAudio(3.0, "play", beepAudioComp, 1);
+
+// Loop firing every 2 seconds, first fire delayed by 5 seconds
+var loop = script.makeLoop(2.0, function() {
+    print("tick");
+}, 5.0);
+
+loop.setInterval(0.5); // speed up on the next cycle
+loop.stop();           // pause
+loop.start(1.0);       // resume, with a 1s delay before the next fire
 ```
 
 ### [MathUtils.js](./MathUtils.js)
