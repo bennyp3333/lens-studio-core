@@ -1,5 +1,5 @@
 // BaseTools.js
-// Version: 1.0.0
+// Version: 1.1.0
 // Description: Injects common utility functions directly onto a script reference.
 // Author: Bennyp3333 [https://benjamin-p.dev]
 //
@@ -119,7 +119,10 @@ var BaseTools = function(scriptRef) {
             event: evt,
             setInterval: function(newTime) { currentTime = newTime; },
             stop: function() { evt.enabled = false; },
-            start: function(firstTime) { evt.enabled = true; evt.reset(firstTime !== undefined ? firstTime : currentTime); }
+            start: function(firstTime) {
+                evt.enabled = true;
+                evt.reset(firstTime !== undefined ? firstTime : currentTime);
+            }
         };
     };
 
