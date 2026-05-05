@@ -1,10 +1,11 @@
 // SpawnManager.js
-// Version: 0.1.2
+// Version: 1.0.0
 // Description: Global spawn utility for Lens Studio
 // Author: Bennyp3333 [https://benjamin-p.dev]
 //
 // Usage:
-//   global.spawn.create(prefabOrObj, parent, group)  - Spawn an object
+//   global.spawn.create(prefabOrObj, parent, group)              - Spawn an object
+//   global.spawn.createAsync(prefab, parent, callback, group, onProgress) - Spawn a prefab async
 //   global.spawn.get(id)                             - Get spawned object by ID
 //   global.spawn.getGroup(groupName)                 - Get all objects in a group
 //   global.spawn.destroy(id)                         - Destroy spawned object by ID
@@ -73,6 +74,72 @@ function create(source, parent, group){
         return null;
     }
 
+    return registerSpawnedObject(newObj, group);
+}
+
+/**
+ * Spawns a prefab asynchronously
+ * @param {Asset.ObjectPrefab} prefab - Prefab asset to instantiate
+ * @param {SceneObject} parent - Parent to spawn under
+ * @param {function} callback - Called with spawn entry { id, obj, group, script } on success, or null on failure
+ * @param {string} [group] - Optional group name for organization
+ * @param {function} [onProgress] - Optional progress callback (progress: number)
+ */
+function createAsync(prefab, parent, callback, group, onProgress) {
+    if (!callback) {
+        printWarning("Cannot spawn async: callback is required");
+        return;
+    }
+
+    if (!prefab) {
+        printWarning("Cannot spawn async: prefab is null");
+        callback(null);
+        return;
+    }
+
+    if (!parent) {
+        printWarning("Cannot spawn async: parent is null");
+        callback(null);
+        return;
+    }
+
+    if (!prefab.isOfType("Asset.ObjectPrefab")) {
+        printWarning("Cannot spawn async: source is not a Prefab. Use create() for SceneObject copies.");
+        callback(null);
+        return;
+    }
+
+    prefab.instantiateAsync(
+        parent,
+        function onSuccess(newObj) {
+            printDebug("Async instantiated Prefab: " + (newObj ? newObj.name : "null"));
+
+            if (!newObj) {
+                printWarning("Async spawn failed: resulting object is null");
+                callback(null);
+                return;
+            }
+
+            var entry = registerSpawnedObject(newObj, group);
+            callback(entry);
+        },
+        function onFailure(error) {
+            printWarning("Async spawn failed: " + error);
+            callback(null);
+        },
+        function onProgressInternal(progress) {
+            if (onProgress) {
+                onProgress(progress);
+            }
+        }
+    );
+}
+
+/**
+ * Shared logic for registering a newly spawned object: enables it, assigns ID,
+ * wires up SpawnableBase script, and adds it to the registry/group.
+ */
+function registerSpawnedObject(newObj, group) {
     // Enable object
     newObj.enabled = true;
 
@@ -338,6 +405,7 @@ function init() {
     // Expose global API
     global.spawn = {
         create,
+        createAsync,
         get,
         getGroup,
         getAll,
