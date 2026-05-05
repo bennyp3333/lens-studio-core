@@ -1,6 +1,6 @@
 /*
 ComponentUtils.js
-Version: 1.0.0
+Version: 1.0.1
 Description: Component-level utilities for managing alpha values and material instances on visual components.
 Author: Bennyp3333 [https://benjamin-p.dev]
 */
@@ -81,22 +81,24 @@ function setAlpha(meshVis, alpha) {
 }
 
 /**
- * Makes the materials on a supported visual component of a SceneObject unique by cloning them.
- * Supports RenderMeshVisual, Image, and Text3D components.
+ * Makes the materials on all supported visual components of a SceneObject unique by cloning them.
+ * Supports RenderMeshVisual, Image, and Text3D components, including multiple of each on the same object.
  * @param {SceneObject} obj - The SceneObject whose materials will be made unique.
- * @returns {Array|undefined} An array of cloned materials if a supported component is found, otherwise undefined.
+ * @returns {void}
  */
 function makeMatUniqueObject(obj) {
-    var meshVisComp = obj.getComponent("Component.RenderMeshVisual");
-    var imageComp = obj.getComponent("Component.Image");
-    var text3DComp = obj.getComponent("Component.Text3D");
-    
-    if(meshVisComp){
-        return makeMatUnique(meshVisComp);
-    }else if(imageComp){
-        return makeMatUnique(imageComp);
-    }else if(text3DComp){
-        return makeMatUnique(text3DComp);
+    var meshVisComps = obj.getComponents("Component.RenderMeshVisual");
+    var imageComps = obj.getComponents("Component.Image");
+    var text3DComps = obj.getComponents("Component.Text3D");
+
+    for (var i = 0; i < meshVisComps.length; i++) {
+        makeMatUnique(meshVisComps[i]);
+    }
+    for (var i = 0; i < imageComps.length; i++) {
+        makeMatUnique(imageComps[i]);
+    }
+    for (var i = 0; i < text3DComps.length; i++) {
+        makeMatUnique(text3DComps[i]);
     }
 }
 

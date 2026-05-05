@@ -1,8 +1,8 @@
 // MakeMatUnique.js
-// Version: 0.1.0
+// Version: 1.0.0
 // Description: Clones all materials on the attached Scene Object to make them unique instances.
 //  This allows modifying material properties at runtime without affecting other objects sharing the same materials.
-//  Supports RenderMeshVisual, Image, and Text3D components.
+//  Supports RenderMeshVisual, Image, and Text3D components, including multiple of each on the same object.
 // Author: Bennyp3333 [https://benjamin-p.dev]
 //
 // ----- USAGE -----
@@ -14,20 +14,20 @@
 var self = script.getSceneObject();
 
 function init(){
-    var meshVisComp = self.getComponent("Component.RenderMeshVisual");
-    var imageComp = self.getComponent("Component.Image");
-    var text3DComp = self.getComponent("Component.Text3D");
-    
-    if(meshVisComp){
-        makeMatUnique(meshVisComp);
+    var meshVisComps = self.getComponents("Component.RenderMeshVisual");
+    var imageComps = self.getComponents("Component.Image");
+    var text3DComps = self.getComponents("Component.Text3D");
+
+    for (var i = 0; i < meshVisComps.length; i++) {
+        makeMatUnique(meshVisComps[i]);
     }
 
-    if (imageComp){
-        makeMatUnique(imageComp);
+    for (var i = 0; i < imageComps.length; i++) {
+        makeMatUnique(imageComps[i]);
     }
 
-    if(text3DComp){
-        makeMatUnique(text3DComp);
+    for (var i = 0; i < text3DComps.length; i++) {
+        makeMatUnique(text3DComps[i]);
     }
 }
 
