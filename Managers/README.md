@@ -309,6 +309,7 @@ global.spawn
 
 **Key Features:**
 - Spawn from ObjectPrefabs or disabled SceneObject templates
+- Async prefab instantiation via `createAsync` with progress and completion callbacks
 - Automatic ID assignment for each spawned object
 - Group spawned objects for batch operations
 - Query spawned objects by ID or group
@@ -317,7 +318,7 @@ global.spawn
 
 **Basic Usage:**
 ```javascript
-// Spawn an object
+// Spawn an object synchronously
 var entry = global.spawn.create(source, parent, "enemies");
 
 // Access the spawned object
@@ -334,13 +335,36 @@ global.spawn.destroyGroup("enemies");
 
 **Spawning from Different Sources:**
 ```javascript
-// From a prefab asset
+// From a prefab asset (synchronous)
 //@input Asset.ObjectPrefab enemyPrefab
 var enemy = global.spawn.create(script.enemyPrefab, script.spawnParent, "enemies");
 
 // From a disabled SceneObject template
 //@input SceneObject popupTemplate {"hint":"Should be DISABLED in hierarchy"}
 var popup = global.spawn.create(script.popupTemplate, script.spawnParent, "popups");
+```
+
+**Async Spawning:**
+```javascript
+// Spawn a prefab asynchronously — useful for large assets
+global.spawn.createAsync(
+    script.enemyPrefab,
+    script.spawnParent,
+    function(entry) {
+        if (!entry) { print("Spawn failed"); return; }
+        print("Spawned: " + entry.obj.name);
+    },
+    "enemies"               // optional group
+);
+
+// With an optional progress callback
+global.spawn.createAsync(
+    script.largePrefab,
+    script.spawnParent,
+    function(entry) { print("Done"); },
+    "assets",
+    function(progress) { print("Loading: " + (progress * 100) + "%"); }
+);
 ```
 
 **Query Functions:**
