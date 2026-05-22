@@ -160,7 +160,9 @@ pressDelay.bind(function(eventdata){
 });
 
 function init() {
-	global.touchSystem.touchBlocking = script.touchBlockingEnabled;
+	if (script.touchBlockingEnabled) {
+		global.touchSystem.touchBlocking = true;
+	}
 
 	if (script.colorOnPress) {
 		applyColor(script.pressed ? script.pressedColor : script.defaultColor);

@@ -133,7 +133,9 @@ var currentTouchPos = new vec2(0, 0);
 
 // ===== Initialization =====
 function init() {
-    global.touchSystem.touchBlocking = script.touchBlockingEnabled;
+    if (script.touchBlockingEnabled) {
+        global.touchSystem.touchBlocking = true;
+    }
     debugLog("Initialized");
 }
 

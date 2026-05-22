@@ -191,7 +191,9 @@ selectDelay.bind(function(eventdata) {
 });
 
 function init() {
-	global.touchSystem.touchBlocking = script.touchBlockingEnabled;
+	if (script.touchBlockingEnabled) {
+		global.touchSystem.touchBlocking = true;
+	}
 
 	if (script.activeTexture && script.inactiveTexture) {
 		buttonImage.mainPass.baseTex = script.selected ? script.activeTexture : script.inactiveTexture;
