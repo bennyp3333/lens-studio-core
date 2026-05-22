@@ -322,9 +322,11 @@ global.spawn
 var entry = global.spawn.create(source, parent, "enemies");
 
 // Access the spawned object
-entry.id;      // Unique spawn ID
-entry.obj;     // The SceneObject
-entry.script;  // The Spawnable script (if present)
+entry.id;        // Unique spawn ID string
+entry.obj;       // The SceneObject
+entry.transform; // Transform component (entry.obj.getTransform())
+entry.group;     // Group name, or null
+entry.script;    // The Spawnable script component, or null
 
 // Destroy by ID
 global.spawn.destroy(entry.id);

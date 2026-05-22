@@ -12,6 +12,13 @@
 //   global.spawn.destroyGroup(groupName)             - Destroy all objects in a group
 //   global.spawn.destroyAll()                        - Destroy all spawned objects
 //   global.spawn.count(groupName)                    - Count objects (optionally in group)
+//
+// Spawn Entry Object (returned by create, createAsync, get, getGroup, getAll):
+//   entry.id        - Unique spawn ID string
+//   entry.obj       - The spawned SceneObject
+//   entry.transform - Transform component of the spawned object (entry.obj.getTransform())
+//   entry.group     - Group name string, or null if none
+//   entry.script    - SpawnableBase script component, or null if not found
 
 //@ui {"widget":"separator"}
 //@input bool editAdvancedOptions
@@ -33,7 +40,7 @@ var idCounter = 0;
  * @param {Asset.ObjectPrefab|SceneObject} source - Prefab asset or SceneObject to copy
  * @param {SceneObject} parent - Parent to spawn under
  * @param {string} [group] - Optional group name for organization
- * @returns {object} - { id, obj, script } or null if failed
+ * @returns {object} - { id, obj, transform, group, script } or null if failed
  * 
  * NOTE FOR SCENE OBJECT COPIES:
  * - The source SceneObject should be DISABLED in the scene hierarchy
@@ -81,7 +88,7 @@ function create(source, parent, group){
  * Spawns a prefab asynchronously
  * @param {Asset.ObjectPrefab} prefab - Prefab asset to instantiate
  * @param {SceneObject} parent - Parent to spawn under
- * @param {function} callback - Called with spawn entry { id, obj, group, script } on success, or null on failure
+ * @param {function} callback - Called with spawn entry { id, obj, transform, group, script } on success, or null on failure
  * @param {string} [group] - Optional group name for organization
  * @param {function} [onProgress] - Optional progress callback (progress: number)
  */
@@ -169,6 +176,7 @@ function registerSpawnedObject(newObj, group) {
     var entry = {
         id: id,
         obj: newObj,
+        transform: newObj.getTransform(),
         group: group || null,
         script: spawnableScript
     };
@@ -194,7 +202,7 @@ function registerSpawnedObject(newObj, group) {
 /**
  * Get a spawned object by ID
  * @param {string} id - The spawn ID
- * @returns {object|null} - { id, obj, group, script } or null
+ * @returns {object|null} - { id, obj, transform, group, script } or null
  */
 function get(id) {
     return spawnedObjects[id] || null;
@@ -203,7 +211,7 @@ function get(id) {
 /**
  * Get all spawned objects in a group
  * @param {string} groupName - The group name
- * @returns {object[]} - Array of { id, obj, group, script }
+ * @returns {object[]} - Array of { id, obj, transform, group, script }
  */
 function getGroup(groupName) {
     var ids = spawnGroups[groupName] || [];
@@ -221,7 +229,7 @@ function getGroup(groupName) {
 
 /**
  * Get all spawned objects
- * @returns {object[]} - Array of { id, obj, group, script }
+ * @returns {object[]} - Array of { id, obj, transform, group, script }
  */
 function getAll() {
     var result = [];
