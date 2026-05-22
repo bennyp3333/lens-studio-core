@@ -1,6 +1,6 @@
 /*
 Timer.js
-Version: 1.1.1
+Version: 1.1.2
 Description: Generalized timer utility for Lens Studio
 Author: Bennyp3333 [https://benjamin-p.dev]
 
@@ -40,6 +40,7 @@ Author: Bennyp3333 [https://benjamin-p.dev]
  - setTickInterval(seconds)   - Set tick frequency (default: 1, supports decimals)
  - setCountdown(bool)         - true = countdown (default), false = count up
  - setFormat(string)          - Set display format (see tokens below)
+ - setWholeSecondsMode(bool)  - Align display to whole seconds (use when no sub-second tokens)
  - addTextComp(comp|array)    - Add Text/Text3D component(s) to auto-update
  - clearTextComps()           - Remove all text components
  - setOnTick(callback)        - Called each tick with (time, formattedTime)
@@ -73,6 +74,7 @@ Author: Bennyp3333 [https://benjamin-p.dev]
 //@input float tickInterval = 1
 //@input bool countdown = true
 //@input string format = "ss"
+//@input bool wholeSecondsMode = false {"label":"Whole Seconds Mode"}
 //@ui {"widget":"separator"}
 //@input Component.Text[] textComponents
 //@input Component.Text3D[] text3DComponents
@@ -89,6 +91,7 @@ var maxTime = 10;
 var tickInterval = 1; // seconds between ticks
 var countUp = false;
 var format = "ss"; // default format
+var wholeSecondsMode = false;
 
 var textComps = [];
 var updateEvent = null;
@@ -148,6 +151,19 @@ script.setCountdown = function(down) {
 script.setFormat = function(formatString) {
     format = formatString;
     printDebug("Format set to '" + formatString + "'");
+    return script;
+};
+
+/**
+ * Enable whole seconds alignment for countdown display.
+ * When on, uses Math.ceil so each whole-second value shows for a full tick
+ * and the timer appears to stop at 0 rather than linger there.
+ * Use when your format has no sub-second tokens (S, SS, SSS).
+ * @param {boolean} enabled
+ */
+script.setWholeSecondsMode = function(enabled) {
+    wholeSecondsMode = enabled;
+    printDebug("Whole seconds mode " + (enabled ? "enabled" : "disabled"));
     return script;
 };
 
@@ -287,7 +303,7 @@ script.getTime = function() {
  * @returns {string}
  */
 script.getFormattedTime = function() {
-    return formatTime(time);
+    return formatTime(getDisplayTime());
 };
 
 /**
@@ -363,8 +379,15 @@ function tick() {
     }
 }
 
+function getDisplayTime() {
+    if (wholeSecondsMode && !countUp) {
+        return Math.min(Math.ceil(time), maxTime);
+    }
+    return time;
+}
+
 function updateText() {
-    var formatted = formatTime(time);
+    var formatted = formatTime(getDisplayTime());
     for (var i = 0; i < textComps.length; i++) {
         if (textComps[i] && textComps[i].text !== undefined) {
             textComps[i].text = formatted;
@@ -429,6 +452,7 @@ function init(){
     tickInterval = Math.max(0.01, script.tickInterval || 1);
     countUp = !script.countdown;
     format = script.format || "ss";
+    wholeSecondsMode = script.wholeSecondsMode || false;
     
     // Set initial time based on direction
     time = countUp ? 0 : maxTime;

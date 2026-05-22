@@ -24,6 +24,7 @@ A flexible timer supporting countdown and countup modes with customizable displa
 - Countdown or countup modes
 - Flexible time formatting with tokens (hours, minutes, seconds, milliseconds)
 - Configurable tick interval for sub-second precision
+- Whole Seconds Mode for correct display alignment when no sub-second tokens are used
 - Pause, resume, stop, and reset controls
 - Callbacks for each tick and on completion
 - Auto-updates assigned Text components
@@ -405,6 +406,7 @@ function onDecisionMade() {
 | **tickInterval** | Seconds between `onTick` callback fires (timer itself updates every frame) | 1 |
 | **countdown** | Count down (true) or up (false) | true |
 | **format** | Display format string | "ss" |
+| **wholeSecondsMode** | Use `Math.ceil` for display so each whole-second value shows for a full tick and "0" appears only when the timer stops; intended for formats with no sub-second tokens | false |
 
 ### Score Settings
 
@@ -552,6 +554,7 @@ script.setStartTime(seconds)      // Set custom start time
 script.setTickInterval(seconds)   // Set tick frequency
 script.setCountdown(bool)         // true = countdown, false = countup
 script.setFormat(string)          // Set display format
+script.setWholeSecondsMode(bool)  // Align display to whole seconds (no sub-second tokens)
 script.addTextComp(comp|array)    // Add text component(s)
 script.clearTextComps()           // Remove all text components
 script.setOnTick(callback)        // Called each tick: (time, formatted)
