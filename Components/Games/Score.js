@@ -1,6 +1,6 @@
 /*
 Score.js
-Version: 0.1.0
+Version: 1.0.0
 Description: Generalized score tracking utility for Lens Studio
 Author: Bennyp3333 [https://benjamin-p.dev]
 
@@ -78,13 +78,13 @@ Author: Bennyp3333 [https://benjamin-p.dev]
 //@input int maxScore = 100 {"showIf":"useMaxScore"}
 //@input float multiplier = 1.0
 //@ui {"widget":"separator"}
-//@input Component.Text textComponent
-//@input Component.Text3D text3DComponent
+//@input Component.Text[] textComponents
+//@input Component.Text3D[] text3DComponents
 //@ui {"widget":"separator"}
 //@input bool enableHighScoreTracking = false
 //@input string highScoreStorageKey = "highScore" {"showIf":"enableHighScoreTracking"}
-//@input Component.Text highScoreTextComponent {"showIf":"enableHighScoreTracking"}
-//@input Component.Text3D highScoreText3DComponent {"showIf":"enableHighScoreTracking"}
+//@input Component.Text[] highScoreTextComponents {"showIf":"enableHighScoreTracking"}
+//@input Component.Text3D[] highScoreText3DComponents {"showIf":"enableHighScoreTracking"}
 //@ui {"widget":"separator"}
 //@input bool editAdvancedOptions
 //@ui {"widget":"group_start", "label":"Advanced Options", "showIf":"editAdvancedOptions"}
@@ -554,11 +554,11 @@ function init() {
     multiplier = script.multiplier || 1;
     
     // Add inspector-configured text components
-    if (script.textComponent) {
-        script.addTextComp(script.textComponent);
+    if (script.textComponents) {
+        script.addTextComp(script.textComponents);
     }
-    if (script.text3DComponent) {
-        script.addTextComp(script.text3DComponent);
+    if (script.text3DComponents) {
+        script.addTextComp(script.text3DComponents);
     }
     
     // Enable high score if configured in inspector
@@ -566,11 +566,11 @@ function init() {
         script.enableHighScore(script.highScoreStorageKey);
         
         // Add inspector-configured high score text components
-        if (script.highScoreTextComponent) {
-            script.addHighScoreTextComp(script.highScoreTextComponent);
+        if (script.highScoreTextComponents) {
+            script.addHighScoreTextComp(script.highScoreTextComponents);
         }
-        if (script.highScoreText3DComponent) {
-            script.addHighScoreTextComp(script.highScoreText3DComponent);
+        if (script.highScoreText3DComponents) {
+            script.addHighScoreTextComp(script.highScoreText3DComponents);
         }
     }
     

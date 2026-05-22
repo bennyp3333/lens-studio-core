@@ -399,10 +399,10 @@ function onDecisionMade() {
 
 | Property | Description | Default |
 |----------|-------------|---------|
-| **textComponent** | Text component to auto-update | None |
-| **text3DComponent** | Text3D component to auto-update | None |
+| **textComponents** | Text components to auto-update (array) | None |
+| **text3DComponents** | Text3D components to auto-update (array) | None |
 | **maxTime** | Target time in seconds | 10 |
-| **tickInterval** | Seconds between ticks | 1 |
+| **tickInterval** | Seconds between `onTick` callback fires (timer itself updates every frame) | 1 |
 | **countdown** | Count down (true) or up (false) | true |
 | **format** | Display format string | "ss" |
 
@@ -410,8 +410,8 @@ function onDecisionMade() {
 
 | Property | Description | Default |
 |----------|-------------|---------|
-| **textComponent** | Text component for current score | None |
-| **text3DComponent** | Text3D component for current score | None |
+| **textComponents** | Text components for current score (array) | None |
+| **text3DComponents** | Text3D components for current score (array) | None |
 | **prefix** | Text before score value | "" |
 | **suffix** | Text after score value | "" |
 | **padding** | Zero-pad to this many digits | 0 |
@@ -421,8 +421,8 @@ function onDecisionMade() {
 | **multiplier** | Score multiplier for increment | 1.0 |
 | **enableHighScoreTracking** | Enable persistent high scores | false |
 | **highScoreStorageKey** | Persistent storage key | "highScore" |
-| **highScoreTextComponent** | Text component for high score | None |
-| **highScoreText3DComponent** | Text3D for high score | None |
+| **highScoreTextComponents** | Text components for high score (array) | None |
+| **highScoreText3DComponents** | Text3D components for high score (array) | None |
 
 ### SwipeDetector Settings
 

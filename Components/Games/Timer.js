@@ -1,6 +1,6 @@
 /*
 Timer.js
-Version: 1.1.0
+Version: 1.1.1
 Description: Generalized timer utility for Lens Studio
 Author: Bennyp3333 [https://benjamin-p.dev]
 
@@ -74,8 +74,8 @@ Author: Bennyp3333 [https://benjamin-p.dev]
 //@input bool countdown = true
 //@input string format = "ss"
 //@ui {"widget":"separator"}
-//@input Component.Text textComponent
-//@input Component.Text3D text3DComponent
+//@input Component.Text[] textComponents
+//@input Component.Text3D[] text3DComponents
 //@ui {"widget":"separator"}
 //@input bool editAdvancedOptions
 //@ui {"widget":"group_start", "label":"Advanced Options", "showIf":"editAdvancedOptions"}
@@ -434,8 +434,8 @@ function init(){
     time = countUp ? 0 : maxTime;
     
     // Add inspector-configured text components
-    if(script.textComponent) script.addTextComp(script.textComponent);
-    if(script.text3DComponent) script.addTextComp(script.text3DComponent);
+    if(script.textComponents) script.addTextComp(script.textComponents);
+    if(script.text3DComponents) script.addTextComp(script.text3DComponents);
     
     // Initial text update
     updateText();
