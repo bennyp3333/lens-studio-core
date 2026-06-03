@@ -1,6 +1,6 @@
 /*
 Fader.js
-Version: 1.2.2
+Version: 1.2.3
 Description: Flexible fading system with support for fade, scale, slide, and move animations
 Author: Bennyp3333 [https://benjamin-p.dev]
 
@@ -139,7 +139,7 @@ Author: Bennyp3333 [https://benjamin-p.dev]
 //@input string faderName {"showIf":"optional"}
 //@input string[] faderTags {"showIf":"optional"}
 //@input bool disableWhenHidden = false {"showIf":"optional"}
-//@input bool makeMaterialsUnique = true {"showIf":"optional"}
+//@input bool makeMaterialsUnique = false {"showIf":"optional"}
 //@input bool applyMoveAsOffset = true {"showIf":"optional"}
 
 //@ui {"widget":"separator"}
