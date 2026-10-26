@@ -10,3 +10,6 @@ Thumbs.db
 # Extra Folders
 Core Template/
 Todo/
+
+# Personal agent config (not for public repo)
+CLAUDE.local.md

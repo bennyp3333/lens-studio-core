@@ -2,6 +2,8 @@
 
 A comprehensive utility package for Snap Lens Studio projects, providing reusable scripts, managers, and components to accelerate development and establish best practices for your lenses.
 
+> **AI agents:** see [CORE_AI_REFERENCE.md](./CORE_AI_REFERENCE.md) for a dense, complete digest of every script, API, and this repo's code-style conventions — optimized for LLM context, with pointers to each source file.
+
 ## What is Lens Studio Core?
 
 Lens Studio Core is a foundational package designed to be added at the start of any Lens Studio project. It provides a curated collection of utility functions, manager systems, and ready-to-use components that handle common tasks and patterns in lens development.
