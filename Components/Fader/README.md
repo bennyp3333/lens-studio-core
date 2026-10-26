@@ -29,6 +29,7 @@ A controller that handles visibility animations with multiple modes and extensiv
 - Independent in/out animation settings
 - 11 easing functions with In/Out/InOut types
 - Delay and duration control
+- Per-call target value override
 - Animation queuing and cancellation
 - Recursive alpha for child objects
 - Tag-based batch operations
@@ -98,7 +99,8 @@ global.faderManager.show("myPanel", {
     time: 0.5,      // Duration in seconds
     delay: 0.2,     // Delay before starting
     mode: "scale",  // Override default mode
-    cancel: "all"   // How to handle existing animations
+    cancel: "all",  // How to handle existing animations
+    value: 0.5      // Override the target value for this call
 });
 ```
 
@@ -145,6 +147,29 @@ global.faderManager.show("tooltip", {delay: 0});
 global.faderManager.hide("tooltip", {delay: 3, cancel: "none"});
 ```
 
+### Target Value Override
+
+Use `value` to animate to a different target than the one set in the inspector, for that call only. The type must match the mode being run: a float for fade, a `vec3` for scale, a `vec4` (left, right, bottom, top) for slide, and a `vec3` for move. With Apply Move As Offset on (the default), the move value is an offset from the object's starting position. ScreenTransforms ignore its z.
+
+```javascript
+// Fade mode - fade to half opacity
+global.faderManager.show("background", {value: 0.5});
+
+// Scale mode - pop slightly larger than normal
+global.faderManager.show("badge", {value: new vec3(1.2, 1.2, 1.2), time: 0.2});
+
+// Slide mode - slide the drawer up to cover the bottom half of its parent
+global.faderManager.show("drawer", {value: new vec4(-1, 1, -1, 0)});
+
+// Move mode - move 10 units up from the starting position
+global.faderManager.show("arrow", {value: new vec3(0, 10, 0)});
+
+// No value - back to the inspector's In target
+global.faderManager.show("background");
+```
+
+**Note:** `hide` still marks the fader as hidden, even when it hides to a partial value. With Disable When Hidden on, `hide({value: 0.3})` disables the object once the animation ends. Use `show` for partial states you want to stay visible, such as dimming.
+
 ### Instant Changes
 
 Set values without animation:
@@ -177,7 +202,7 @@ myFader.setPosition(new vec2(-0.5, 0));
 - **Mode** - Choose fade, scale, slide, or move
 - **Time** - Animation duration in seconds
 - **Advanced** - Expand for additional options:
-  - **Value/Scale/Rect/Position** - Target value for the animation
+  - **Value/Scale/Rect/Position** - Target value for the animation (can be overridden per call with `value`)
   - **Easing Func** - Easing function (Linear, Quadratic, Cubic, etc.)
   - **Easing Type** - In, Out, or InOut
   - **Recursive** - Apply to children (fade mode only)
@@ -218,6 +243,31 @@ function showTooltip(text) {
     updateTooltipText(text);
     global.faderManager.show("tooltip", {delay: 0, cancel: "all"});
     global.faderManager.hide("tooltip", {delay: 3, cancel: "none"});
+}
+```
+
+### Dim Background
+
+```javascript
+// Dim the background while a popup is open, then restore it
+function openPopup() {
+    global.faderManager.show("background", {value: 0.3});
+    global.faderManager.show("popup");
+}
+
+function closePopup() {
+    global.faderManager.hide("popup");
+    global.faderManager.show("background"); // Back to the inspector's In value
+}
+```
+
+### Progress Bar
+
+```javascript
+// Slide mode fader on the bar - move its right anchor to match progress (0-1)
+function setProgress(progress) {
+    var right = -1 + 2 * progress;
+    global.faderManager.show("progressBar", {value: new vec4(-1, right, -1, 1), time: 0.2});
 }
 ```
 
@@ -343,6 +393,7 @@ global.faderManager.remove(fader);      // Remove fader
 **Animation not playing:**
 - Check that the target object has visual components (Image, RenderMeshVisual, Text)
 - Verify the fader name matches what you're calling
+- Make sure the identifier isn't `null`/`undefined` (e.g. an unset input). These are ignored, with a warning if Print Warning Statements is on
 - Enable debug logging to trace execution
 
 **Easing not working:**

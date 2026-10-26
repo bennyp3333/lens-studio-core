@@ -1,6 +1,6 @@
 /*
 Fader.js
-Version: 1.2.4
+Version: 1.2.5
 Description: Flexible fading system with support for fade, scale, slide, and move animations
 Author: Bennyp3333 [https://benjamin-p.dev]
 
@@ -76,7 +76,7 @@ Author: Bennyp3333 [https://benjamin-p.dev]
  - time: Animation duration in seconds (default: fadeTime input, 0 = instant)
  - delay: Delay before animation starts in seconds (default: 0)
  - mode: Animation mode - "fade", "scale", "slide", or "move" (default: inMode/outMode input)
- - cancel: How to handle existing animations - "none", "active", or "all" (default: "none")
+ - cancel: How to handle existing animations - "none", "active", or "all" (default: "all")
    * "none" - Don't cancel any animations (allows queuing multiple animations)
    * "active" - Only cancel animations that have started (respects delays)
    * "all" - Cancel all animations including those in delay phase
@@ -1095,12 +1095,12 @@ FaderManager.prototype._cleanupDestroyed = function() {
 
 /**
  * Resolves identifiers to fader instances
- * @param {string|string[]|SceneObject|SceneObject[]|null} identifier
+ * @param {string|string[]|SceneObject|SceneObject[]} identifier
  * @returns {Fader[]} Array of matching faders
  */
 FaderManager.prototype._resolveFaders = function(identifier) {
-    if (identifier === undefined) {
-        this._printWarning("Failed to resolve - identifier undefined");
+    if (identifier === undefined || identifier === null) {
+        this._printWarning("Failed to resolve - identifier is null or undefined");
         return [];
     }
 
@@ -1118,18 +1118,6 @@ FaderManager.prototype._resolveFaders = function(identifier) {
             added[key] = true;
         }
     };
-    
-    // If null/undefined, return all faders
-    if (identifier === null) {
-        this._printDebug("Identifier is null - returning all faders");
-        for (var key in this.faders) {
-            var faderList = this.faders[key];
-            for (var i = 0; i < faderList.length; i++) {
-                addUnique(faderList[i]);
-            }
-        }
-        return result;
-    }
     
     // Handle array of identifiers
     if (identifier.length !== undefined && typeof identifier !== "string") {

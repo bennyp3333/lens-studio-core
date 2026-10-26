@@ -778,10 +778,13 @@ debug -> print flags.
 | `add(fader)` / `remove(fader)` | (instances self-register on init) |
 
 `identifier`: fader name (string; defaults to the SceneObject name) · tag (string) ·
-SceneObject · array of any of those · `null` = all. On a multi-match, `onComplete` fires
-once (from the first).
+SceneObject · array of any of those · `null`/`undefined` -> warning + no-op (there is no
+"all faders" identifier). On a multi-match, `onComplete` fires once (from the first).
 `animOptions`: `time` (default = the mode's `inTime`/`outTime`; `0` = instant) · `delay=0` ·
-`mode` (override) · `cancel` `"all"`(default)`|"active"|"none"` · `onStart` · `onComplete`.
+`mode` (override) · `cancel` `"all"`(default)`|"active"|"none"` · `onStart` · `onComplete` ·
+`value` (per-call target override; type matches the mode — fade float / scale vec3 /
+slide vec4 / move vec3, an offset when `applyMoveAsOffset`; this call only; applied to
+every matched fader).
 
 Per-instance (`var f = sceneObj.getComponent("Component.ScriptComponent")`):
 `f.show(animOptions?, onComplete?)` · `f.hide(...)` · `f.toggle(...)` · `f.stop()` ·
@@ -792,7 +795,9 @@ Per-instance (`var f = sceneObj.getComponent("Component.ScriptComponent")`):
 Notes: needs `global.easing` loaded (easing names are mapped to `global.easing.*`
 internally). `fadeMaterialParameter:"particles"` sets all GPU-particle alpha params
 together (hotfix). `disableWhenHidden` on the script's **own** object self-locks (it warns)
-— point `sceneObject` at a child instead.
+— point `sceneObject` at a child instead. `hide({value})` still counts as hidden (and
+triggers `disableWhenHidden`), so use `show({value})` for partial states like dimming.
+Empty material slots / materials with no `mainPass` are skipped when fading.
 
 ---
 
