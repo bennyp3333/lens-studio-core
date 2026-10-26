@@ -1,0 +1,175 @@
+// ============================================================
+// Multi Sample — Material Editor Code Node
+// Version 1.0.0
+// ------------------------------------------------------------
+// Samples one (usually seamless, tiling) texture N times, each
+// pass with its own pseudo-random direction, scale, phase and
+// speed derived from Seed. Combines by multiply or average.
+//
+// The point: one Seed input replaces hand-authoring the offset
+// vector of every pass. Two instances of this node with the
+// same texture and different Seeds will never look alike.
+//
+// USAGE
+//   UV        - wire a UV node (or anything vec2)
+//   Seed      - change to reshuffle every pass's motion
+//   Passes    - 1..8, fractional OK (3.5 = 4th layer at half weight)
+//   Speed     - base pan speed; each pass scales off this
+//   Offset    - manual pan, added on top of Speed * time
+//   Scale     - base tiling
+//   ScaleStep - per-pass tiling multiplier. 1.0 = all same size.
+//               Keep it irrational-ish (1.63, 1.87) so passes
+//               don't re-align on a common period.
+//   SpeedStep - per-pass speed multiplier. <1 makes big layers
+//               drift slow and small layers scurry.
+//
+// API
+//   Result    - vec4, full RGBA
+//   Value     - float, red channel (the usual case for noise)
+//
+// NOTES
+//   Multiply is renormalized as a geometric mean, so stacking
+//   passes doesn't crush everything toward black. Turn that off
+//   with Normalize if you actually want the darkening.
+//   Loop is a fixed 8 with weight masking — GLSL ES needs a
+//   constant bound. Passes <= 4 costs 4 samples, not 8.
+// ============================================================
+
+input_texture_2d Tex;
+input_vec2  UV;
+
+input_group  MotionGroup( "Motion" );
+input_float  Seed;
+// any value; 0..100 is fine
+input_float  Passes;        
+// 1.0 .. 8.0, fractional allowed
+input_float  Speed;
+// base units/sec
+input_vec2   Offset;
+// manual pan, added to Speed * time
+
+input_group  ShapeGroup( "Shape" );
+input_float  Scale;
+// base tiling, try 1.0
+input_float  ScaleStep;
+// per-pass tiling mult, try 1.63
+input_float  SpeedStep;
+// per-pass speed mult, try 1.35
+input_float  ScaleJitter;
+// 0..1, extra random scale spread per pass
+
+input_group  BlendGroup( "Blend" );
+input_droplist BlendMode( "Multiply : Average : Min : Max" );
+input_checkbox Normalize;
+// geometric-mean the multiply result
+input_float  Contrast;
+// 1.0 = off
+input_float  Bias;
+// -1..1, added before contrast
+
+output_vec4  Result;
+output_float Value;
+
+const int MAX_PASSES = 8;
+const float TAU = 6.28318530718;
+
+// ---- per-pass hash. Stable for a given Seed + index. ----
+// Two decorrelated channels out of one scalar. Fract-sin is
+// fine here; we only need "different", not "uniform".
+vec2 hash2( float n )
+{
+    vec2 p = fract( vec2( n * 0.1031, n * 0.1030 ) );
+    p += dot( p, p.yx + 33.33 );
+    return fract( ( p.xx + p.yx ) * p.yx );
+}
+
+// Sample params for pass i: xy = pan direction, z = scale, w = speed
+vec4 passParams( int i, out vec2 phase, out float rotAngle )
+{
+    float n = Seed * 91.7 + float( i ) * 37.13;
+
+    vec2 a = hash2( n );          // direction + rotation
+    vec2 b = hash2( n + 19.19 );  // phase offset
+    vec2 c = hash2( n + 57.71 );  // scale jitter + speed sign
+
+    rotAngle = a.x * TAU;
+    float panAngle = a.y * TAU;
+    phase = b * 17.0;             // decorrelate which part of the tile we land on
+
+    float jitter = mix( 1.0, mix( 0.7, 1.4, c.x ), clamp( ScaleJitter, 0.0, 1.0 ) );
+    float scale = Scale * pow( max( 0.001, ScaleStep ), float( i ) ) * jitter;
+
+    // half the passes drift backwards so the stack never reads as
+    // one sheet sliding in a single direction
+    float dirSign = ( c.y < 0.5 ) ? -1.0 : 1.0;
+    float speed = Speed * pow( max( 0.0, SpeedStep ), float( i ) ) * dirSign;
+
+    return vec4( cos( panAngle ), sin( panAngle ), scale, speed );
+}
+
+void main()
+{
+    float t = system.getTimeElapsed();
+    float count = clamp( Passes, 0.0, float( MAX_PASSES ) );
+
+    vec4  sum   = vec4( 0.0 );
+    vec4  prod  = vec4( 1.0 );
+    vec4  lo    = vec4( 1.0 );
+    vec4  hi    = vec4( 0.0 );
+    float wSum  = 0.0;
+
+    for ( int i = 0; i < MAX_PASSES; i++ )
+    {
+        // fractional tail: last pass fades in instead of popping
+        float w = clamp( count - float( i ), 0.0, 1.0 );
+
+        if ( w > 0.0 )
+        {
+            vec2 phase;
+            float rotAngle;
+            vec4 p = passParams( i, phase, rotAngle );
+
+            // rotate UV per pass so the texture's own features
+            // don't line up between layers
+            float cr = cos( rotAngle );
+            float sr = sin( rotAngle );
+            vec2 uv = vec2( UV.x * cr - UV.y * sr, UV.x * sr + UV.y * cr );
+
+            uv = uv * p.z + phase + Offset + p.xy * ( p.w * t );
+
+            vec4 s = Tex.sample( uv );
+
+            sum  += s * w;
+            prod *= mix( vec4( 1.0 ), s, w );
+            lo    = min( lo, mix( vec4( 1.0 ), s, w ) );
+            hi    = max( hi, s * w );
+            wSum += w;
+        }
+    }
+
+    float invW = 1.0 / max( wSum, 0.0001 );
+
+    vec4 result;
+    if ( BlendMode == 0 )
+    {
+        result = Normalize ? pow( max( prod, vec4( 0.0 ) ), vec4( invW ) ) : prod;
+    }
+    else if ( BlendMode == 1 )
+    {
+        result = sum * invW;
+    }
+    else if ( BlendMode == 2 )
+    {
+        result = lo;
+    }
+    else
+    {
+        result = hi;
+    }
+
+    result += vec4( Bias );
+    result = ( result - vec4( 0.5 ) ) * vec4( Contrast ) + vec4( 0.5 );
+
+    Result = result;
+    Value  = result.r;
+}

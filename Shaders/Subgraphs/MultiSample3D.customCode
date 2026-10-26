@@ -1,0 +1,195 @@
+// ============================================================
+// Multi Sample 3D — Material Editor Code Node
+// Version 1.0.0
+// ------------------------------------------------------------
+// 3D-texture counterpart of Multi Sample. Samples one (usually
+// seamless, tiling) volume texture N times, each pass with its
+// own pseudo-random 3D rotation, pan direction, scale, phase and
+// speed derived from Seed. Combines by multiply / average / min / max.
+//
+// USAGE
+//   Tex       - Texture 3D Object Parameter node. Set its wrap
+//               mode to Repeat or passes will clamp at the edges.
+//   UVW       - vec3 coordinate. Object/world position works well
+//               for true volumetric noise; vec3(uv, 0.0) also works
+//               and gives each pass a different slice through the
+//               volume thanks to the per-pass rotation.
+//   Seed      - change to reshuffle every pass's motion
+//   Passes    - 1..8, fractional OK (3.5 = 4th layer at half weight)
+//   Speed     - base pan speed; each pass scales off this
+//   Offset    - manual pan (vec3), added on top of Speed * time
+//   Scale     - base tiling
+//   ScaleStep - per-pass tiling multiplier. Keep it irrational-ish
+//               (1.63, 1.87) so passes don't re-align.
+//   SpeedStep - per-pass speed multiplier.
+//
+// API
+//   Result    - vec4, full RGBA
+//   Value     - float, red channel
+//
+// NOTES
+//   Each pass gets a random rotation axis (uniform on the sphere)
+//   and angle, and a separate random 3D pan direction, so layers
+//   drift through the volume along unrelated axes.
+//   Multiply is renormalized as a geometric mean when Normalize
+//   is on. Loop is a fixed 8 with weight masking.
+// ============================================================
+
+input_texture_3d Tex;
+input_vec3  UVW;
+
+input_group  MotionGroup( "Motion" );
+input_float  Seed;
+// any value; 0..100 is fine
+input_float  Passes;
+// 1.0 .. 8.0, fractional allowed
+input_float  Speed;
+// base units/sec
+input_vec3   Offset;
+// manual pan, added to Speed * time
+
+input_group  ShapeGroup( "Shape" );
+input_float  Scale;
+// base tiling, try 1.0
+input_float  ScaleStep;
+// per-pass tiling mult, try 1.63
+input_float  SpeedStep;
+// per-pass speed mult, try 1.35
+input_float  ScaleJitter;
+// 0..1, extra random scale spread per pass
+
+input_group  BlendGroup( "Blend" );
+input_droplist BlendMode( "Multiply : Average : Min : Max" );
+input_checkbox Normalize;
+// geometric-mean the multiply result
+input_float  Contrast;
+// 1.0 = off
+input_float  Bias;
+// -1..1, added before contrast
+
+output_vec4  Result;
+output_float Value;
+
+const int MAX_PASSES = 8;
+const float TAU = 6.28318530718;
+
+// ---- per-pass hash: three decorrelated channels from one scalar ----
+vec3 hash3( float n )
+{
+    vec3 p = fract( vec3( n ) * vec3( 0.1031, 0.1030, 0.0973 ) );
+    p += dot( p, p.yzx + 33.33 );
+    return fract( ( p.xxy + p.yzz ) * p.zyx );
+}
+
+// uniform random unit vector from two [0,1) values
+vec3 unitVector( vec2 r )
+{
+    float z = r.x * 2.0 - 1.0;
+    float phi = r.y * TAU;
+    float s = sqrt( max( 0.0, 1.0 - z * z ) );
+    return vec3( s * cos( phi ), s * sin( phi ), z );
+}
+
+// Rodrigues rotation matrix about a unit axis
+mat3 axisAngle( vec3 axis, float angle )
+{
+    float c = cos( angle );
+    float s = sin( angle );
+    float k = 1.0 - c;
+    vec3 a = axis;
+    return mat3(
+        c + a.x * a.x * k,        a.y * a.x * k + a.z * s,  a.z * a.x * k - a.y * s,
+        a.x * a.y * k - a.z * s,  c + a.y * a.y * k,        a.z * a.y * k + a.x * s,
+        a.x * a.z * k + a.y * s,  a.y * a.z * k - a.x * s,  c + a.z * a.z * k
+    );
+}
+
+// Params for pass i.
+//   rot   - per-pass rotation
+//   dir   - pan direction (unit)
+//   phase - offset into the tile
+//   returns vec2( scale, speed )
+vec2 passParams( int i, out mat3 rot, out vec3 dir, out vec3 phase )
+{
+    float n = Seed * 91.7 + float( i ) * 37.13;
+
+    vec3 a = hash3( n );           // rot axis (xy) + rot angle (z)
+    vec3 b = hash3( n + 19.19 );   // phase
+    vec3 c = hash3( n + 57.71 );   // pan dir (xy) + jitter (z)
+    vec3 d = hash3( n + 83.37 );   // speed sign (x)
+
+    rot   = axisAngle( unitVector( a.xy ), a.z * TAU );
+    dir   = unitVector( c.xy );
+    phase = b * 17.0;
+
+    float jitter = mix( 1.0, mix( 0.7, 1.4, c.z ), clamp( ScaleJitter, 0.0, 1.0 ) );
+    float scale = Scale * pow( max( 0.001, ScaleStep ), float( i ) ) * jitter;
+
+    // half the passes drift backwards
+    float dirSign = ( d.x < 0.5 ) ? -1.0 : 1.0;
+    float speed = Speed * pow( max( 0.0, SpeedStep ), float( i ) ) * dirSign;
+
+    return vec2( scale, speed );
+}
+
+void main()
+{
+    float t = system.getTimeElapsed();
+    float count = clamp( Passes, 0.0, float( MAX_PASSES ) );
+
+    vec4  sum   = vec4( 0.0 );
+    vec4  prod  = vec4( 1.0 );
+    vec4  lo    = vec4( 1.0 );
+    vec4  hi    = vec4( 0.0 );
+    float wSum  = 0.0;
+
+    for ( int i = 0; i < MAX_PASSES; i++ )
+    {
+        // fractional tail: last pass fades in instead of popping
+        float w = clamp( count - float( i ), 0.0, 1.0 );
+
+        if ( w > 0.0 )
+        {
+            mat3 rot;
+            vec3 dir;
+            vec3 phase;
+            vec2 p = passParams( i, rot, dir, phase );
+
+            vec3 uvw = ( rot * UVW ) * p.x + phase + Offset + dir * ( p.y * t );
+
+            vec4 s = Tex.sample( uvw );
+
+            sum  += s * w;
+            prod *= mix( vec4( 1.0 ), s, w );
+            lo    = min( lo, mix( vec4( 1.0 ), s, w ) );
+            hi    = max( hi, s * w );
+            wSum += w;
+        }
+    }
+
+    float invW = 1.0 / max( wSum, 0.0001 );
+
+    vec4 result;
+    if ( BlendMode == 0 )
+    {
+        result = Normalize ? pow( max( prod, vec4( 0.0 ) ), vec4( invW ) ) : prod;
+    }
+    else if ( BlendMode == 1 )
+    {
+        result = sum * invW;
+    }
+    else if ( BlendMode == 2 )
+    {
+        result = lo;
+    }
+    else
+    {
+        result = hi;
+    }
+
+    result += vec4( Bias );
+    result = ( result - vec4( 0.5 ) ) * vec4( Contrast ) + vec4( 0.5 );
+
+    Result = result;
+    Value  = result.r;
+}
