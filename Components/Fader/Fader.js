@@ -1,6 +1,6 @@
 /*
 Fader.js
-Version: 1.2.3
+Version: 1.2.4
 Description: Flexible fading system with support for fade, scale, slide, and move animations
 Author: Bennyp3333 [https://benjamin-p.dev]
 
@@ -82,6 +82,7 @@ Author: Bennyp3333 [https://benjamin-p.dev]
    * "all" - Cancel all animations including those in delay phase
  - onStart: Callback function called when animation begins (after delay)
  - onComplete: Callback function called when animation completes
+ - value: Override the target value for this call (alpha float, scale vec3, rect vec4, or position vec3)
 
  ==== Notes ====
  - Supports fade, scale, slide and move modes
@@ -476,6 +477,12 @@ Fader.prototype._animate = function(direction, animOptions, onComplete) {
         mode = "fade";
     }
 
+    // Per-call override of the target value (alpha / scale / rect / position)
+    if (animOptions.value !== undefined) {
+        endVal = animOptions.value;
+        this._printDebug("Target overridden by animOptions.value: " + endVal);
+    }
+
     // Create easing string
     var easingFunc = this.scriptSettings[direction + "Easing"];
     var easingType = this.scriptSettings[direction + "EasingType"];
@@ -606,7 +613,9 @@ Fader.prototype._setAlpha = function(obj, alpha, recursive, parameter) {
         // Apply to all mainPass components
         for (var i = 0; i < this._componentCache.mainPass.length; i++) {
             var comp = this._componentCache.mainPass[i];
-            
+            // Skip empty material slots / materials whose shader failed to load
+            if (!comp || !comp.mainPass) continue;
+
             if (parameter === "baseColor") {
                 var color = comp.mainPass[parameter];
                 if (color) {
@@ -665,7 +674,9 @@ Fader.prototype._setAlpha = function(obj, alpha, recursive, parameter) {
         
         for (var i = 0; i < mainPassComponents.length; i++) {
             var comp = mainPassComponents[i];
-            
+            // Skip empty material slots / materials whose shader failed to load
+            if (!comp || !comp.mainPass) continue;
+
             if (parameter === "baseColor") {
                 var color = comp.mainPass[parameter];
                 if (color) {
@@ -714,7 +725,7 @@ Fader.prototype._getAlpha = function(direction) {
         mainPassComp = this._componentCache.mainPass[0];
     }
     
-    if (mainPassComp) {
+    if (mainPassComp && mainPassComp.mainPass) {
         var param = this.scriptSettings[direction + "FadeMaterialParameter"];
         
         if (param === "baseColor") {
