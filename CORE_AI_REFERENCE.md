@@ -22,7 +22,7 @@ Optimised for coding agents, not humans. The per-folder `README.md` files are th
 | `Classes\` | `CallbackTracker.js`, `DelayManager.js` — plain classes, exposed on `global` |
 | `Managers\` | Singletons wired by the Core prefab: TouchBlocking, AudioManager, GlobalEvents, GlobalUtils, DelayManager glue, SpawnManager, TextLogger |
 | `Utilities\` | 13 function modules merged into `global.utils` / `global.easing` / `global.simpleTween` / `global.BaseTools` |
-| `Components\` | Drop-on-object scripts (buttons, fader, carousel, games, particles, spawnables, misc) + `BaseScript.js` template |
+| `Components\` | Drop-on-object scripts (buttons, fader, carousel, games, particles, spawnables, delay loader, misc) + `BaseScript.js` template |
 | `Shaders\` | Reusable shader graphs / subgraphs (not covered here) |
 | `Core.lspkg` | The built package consumers import |
 | `sync_to_template.py` | Pre-export sync step (§8) |
@@ -77,6 +77,7 @@ Core-owned (created by the scripts in this repo):
 | `global.spawn` | `Managers\SpawnManager.js` | prefab/template spawning + registry; see §6 |
 | `global.faderManager` | `Components\Fader\Fader.js` | created by the first Fader instance; see §7 |
 | `global.GPUParticles` | `Components\GPU Particles\GPUParticlesController.js` | registry, created by first controller |
+| `global.delayLoader` | `Components\Delay Loader\DelayLoader.js` | shared prefab-load registry, created by the first DelayLoader; see §7 |
 | `global.textLogger` | `Managers\TextLogger.js` | on-screen log object |
 | `global.logToScreen(msg)` | `Managers\TextLogger.js` | = `textLogger.addLog` |
 | `global.logError(msg)` | `Managers\TextLogger.js` | = `textLogger.addErrorLog` (renders red) |
@@ -799,6 +800,99 @@ together (hotfix). `disableWhenHidden` on the script's **own** object self-locks
 triggers `disableWhenHidden`), so use `show({value})` for partial states like dimming.
 Empty material slots / materials with no `mainPass` are skipped when fading.
 
+### Delay Loader  (`Components\Delay Loader\`)  — `global.delayLoader` + reference forwarding
+
+Passes Snap's LAT (Latency Activation Time) check by keeping heavy content out of the scene
+until after the first frame: heavy content goes into prefabs, DelayLoader instantiates them later.
+**Each prefab needs Lazy Loading on** (`LazyLoading: true` in the `.prefab`, off by default) or
+its assets still load at lens start and LAT doesn't move. Lazy prefabs block inside
+`instantiate()` while their assets load, so tick `async` on those entries. Moving objects into a
+prefab breaks inputs that pointed at them; PrefabForwarder + (manual code | PrefabInjector)
+restore them.
+
+**Three names** (property names match the Inspector labels): **Load Name** (`loadName`, set on a
+DelayLoader entry) = which prefab · **Forward Name** (`forwardName`, set on a PrefabForwarder
+entry) = which reference inside it · **Target Input** (`targetInput`, set on a PrefabInjector row)
+= which input on the target script. These replaced the old generic `nameRef` / `inputName`
+properties in DelayLoader / PrefabForwarder 2.0.0, so pre-2.0 Inspector setups must be re-entered.
+
+#### DelayLoader.js
+Every instance shares one registry, `global.delayLoader` (created by the first to wake). Entries
+register on awake, before any OnStart, so `loadObject` works on frame one. Load Names are unique
+scene-wide (a duplicate warns and is ignored). Entries with a blank Load Name or no prefab are
+skipped at registration with a warning.
+Inputs: `objects[]` of struct `ObjectToLoad`: `loadName` · `prefab` (Asset.ObjectPrefab) ·
+`parent` (SceneObject; falls back to the loader's own object, warns) · `loadOnInit=false` ->
+`delayType` `"frames"|"time"` + `frameDelay=1` / `timeDelay=0.25` · `async=false` ·
+`enableOnLoad=true` · `resetTransform=false` (else keeps the prefab's authored local transform;
+never reparented) · debug trio. `frameDelay=1` loads on the 2nd update (what LAT wants); `0`
+loads inside OnStart.
+
+| Signature | Notes |
+|---|---|
+| `loadObject(loadName, onComplete?|options?) -> void` | options `{ parent, async, onComplete }` override the entry for this load. `onComplete(payload|null)`; already loaded -> called at once with the existing payload; in flight -> queued on that load |
+| `loadAll(onComplete?) -> void` | every entry not loaded; `onComplete(null)` once, after the last settles |
+| `unload(loadName) -> bool` | destroys root, clears the sticky `onLoaded`, fires `onUnloaded(payload)` |
+| `reload(loadName, onComplete?|options?) -> void` | unload if loaded, then `loadObject` |
+| `isLoaded(loadName) -> bool` | |
+| `get(loadName) -> payload|null` | |
+| `getRef(loadName, forwardName) -> ref|null` | `get(loadName).get(forwardName)` |
+| `getNames() -> string[]` | every Load Name, registration order |
+| `onLoaded(loadName) -> Event` | **sticky**: late subscribers get the payload immediately |
+| `onUnloaded(loadName) -> Event` | |
+| `onAnyLoaded` | Event, every load |
+| `onAllLoaded` | Event, sticky, once all `loadOnInit` entries settle (loaded or failed); also fires when there are none |
+
+Events: local `EventDispatcher`, `.add(fn, skipReplay?)` / `.remove(fn)`; callbacks are
+try/caught (errors printed, others still run). A failed load calls `onComplete(null)` and does
+**not** fire `onLoaded`.
+Payload: `{ name, root, transform, parent, prefab, refs, get(forwardName) }` — `name` is the Load
+Name; `refs` is the merged PrefabForwarder table keyed by Forward Name; `get` logs + returns
+`null` for an unknown Forward Name.
+Async loads go through `instantiateAsync` and a queue, one at a time. Each component also mirrors
+the registry API onto its own `script.*` (`script.loadObject` … `script.onAllLoaded`). Debug logs
+each load's duration; ~0ms for a heavy prefab = Lazy Loading is off. `unload` frees assets only
+if the prefab's Retain Assets (`RetainAssets`, default true) is off.
+
+#### PrefabForwarder.js  — on the prefab root (or an immediate child)
+Inputs: `sceneObjectsToForward[]` `{ forwardName, isArray, sceneObject | sceneObjects[] }` ·
+`componentsToForward[]` `{ forwardName, isArray, component | components[] }` · debug trio.
+`isArray` forwards the whole array under one Forward Name: a copy, original length kept (empty
+slots included so indices line up), `[]` when empty. Forward Names are unique per prefab only.
+Blank Forward Names / blank single refs are skipped with a warning; duplicates keep the first.
+Forwarders on the root + its immediate children merge into one `payload.refs`. DelayLoader detects
+a forwarder by its `sceneObjectsToForward` input (reading `forwardName` directly as a fallback),
+so it works before the forwarder's body has run.
+API: `script.isPrefabForwarder = true` · `script.getForwardedRefs() -> { forwardName: ref|Array }`.
+
+#### PrefabInjector.js  — repair an unmodified script's inputs
+Inputs: `targetScript` (ScriptComponent — **untick it in the Inspector**) · `loadName` ·
+`injections[]` `{ forwardName, targetInput (blank = forwardName), loadNameOverride (blank = the
+component's loadName) }` · `enableTarget=true` · `requireAll=true` (label "Only Enable If All
+Succeeded") · `objectsToEnable[]` · `componentsToEnable[]` · debug trio. Inputs across all three
+scripts carry `hint` tooltips; a label widget above Injections reads "Each row: Forward Name ->
+Target Input".
+Flow: on OnStart subscribes to `onLoaded` for every Load Name its rows use (sticky, so order
+doesn't matter) -> when all have loaded: resolves every row -> if any failed and `requireAll`,
+writes nothing and enables nothing -> writes each value onto `targetScript[targetInput]` -> enables
+the target + listed objects/components -> writes them again (safeguard; debug logs whether it was
+needed). **Values written onto a never-enabled script survive its first enable** (confirmed
+LS 5.15), so the target sees them in its body and OnStart alike.
+Caveats: a `targetInput` typo can't be detected (an empty object input and an undeclared name
+both read `undefined`). Enabling a component does nothing while its SceneObject is disabled — list the
+object in `objectsToEnable`.
+Warns at awake when `global.delayLoader` is missing, no target is set, or the target is already
+enabled; at OnStart when a Load Name isn't registered.
+API: `script.inject() -> { ok, injected, failed }` (inject now, against what has loaded) ·
+`script.isInjected() -> bool` · `script.onInjected` (sticky Event, same payload) ·
+`script.isPrefabInjector = true`.
+
+Two ways to restore references (both shown in `Components\Delay Loader\Example\`): **manual** —
+the script does `global.delayLoader.onLoaded(loadName).add(fn)`, assigns
+`script.x = loaded.get(forwardName)` and opens a `ready` flag gating its logic (`Example1.js`);
+**PrefabInjector** — no script edits (`Example2.js`). Both live in the example project's
+`Assets\Example Assets\`.
+
 ---
 
 ## 8. Extending Core
@@ -868,3 +962,6 @@ All paths under `D:\Nextcloud\Projects\Reference\lens-studio-core\`.
 | `Components\Carousel\CarouselElement.js` | per-element distance-based visuals |
 | `Components\Carousel\LinearCarousel.js` | drag/snap carousel controller |
 | `Components\Fader\Fader.js` | fade/scale/slide/move visibility system + `global.faderManager` |
+| `Components\Delay Loader\DelayLoader.js` | deferred prefab loading for LAT + `global.delayLoader` |
+| `Components\Delay Loader\PrefabForwarder.js` | forwards refs out of a delay loaded prefab |
+| `Components\Delay Loader\PrefabInjector.js` | injects forwarded refs into a disabled script's inputs, then enables it |

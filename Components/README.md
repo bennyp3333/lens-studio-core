@@ -20,6 +20,16 @@ Interactive button components for building UI elements:
 
 Perfect for creating interactive menus, settings panels, and UI controls. See the [Buttons README](./Buttons/) for detailed documentation and examples.
 
+### [Delay Loader/](./Delay%20Loader/)
+
+Deferred prefab loading for passing Snap's LAT (Latency Activation Time) check:
+
+- **DelayLoader** - Instantiates heavy prefabs after the first frame, or on demand, via `global.delayLoader`
+- **PrefabForwarder** - Exposes objects and components inside a prefab so other scripts can get them once it loads
+- **PrefabInjector** - Writes forwarded references into another script's inputs and enables it, with no changes to that script
+
+Essential for ad lenses that need to get through LAT review. See the [Delay Loader README](./Delay%20Loader/) for detailed documentation and examples.
+
 ### [Fader/](./Fader/)
 
 Flexible fading system with support for multiple animation modes:
