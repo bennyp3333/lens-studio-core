@@ -1,6 +1,6 @@
 /*
 AudioManager.js
-Version: 1.1.1
+Version: 1.2.0
 Description: Global audio manager for playing named audio tracks across scripts.
 Author: Bennyp3333 [https://benjamin-p.dev]
 
@@ -8,6 +8,8 @@ Author: Bennyp3333 [https://benjamin-p.dev]
 1. Add this script to a SceneObject in your scene
 2. Assign AudioTrackAssets in the inspector via the audioTracks list
 3. Configure per-track options (volume, loop, fade, allowOverwrite, allowConcurrent)
+4. (Optional) Tick "Random Variants" on a track and fill its Variants list to have
+   each play() pick one of several assets at random (see Random Variants below)
 
 ==== Global API Usage ====
 global.audioManager.play("trackName")                          - Play with track defaults
@@ -55,6 +57,16 @@ allowConcurrent=true: Find a free AudioComponent or create a new one (concurrent
                       created on demand and cached for reuse.
 A paused AudioComponent is always treated as available regardless of allowOverwrite.
 
+==== Random Variants ====
+A track with "Random Variants" ticked holds a list of AudioTrackAssets (Variants) instead
+of a single track. Every play() of that name picks one at random - never the same one
+twice in a row when there are 2+ - so e.g. footsteps or casts don't sound canned:
+    global.audioManager.play("cast")   // one of cast1..cast5
+All other options (volume, fades, loop, concurrency, delays) apply per name exactly as
+for a single-asset track; each pooled AudioComponent just gets its asset set at play
+time. From code, passing `tracks` with no `track` implies variants:
+    global.audioManager.addTracks({ trackName: "cast", tracks: [castA, castB, castC] });
+
 ==== Naming ====
 Track names must be unique. Duplicate names are rejected with a warning.
 */
@@ -62,7 +74,9 @@ Track names must be unique. Duplicate names are rejected with a warning.
 /*
 @typedef audioTrack
 @property {string} trackName {"label": "Name"}
-@property {Asset.AudioTrackAsset} track
+@property {bool} variants = false {"label": "Random Variants"}
+@property {Asset.AudioTrackAsset} track {"showIf":"variants", "showIfValue":false}
+@property {Asset.AudioTrackAsset[]} tracks {"label": "Variants", "showIf":"variants"}
 @property {float} volume = 1.0
 @property {bool} advanced = false
 @ui {"widget":"group_start", "label":"Advanced", "showIf":"advanced"}
@@ -88,6 +102,8 @@ var AudioManager = function() {
     this._tracks = {};         // trackName -> trackConfig
     this._audioComps = {};     // trackName -> [AudioComponent] (per-track, grows with concurrent)
     this._pendingDelays = {};  // trackName -> [DelayedCallbackEvent]
+    this._assets = {};         // trackName -> [AudioTrackAsset] (1 entry, or the random variants)
+    this._lastVariant = {};    // trackName -> index of the variant played last (-1 = none yet)
 };
 
 AudioManager.prototype._addTrack = function(trackConfig) {
@@ -96,15 +112,18 @@ AudioManager.prototype._addTrack = function(trackConfig) {
         printWarning("Track has no name, skipping.");
         return;
     }
-    if (!trackConfig.track) {
-        printWarning("Track '" + name + "' has no AudioTrackAsset, skipping.");
-        return;
-    }
     if (this._tracks[name]) {
         printWarning("Track '" + name + "' already exists. Names must be unique — skipping duplicate.");
         return;
     }
+    var assets = resolveAssets(trackConfig);
+    if (assets.length === 0) {
+        printWarning("Track '" + name + "' has no AudioTrackAsset, skipping.");
+        return;
+    }
     this._tracks[name] = trackConfig;
+    this._assets[name] = assets;
+    this._lastVariant[name] = -1;
     this._audioComps[name] = [this._createComp(trackConfig)];
     this._pendingDelays[name] = [];
     printDebug("Added track: " + name);
@@ -112,11 +131,22 @@ AudioManager.prototype._addTrack = function(trackConfig) {
 
 AudioManager.prototype._createComp = function(trackConfig) {
     var comp = script.getSceneObject().createComponent("Component.AudioComponent");
-    comp.audioTrack = trackConfig.track;
+    comp.audioTrack = this._assets[trackConfig.trackName][0];
     comp.volume = trackConfig.volume !== undefined ? trackConfig.volume : 1.0;
     comp.fadeInTime  = trackConfig.fadeIn  ? (trackConfig.fadeInTime  || 0) : 0;
     comp.fadeOutTime = trackConfig.fadeOut ? (trackConfig.fadeOutTime || 0) : 0;
     return comp;
+};
+
+// The asset for this play: the only one, or a random variant that isn't the last one played.
+AudioManager.prototype._pickAsset = function(name) {
+    var assets = this._assets[name];
+    if (assets.length === 1) return assets[0];
+    var last = this._lastVariant[name];
+    var idx = Math.floor(Math.random() * (last >= 0 ? assets.length - 1 : assets.length));
+    if (last >= 0 && idx >= last) idx++; // skip over the last one played
+    this._lastVariant[name] = idx;
+    return assets[idx];
 };
 
 AudioManager.prototype._getFreeComp = function(name) {
@@ -218,6 +248,7 @@ AudioManager.prototype._play = function(name, options) {
     }
 
     // Apply per-call overrides to the comp before playing
+    comp.audioTrack  = this._pickAsset(name);
     comp.volume      = volume;
     comp.fadeInTime  = fadeInTime;
     comp.fadeOutTime = fadeOutTime;
@@ -302,6 +333,8 @@ AudioManager.prototype._resume = function(name) {
  * global.audioManager.addTracks({
  *     trackName: "bubblePop",          // {string}  Unique name used to reference this track
  *     track:     script.myAudioAsset,  // {Asset.AudioTrackAsset} The audio asset to play
+ *     // tracks: [assetA, assetB],     // {Asset.AudioTrackAsset[]} Instead of track: random variant per play
+ *     // variants: true,               // {bool}    Use tracks over track (implied when track is unset)
  *     volume:    1.0,                  // {number}  Volume multiplier (0-1), default 1.0
  *     loop:      false,                // {bool}    Loop forever (-1 loops), default false
  *     fadeIn:    false,                // {bool}    Apply fade in on play, default false
@@ -340,6 +373,8 @@ AudioManager.prototype.removeTracks = function(names) {
         delete this._audioComps[name];
         delete this._pendingDelays[name];
         delete this._tracks[name];
+        delete this._assets[name];
+        delete this._lastVariant[name];
         printDebug("Removed track: " + name);
     }
 };
@@ -486,6 +521,24 @@ AudioManager.prototype.resume = function(name, options) {
     }
     return results;
 };
+
+// ============ HELPERS ============
+
+// A track's playable assets: its Variants list when "Random Variants" is ticked (or
+// when only `tracks` was given, e.g. from code), otherwise just its single track.
+function resolveAssets(trackConfig) {
+    var list = trackConfig.tracks;
+    var useList = list && list.length > 0 && (trackConfig.variants || !trackConfig.track);
+    var assets = [];
+    if (useList) {
+        for (var i = 0; i < list.length; i++) {
+            if (list[i]) assets.push(list[i]);
+        }
+    } else if (trackConfig.track) {
+        assets.push(trackConfig.track);
+    }
+    return assets;
+}
 
 // ============ INITIALIZATION ============
 

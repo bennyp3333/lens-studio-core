@@ -23,7 +23,7 @@ Lens Studio Core is a foundational package designed to be added at the start of 
 The Core prefab automatically sets up essential systems:
 
 - **TouchBlocking**: Block native Snapchat gestures and configure per-type exceptions
-- **AudioManager**: Global audio playback for named tracks with pooling, fade, and delay support
+- **AudioManager**: Global audio playback for named tracks with pooling, fade, delay, and random variant support
 - **GlobalEvents**: Event management system for decoupled communication between scripts
 - **DelayManager**: Handle delayed callbacks and time-based operations
 - **SpawnManager**: Spawn and manage objects from prefabs or scene templates

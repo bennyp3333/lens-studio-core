@@ -31,6 +31,7 @@ global.audioManager
 - Delay support on all operations via `options.delay`
 - Pending delayed plays are cancelled immediately when `stop()` or `pause()` is called, even when those calls themselves use `options.delay`
 - `isPlaying()` query method for conditional logic
+- Random variants — one track name can hold several assets, picking one at random per play
 - Duplicate track name detection at startup
 
 **Basic Usage:**
@@ -111,6 +112,21 @@ global.audioManager.addTracks({
 global.audioManager.removeTracks("powerUp");
 ```
 
+**Random Variants:**
+
+Tick **Random Variants** on a track and fill its **Variants** list to have one name play one of several assets. Each `play()` picks one at random, and never the same one twice in a row when there are 2 or more, so repeated SFX like footsteps or casts don't sound canned.
+```javascript
+// "cast" has Random Variants ticked with cast1..cast5 in its Variants list
+global.audioManager.play("cast"); // plays one of cast1..cast5
+
+// From code: passing `tracks` with no `track` implies variants
+global.audioManager.addTracks({
+    trackName: "cast",
+    tracks:    [script.castA, script.castB, script.castC]
+});
+```
+All other options (volume, fades, loop, concurrency, delays, per-call overrides) apply per name exactly as for a single-asset track. Each pooled AudioComponent has its asset set at play time, and `resume()` continues whichever variant was paused. Empty slots in the Variants list are skipped; a track with no assets at all is rejected with a warning.
+
 **State Query:**
 ```javascript
 // Check if a track is currently playing (any AudioComponent in its pool)
@@ -119,7 +135,9 @@ global.audioManager.isPlaying("music"); // returns bool
 
 **Inspector Options (per track):**
 - **Name** — Unique string key used to reference this track
-- **track** — The AudioTrackAsset to play
+- **Random Variants** — Use a list of assets instead of one, picking one at random per play, default false
+- **track** — The AudioTrackAsset to play (shown when Random Variants is off)
+- **Variants** — The AudioTrackAssets to pick from (shown when Random Variants is on)
 - **volume** — Volume multiplier (0–1), default 1.0
 - **loop** — Loop indefinitely, default false
 - **fadeIn / fadeInTime** — Fade in on play
@@ -141,6 +159,7 @@ A paused AudioComponent is always treated as available — it will be stopped an
 - UI sound effects (button taps, transitions)
 - Looping background music with clean stop/fade
 - Overlapping SFX (bubble pops, footsteps) via `allowConcurrent`
+- Varied repeated SFX (footsteps, impacts, casts) via Random Variants
 - Timed audio cues synced to animations via `options.delay`
 - Chaining sounds using `onComplete` to trigger the next play
 

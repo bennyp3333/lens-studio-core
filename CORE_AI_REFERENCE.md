@@ -480,7 +480,9 @@ so its on-screen debug is a no-op (console `print()` still works).
 ### AudioManager.js -> `global.audioManager`  (class, built at file scope)
 
 Inputs: `audioTracks` — array of a custom struct:
-`trackName`(label "Name") · `track` (Asset.AudioTrackAsset) · `volume=1.0` · `advanced` ->
+`trackName`(label "Name") · `variants=false` (label "Random Variants") · `track`
+(Asset.AudioTrackAsset; shown when `!variants`) · `tracks` (Asset.AudioTrackAsset[], label
+"Variants"; shown when `variants`) · `volume=1.0` · `advanced` ->
 `loop=false` · `fadeIn=false` · `fadeInTime=1.0` · `fadeOut=false` · `fadeOutTime=1.0` ·
 `allowConcurrent=true` · `allowOverwrite=false`. Plus `printDebugStatements`,
 `printWarningStatements`.
@@ -504,6 +506,13 @@ Concurrency: `allowConcurrent:true` -> per-track AudioComponent pool grows on de
 `allowConcurrent:false` + `allowOverwrite:false` -> skip if already playing.
 `allowConcurrent:false` + `allowOverwrite:true` -> stop & restart. A paused component is
 always reused.
+
+Random variants: a track uses its `tracks` list when `variants` is true, **or** when
+`tracks` is non-empty and `track` is unset (so `addTracks({ trackName, tracks: [a, b] })`
+needs no `variants` flag). Null slots are skipped; zero assets -> warning + track rejected.
+Every `play()` sets `comp.audioTrack` to a random pick, never the same index twice in a row
+when there are 2+ (tracked per name, across the whole pool). All other options apply per
+name unchanged; `resume()` continues the paused comp's current asset.
 
 ### SpawnManager.js -> `global.spawn`  (built at file scope)
 
@@ -925,7 +934,7 @@ All paths under `D:\Nextcloud\Projects\Reference\lens-studio-core\`.
 | `Managers\GlobalEvents.js` | `global.events` (`.add/.remove/.trigger`) |
 | `Managers\TouchBlocking.js` | inspector wrapper over `global.touchSystem` blocking |
 | `Managers\TextLogger.js` | `global.textLogger` / `global.logToScreen` / `global.logError` |
-| `Managers\AudioManager.js` | `global.audioManager` — named-track playback with pooling/fade/delay |
+| `Managers\AudioManager.js` | `global.audioManager` — named-track playback with pooling/fade/delay/random variants |
 | `Managers\SpawnManager.js` | `global.spawn` — prefab/template spawning + registry |
 | `Utilities\MathUtils.js` | lerp/clamp/remap/quat helpers |
 | `Utilities\ArrayUtils.js` | array clone/filter/shuffle/max |
